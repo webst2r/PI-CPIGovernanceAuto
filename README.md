@@ -9,4 +9,4 @@
 - [Daniel Azevedo](https://github.com/danieltazevedo)
 - [Nuno Mata](https://github.com/nunodmata)
 - [Pedro Araújo](https://github.com/pedroarauj09) 
-- [Cláudia Ribeiro]() 
+- [Cláudia Ribeiro](https://github.com/claudiadmr) 
