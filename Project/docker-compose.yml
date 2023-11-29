@@ -1,0 +1,21 @@
+services:
+  cpilint:
+    container_name: cpilint
+    image: cpilint
+    build:
+      context: .
+      dockerfile: ./cpilint-1.0.4/Dockerfile
+    ports:
+      - "8081:8081"
+  jenkins:
+    image: jenkins/jenkins:lts
+    restart: unless-stopped
+    privileged: true
+    user: root
+    ports:
+      - 8080:8080
+    container_name: jenkins
+    volumes:
+      - ~/jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/docker:/usr/local/bin/docker
