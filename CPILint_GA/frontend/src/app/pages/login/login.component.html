@@ -1,0 +1,31 @@
+<form [formGroup]="form" (ngSubmit)="login()">
+  <div class="form-container">
+    <mat-card-title class="login-title larger-text">{{"loginPage.login" | translate}}</mat-card-title>
+    <hr class="line">
+
+    <mat-form-field>
+      <input type="text" matInput [placeholder]="'loginPage.email' | translate" formControlName="email">
+    </mat-form-field>
+
+    <span *ngIf="!form.controls['email'].valid && form.controls['email']?.touched" class="error">
+      {{ "loginPage.invalidEmail" | translate }}
+    </span>
+
+    <mat-form-field>
+      <input type="password" matInput [placeholder]="'loginPage.password' | translate" formControlName="password">
+    </mat-form-field>
+
+    <span *ngIf="!form.controls['password'].valid && form.controls['password']?.touched" class="error">
+      {{  "loginPage.invalidPassword" | translate  }}
+    </span>
+
+    <p *ngIf="error" class="error">
+      {{ error }}
+    </p>
+
+    <div class="button-container">
+      <button type="submit" [disabled]="!form.valid" mat-button>{{"loginPage.login" | translate}}</button>
+      <button type="button" routerLink="/register" mat-button>{{"registerPage.register" | translate}}</button>
+    </div>
+  </div>
+</form>
