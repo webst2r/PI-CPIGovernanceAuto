@@ -79,5 +79,6 @@ services:
       project-network:
 volumes:
   mysql_db:
+  jenkins_data:
 networks:
   project-network:
