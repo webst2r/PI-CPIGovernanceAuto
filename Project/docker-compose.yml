@@ -7,6 +7,8 @@ services:
       dockerfile: ./cpilint-1.0.4/Dockerfile
     ports:
       - "8081:8081"
+    networks:
+      project-network:
 
   jenkins:
     image: jenkins/jenkins:lts
@@ -20,6 +22,8 @@ services:
       - ~/jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/local/bin/docker
+    networks:
+      project-network:
 
   mysqldb:
     image: mysql:latest
@@ -71,6 +75,8 @@ services:
       - "4200:80"
     depends_on:
       - backend
+    networks:
+      project-network:
 volumes:
   mysql_db:
 networks:
