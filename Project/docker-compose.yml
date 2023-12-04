@@ -7,6 +7,7 @@ services:
       dockerfile: ./cpilint-1.0.4/Dockerfile
     ports:
       - "8081:8081"
+
   jenkins:
     image: jenkins/jenkins:lts
     restart: unless-stopped
@@ -19,3 +20,58 @@ services:
       - ~/jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/local/bin/docker
+
+  mysqldb:
+    image: mysql:latest
+    restart: always
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: "Root123"
+      MYSQL_DATABASE: "project_db"
+      MYSQL_USER: "user"
+      mysql_password: "Root123"
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - mysql_db:/var/lib/mysql
+    networks:
+      project-network:
+
+  backend:
+    container_name: backend
+    image: backend
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    ports:
+      - "9001:9001"
+    depends_on:
+      - mysqldb
+    environment:
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/project_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Root123
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_SHOW_SQL=true
+      - SERVER_PORT=9001
+    networks:
+      - project-network
+    restart: on-failure
+
+  frontend:
+    container_name: frontend
+    image: frontend
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+volumes:
+  mysql_db:
+networks:
+  project-network:

@@ -8,4 +8,4 @@ RUN npm run build --prod
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 COPY --from=node /home/app/dist/frontend/browser .
-EXPOSE 80
+EXPOSE 4200
