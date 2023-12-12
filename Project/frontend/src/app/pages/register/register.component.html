@@ -1,38 +1,38 @@
 <form [formGroup]="form" (ngSubmit)="register()">
   <div class="form-container">
-    <mat-card-title class="register-title larger-text">Registar</mat-card-title>
+    <mat-card-title class="register-title larger-text">{{"registerPage.register" | translate}}</mat-card-title>
     <hr class="line">
 
     <mat-form-field>
-      <input type="text" matInput placeholder="Email" formControlName="email">
+      <input type="text" matInput [placeholder]="'loginPage.email' | translate" formControlName="email">
     </mat-form-field>
 
     <span *ngIf="!form.controls['email'].valid && form.controls['email']?.touched" class="error">
-      Email inválido
+      {{ "loginPage.invalidEmail" | translate }}
     </span>
 
     <mat-form-field>
-      <input type="password" matInput placeholder="Password" formControlName="password">
+      <input type="password" matInput [placeholder]="'loginPage.password' | translate" formControlName="password">
     </mat-form-field>
 
     <span *ngIf="!form.controls['password'].valid && form.controls['password']?.touched" class="error">
-      Password tem de ter no minimo 8 caracteres
+      {{  "loginPage.invalidPassword" | translate  }}
     </span>
 
     <mat-form-field>
-      <input type="text" matInput placeholder="Nome Próprio" formControlName="firstName">
+      <input type="text" matInput [placeholder]="'registerPage.firstName' | translate" formControlName="firstName">
     </mat-form-field>
 
     <span *ngIf="!form.controls['firstName'].valid && form.controls['firstName']?.touched" class="error">
-      O nome próprio é obrigatório
+      {{  "registerPage.firstNameRequired" | translate  }}
     </span>
 
     <mat-form-field>
-      <input type="text" matInput placeholder="Apelido" formControlName="lastName">
+      <input type="text" matInput [placeholder]="'registerPage.lastName' | translate" formControlName="lastName">
     </mat-form-field>
 
     <span *ngIf="!form.controls['lastName'].valid && form.controls['lastName']?.touched" class="error">
-      O apelido é obrigatório"
+      {{  "registerPage.lastNameRequired" | translate  }}
     </span>
 
     <p *ngIf="error" class="error">
@@ -40,9 +40,8 @@
     </p>
 
     <div class="button-container">
-      <button type="submit" [disabled]="!form.valid" mat-button>Registar</button>
-      <button type="button" routerLink="/login" mat-button>Login</button>
+      <button type="submit" [disabled]="!form.valid" mat-button>{{"registerPage.register" | translate}}</button>
+      <button type="button" routerLink="/login" mat-button>{{"loginPage.login" | translate}}</button>
     </div>
   </div>
 </form>
-

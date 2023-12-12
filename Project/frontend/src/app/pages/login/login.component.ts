@@ -7,6 +7,7 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 import {AppConstant} from "../../app.constant";
 import {AuthenticationService} from "../../services/authentication.service";
 import {NgIf} from "@angular/common";
+import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,8 @@ import {NgIf} from "@angular/common";
     MatButtonModule,
     RouterLink,
     ReactiveFormsModule,
-    NgIf
+    NgIf,
+    TranslateModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'

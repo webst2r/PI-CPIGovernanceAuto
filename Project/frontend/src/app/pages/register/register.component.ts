@@ -7,6 +7,7 @@ import {Router, RouterLink} from "@angular/router";
 import {MatButtonModule} from "@angular/material/button";
 import {AuthenticationService} from "../../services/authentication.service";
 import {AppConstant} from "../../app.constant";
+import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-register',
@@ -17,7 +18,8 @@ import {AppConstant} from "../../app.constant";
     MatInputModule,
     NgIf,
     RouterLink,
-    MatButtonModule
+    MatButtonModule,
+    TranslateModule
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
