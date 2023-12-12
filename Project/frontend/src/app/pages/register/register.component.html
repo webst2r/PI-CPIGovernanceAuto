@@ -1,0 +1,48 @@
+<form [formGroup]="form" (ngSubmit)="register()">
+  <div class="form-container">
+    <mat-card-title class="register-title larger-text">Registar</mat-card-title>
+    <hr class="line">
+
+    <mat-form-field>
+      <input type="text" matInput placeholder="Email" formControlName="email">
+    </mat-form-field>
+
+    <span *ngIf="!form.controls['email'].valid && form.controls['email']?.touched" class="error">
+      Email inválido
+    </span>
+
+    <mat-form-field>
+      <input type="password" matInput placeholder="Password" formControlName="password">
+    </mat-form-field>
+
+    <span *ngIf="!form.controls['password'].valid && form.controls['password']?.touched" class="error">
+      Password tem de ter no minimo 8 caracteres
+    </span>
+
+    <mat-form-field>
+      <input type="text" matInput placeholder="Nome Próprio" formControlName="firstName">
+    </mat-form-field>
+
+    <span *ngIf="!form.controls['firstName'].valid && form.controls['firstName']?.touched" class="error">
+      O nome próprio é obrigatório
+    </span>
+
+    <mat-form-field>
+      <input type="text" matInput placeholder="Apelido" formControlName="lastName">
+    </mat-form-field>
+
+    <span *ngIf="!form.controls['lastName'].valid && form.controls['lastName']?.touched" class="error">
+      O apelido é obrigatório"
+    </span>
+
+    <p *ngIf="error" class="error">
+      {{ error }}
+    </p>
+
+    <div class="button-container">
+      <button type="submit" [disabled]="!form.valid" mat-button>Registar</button>
+      <button type="button" routerLink="/login" mat-button>Login</button>
+    </div>
+  </div>
+</form>
+

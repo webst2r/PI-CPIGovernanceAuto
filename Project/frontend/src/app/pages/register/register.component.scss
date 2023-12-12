@@ -19,8 +19,9 @@ mat-form-field {
 
 .register-title {
   position: absolute;
-  top: -200px;
-  left: -300px;
+  top: -220px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .larger-text {
@@ -30,7 +31,7 @@ mat-form-field {
 .line {
   border: 1px solid black;
   width: calc(100% + 640px);
-  margin: -120px -350px 100px;
+  margin: -120px -400px 50px;
   position: relative;
 }
 
@@ -49,8 +50,9 @@ button {
   background: blue;
   color: white;
   display: flex;
-  justify-content: space-between;
-  padding: 10px;
+  justify-content: center;
+  font-size: medium;
+  padding: 30px;
 }
 
 button span {

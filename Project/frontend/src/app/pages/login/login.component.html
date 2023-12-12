@@ -1,0 +1,31 @@
+<form [formGroup]="form" (ngSubmit)="login()">
+  <div class="form-container">
+    <mat-card-title class="login-title larger-text">Login</mat-card-title>
+    <hr class="line">
+
+    <mat-form-field>
+      <input type="text" matInput placeholder="Email" formControlName="email">
+    </mat-form-field>
+
+    <span *ngIf="!form.controls['email'].valid && form.controls['email']?.touched" class="error">
+      Email inválido
+    </span>
+
+    <mat-form-field>
+      <input type="password" matInput placeholder="Password" formControlName="password">
+    </mat-form-field>
+
+    <span *ngIf="!form.controls['password'].valid && form.controls['password']?.touched" class="error">
+      Password tem de ter no minimo 8 caracteres
+    </span>
+
+    <p *ngIf="error" class="error">
+      {{ error }}
+    </p>
+
+    <div class="button-container">
+      <button type="submit" [disabled]="!form.valid" mat-button>Login</button>
+      <button type="button" routerLink="/register" mat-button>Registar</button>
+    </div>
+  </div>
+</form>

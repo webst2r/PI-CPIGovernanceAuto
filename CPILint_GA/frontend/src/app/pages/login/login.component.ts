@@ -24,13 +24,10 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
-
   login() {
     if (!this.form.valid) {
       return;
     }
-
     this.authenticationService.login(this.form.controls['email'].value, this.form.controls['password'].value).pipe(
       tap(user => {
         this.authenticationService.saveToken(user.token);
