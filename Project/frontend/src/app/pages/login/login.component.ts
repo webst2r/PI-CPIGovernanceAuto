@@ -7,7 +7,9 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 import {AppConstant} from "../../app.constant";
 import {AuthenticationService} from "../../services/authentication.service";
 import {NgIf} from "@angular/common";
-import {TranslateModule} from "@ngx-translate/core";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
+import {tap} from "rxjs";
+import {ExceptionType} from "../../enumeration/exception";
 
 @Component({
   selector: 'app-login',
@@ -32,7 +34,8 @@ export class LoginComponent {
   });
 
   constructor(private readonly authenticationService: AuthenticationService,
-              private router: Router,) {
+              private router: Router,
+              private translate: TranslateService) {
   }
 
   login() {
@@ -42,12 +45,20 @@ export class LoginComponent {
     this.authenticationService.login({
       email: this.form.controls['email'].value,
       password: this.form.controls['password'].value
-    })
+    }).pipe(
+      tap(user => {
+        this.authenticationService.saveToken(user.token);
+        this.authenticationService.saveUser(user);
+      })
+    )
       .subscribe({
-        next: (response) => {
-          localStorage.setItem('token', response.token as string);
-          this.router.navigate(['home']);
+        next: () => this.router.navigate(['home']),
+        error: (error) => {
+          if (error.error && error.error.type === ExceptionType.WRONG_CREDENTIALS) {
+            this.error = this.translate.instant("loginPage.wrongCredentials");
+          }
         }
+
       });
   }
 

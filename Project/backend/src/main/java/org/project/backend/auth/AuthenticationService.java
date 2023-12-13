@@ -2,6 +2,8 @@ package org.project.backend.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.project.backend.config.JwtService;
+import org.project.backend.exception.BadRequestException;
+import org.project.backend.exception.enumeration.ExceptionType;
 import org.project.backend.user.Role;
 import org.project.backend.user.User;
 import org.project.backend.user.UserRepository;
@@ -18,17 +20,17 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public String register(RegisterRequest request) {
+        validateNewEmail(request.getEmail());
         var user = User.builder()
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        return "User registered successfully!";
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -36,9 +38,21 @@ public class AuthenticationService {
                 request.getEmail(),
                 request.getPassword()
         ));
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        var user = userRepository.findByEmail(request.getEmail()).get();
 
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        return AuthenticationResponse
+                .builder()
+                .token(jwtToken)
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .build();
+    }
+
+    private void validateNewEmail(String email) throws BadRequestException {
+        if (userRepository.existsByEmail(email)) {
+            throw new BadRequestException("Email already exists", ExceptionType.EMAIL_ALREADY_EXISTS);
+        }
     }
 }
