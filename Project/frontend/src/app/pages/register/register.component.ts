@@ -7,7 +7,8 @@ import {Router, RouterLink} from "@angular/router";
 import {MatButtonModule} from "@angular/material/button";
 import {AuthenticationService} from "../../services/authentication.service";
 import {AppConstant} from "../../app.constant";
-import {TranslateModule} from "@ngx-translate/core";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
+import {ExceptionType} from "../../enumeration/exception";
 
 @Component({
   selector: 'app-register',
@@ -34,7 +35,8 @@ export class RegisterComponent {
   });
 
   constructor(private readonly authenticationService: AuthenticationService,
-              private router: Router) {
+              private router: Router,
+              private translate:TranslateService) {
   }
 
   register() {
@@ -45,17 +47,18 @@ export class RegisterComponent {
       {
         email: this.form.controls['email'].value,
         password: this.form.controls['password'].value,
-        firstname: this.form.controls['firstName'].value,
-        lastname: this.form.controls['lastName'].value,
+        firstName: this.form.controls['firstName'].value,
+        lastName: this.form.controls['lastName'].value,
       }
     )
       .subscribe({
-        next: (response) => {
-          console.log(response)
-          if (response) {
-            this.router.navigate(['login']);
+        next: () => this.router.navigate(['login']),
+        error: (error) => {
+          if (error.error && error.error.type === ExceptionType.EMAIL_ALREADY_EXISTS) {
+            this.error = this.translate.instant("registerPage.emailAlreadyExists");
           }
         }
+
       });
 
   }

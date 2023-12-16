@@ -3,7 +3,7 @@ WORKDIR /home/app
 COPY package*.json .
 RUN npm ci
 COPY . .
-RUN npm run build --prod
+RUN npm run build
 # Stage 2
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
