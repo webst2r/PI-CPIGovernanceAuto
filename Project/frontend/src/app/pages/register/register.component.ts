@@ -47,8 +47,8 @@ export class RegisterComponent {
       {
         email: this.form.controls['email'].value,
         password: this.form.controls['password'].value,
-        firstname: this.form.controls['firstName'].value,
-        lastname: this.form.controls['lastName'].value,
+        firstName: this.form.controls['firstName'].value,
+        lastName: this.form.controls['lastName'].value,
       }
     )
       .subscribe({

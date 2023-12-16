@@ -23,8 +23,8 @@ public class AuthenticationService {
     public String register(RegisterRequest request) {
         validateNewEmail(request.getEmail());
         var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .firstname(request.getFirstName())
+                .lastname(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
@@ -44,8 +44,8 @@ public class AuthenticationService {
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
+                .firstName(user.getFirstname())
+                .lastName(user.getLastname())
                 .email(user.getEmail())
                 .build();
     }

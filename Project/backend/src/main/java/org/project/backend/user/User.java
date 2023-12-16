@@ -29,11 +29,11 @@ public class User implements UserDetails {
 
     @NotBlank
     @Size(max = 20)
-    private String firstName;
+    private String firstname;
 
     @NotBlank
     @Size(max = 20)
-    private String lastName;
+    private String lastname;
 
     @NotBlank
     @Size(max = 50)

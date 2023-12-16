@@ -42,17 +42,22 @@ export class LoginComponent {
     if (!this.form.valid) {
       return;
     }
+    console.log("passou validação")
     this.authenticationService.login({
       email: this.form.controls['email'].value,
       password: this.form.controls['password'].value
     }).pipe(
       tap(user => {
+        console.log(user)
         this.authenticationService.saveToken(user.token);
         this.authenticationService.saveUser(user);
       })
     )
       .subscribe({
-        next: () => this.router.navigate(['home']),
+        next: () => {
+          console.log("navegou pra home")
+          this.router.navigate(['home'])
+        },
         error: (error) => {
           if (error.error && error.error.type === ExceptionType.WRONG_CREDENTIALS) {
             this.error = this.translate.instant("loginPage.wrongCredentials");

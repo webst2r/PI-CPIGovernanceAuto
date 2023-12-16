@@ -56,7 +56,6 @@ export class AuthenticationService {
     if(token !== null) {
       return !this.jwtHelperService.isTokenExpired(token);
     }
-
     return false;
   }
 }
