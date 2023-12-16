@@ -1,0 +1,43 @@
+/* Add global styles here if needed */
+
+div {
+  /* Add styles for the main container */
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+table {
+  /* Add styles for the table */
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+table, th, td {
+  border: 1px solid #ddd;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.last-row {
+  /* Add styles for the last row with dropdown menu */
+  margin-top: 15px;
+}
+
+select {
+  /* Add styles for the dropdown menu */
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
