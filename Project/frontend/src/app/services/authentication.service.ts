@@ -18,8 +18,8 @@ export class AuthenticationService {
   register(
     registerRequest: RegisterRequest
   ) {
-    return this.http.post<String>
-    (AppConstant.API_URL+AppConstant.API_PATHS.AUTH.REGISTER, registerRequest);
+    return this.http.post
+    (AppConstant.API_URL+AppConstant.API_PATHS.AUTH.REGISTER, registerRequest, {responseType: "text"});
   }
 
   login(
