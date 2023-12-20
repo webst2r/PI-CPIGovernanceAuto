@@ -54,7 +54,7 @@ export class LoginComponent {
     )
       .subscribe({
         next: () => {
-          this.router.navigate([''])
+          this.router.navigate(['home'])
         },
         error: (error) => {
           if (error.error && error.error.type === ExceptionType.WRONG_CREDENTIALS) {
