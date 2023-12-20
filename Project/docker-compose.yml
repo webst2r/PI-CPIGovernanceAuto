@@ -33,7 +33,7 @@ services:
       MYSQL_ROOT_PASSWORD: "Root123"
       MYSQL_DATABASE: "project_db"
       MYSQL_USER: "user"
-      mysql_password: "Root123"
+      MYSQL_PASSWORD: "Root123"
     ports:
       - "3306:3306"
     expose:
