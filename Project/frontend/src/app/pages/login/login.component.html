@@ -3,21 +3,25 @@
     <mat-card-title class="login-title larger-text">{{"loginPage.login" | translate}}</mat-card-title>
     <hr class="line">
 
-    <mat-form-field>
+    <label>{{'loginPage.email' | translate}}</label>
+    <mat-form-field appearance="outline">
       <input type="text" matInput [placeholder]="'loginPage.email' | translate" formControlName="email">
     </mat-form-field>
 
     <span *ngIf="!form.controls['email'].valid && form.controls['email']?.touched" class="error">
       {{ "loginPage.invalidEmail" | translate }}
     </span>
+    <br />
 
-    <mat-form-field>
+    <label>{{'loginPage.password' | translate}}</label>
+    <mat-form-field appearance="outline">
       <input type="password" matInput [placeholder]="'loginPage.password' | translate" formControlName="password">
     </mat-form-field>
 
     <span *ngIf="!form.controls['password'].valid && form.controls['password']?.touched" class="error">
       {{  "loginPage.invalidPassword" | translate  }}
     </span>
+    <br />
 
     <p *ngIf="error" class="error">
       {{ error }}
