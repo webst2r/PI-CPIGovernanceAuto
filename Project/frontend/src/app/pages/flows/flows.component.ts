@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatTableModule } from "@angular/material/table";
+import {HttpClient} from "@angular/common/http";
 
 export interface FlowElement {
   position: number;
@@ -26,4 +27,25 @@ const FLOW_DATA: FlowElement[] = [
 export class FlowsComponent {
   displayedColumns: string[] = ['position', 'package', 'flowId', 'actions'];
   dataSource = FLOW_DATA;
+
+  constructor(private httpClient: HttpClient) {}
+
+  ngOnInit() {
+    this.getPackages();
+  }
+
+
+  getPackages() {
+    const apiUrl = 'http://localhost:9001/api/flows/getPackages';
+
+    this.httpClient.get(apiUrl, { responseType: 'json' }).subscribe(
+      (response) => {
+        console.log('Response:', response);
+      },
+      (error) => {
+        console.error('Error fetching packages:', error);
+      }
+    );
+  }
+
 }

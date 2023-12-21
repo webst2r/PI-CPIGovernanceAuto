@@ -41,6 +41,13 @@ export class CredentialsComponent {
       this.credentialsService.registerCredentials(formData).subscribe(
         (response) => {
           console.log('Successfully registered credentials:', response);
+          // Check if the response has a status of 200
+          if (response && response.status === 200) {
+            // Reload the page if the status is 200
+            window.location.reload();
+          } else {
+            // Handle other successful responses if needed
+          }
         },
         (error) => {
           console.error('Error registering credentials:', error);
@@ -48,4 +55,5 @@ export class CredentialsComponent {
       );
     }
   }
+
 }
