@@ -7,7 +7,7 @@ export class AppConstant {
     AUTH:{
       LOGIN: 'auth/authenticate',
       REGISTER: 'auth/register',
-    }
+    },
   }
 
   public static readonly REGEX = {
