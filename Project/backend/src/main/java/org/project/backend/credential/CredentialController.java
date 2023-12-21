@@ -39,11 +39,9 @@ public class CredentialController {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             if (principal instanceof UserDetails) {
-                // Cast the principal to UserDetails to get user details
                 UserDetails userDetails = (UserDetails) principal;
                 User user = userService.findOrCreateUser(userDetails.getUsername());
 
-                // Set the user in the credential object
                 credentialDto.setUser(user);
 
                 // Check if credentials with the same user_id exist
