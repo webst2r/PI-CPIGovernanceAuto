@@ -1,6 +1,9 @@
 package org.project.backend.flows;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.logging.LoggingSystemFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,41 +47,29 @@ public class FlowsService {
 
     //private static final Logger LOG = (Logger) LoggerFactory.getLogger(FlowsService.class);
 
-    public Mono<String> obtainSecuredResource() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = null;
+    public PackagesResponseDTO obtainSecuredResource(Integer userId) throws JsonProcessingException {
+        User user = userRepository.findById(userId).orElseThrow();
 
-        // Extract UserDetails from Authentication
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String username = userDetails.getUsername();
-            user = userRepository.findByEmail(username).orElseThrow();
-        }
+        Credential credentials = credentialsRepository.findByUserId(user.getId());
+        String clientId = credentials.getClientId();
+        String clientSecret = credentials.getClientSecret();
 
-        if (user != null) {
-            Credential credentials = credentialsRepository.findByUserId(user.getId());
-            String clientId = credentials.getClientId();
-            String clientSecret = credentials.getClientSecret();
+        String accessTokenValue = obtainAccessToken(clientId, clientSecret).block();
+        log.debug("Access token: {}", accessTokenValue);
 
-            // Encode client credentials
-            String encodedClientData = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
+        String jsonResponse = webClientBuilder.build()
+                .get()
+                .uri("https://45438691trial.it-cpitrial05.cfapps.us10-001.hana.ondemand.com/api/v1/IntegrationPackages")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenValue)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .retrieve()
+                .bodyToMono(String.class).block();
 
-            return obtainAccessToken(clientId, clientSecret)
-                    .flatMap(accessTokenValue -> {
-                        log.debug("Access token: {}", accessTokenValue);
+        // Deserialize JSON into IntegrationPackage object
+        ObjectMapper objectMapper = new ObjectMapper();
+        PackagesResponseDTO packagesResponse = objectMapper.readValue(jsonResponse, PackagesResponseDTO.class);
 
-                        return webClientBuilder.build()
-                                .get()
-                                .uri("https://45438691trial.it-cpitrial05.cfapps.us10-001.hana.ondemand.com")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenValue)
-                                .retrieve()
-                                .bodyToMono(String.class);
-                    })
-                    .map(res -> "Retrieved the resource using a manual approach: " + res);
-        } else {
-            // Handle the case where client details are not found for the user
-            return Mono.error(new RuntimeException("Client details not found for the user"));
-        }
+        return packagesResponse;
     }
 
     private Mono<String> obtainAccessToken(String clientId, String clientSecret) {
@@ -87,10 +80,11 @@ public class FlowsService {
                         .with("client_id", clientId)
                         .with("client_secret", clientSecret))
                 .retrieve()
-                .onStatus(status -> status.isError(), response -> {
-                    log.error("Error obtaining access token. Status code: {}", response.toString());
-                    return Mono.error(new RuntimeException("Error obtaining access token"));
-                })
+                .onStatus(status -> status.isError(), response -> response.toEntity(String.class)
+                        .flatMap(entity -> {
+                            log.error("Error obtaining access token. Status code: {}, Response: {}", response.statusCode(), entity.getBody());
+                            return Mono.error(new RuntimeException("Error obtaining access token"));
+                        }))
                 .bodyToMono(JsonNode.class)
                 .map(tokenResponse -> tokenResponse.get("access_token").textValue())
                 .onErrorResume(throwable -> {
@@ -98,8 +92,6 @@ public class FlowsService {
                     return Mono.error(new RuntimeException("Error obtaining access token", throwable));
                 });
     }
-
-
 
 
     public FlowsResponse getPackages() {

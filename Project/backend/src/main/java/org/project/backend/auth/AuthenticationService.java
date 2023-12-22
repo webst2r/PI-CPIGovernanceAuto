@@ -1,5 +1,6 @@
 package org.project.backend.auth;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.project.backend.config.JwtService;
 import org.project.backend.exception.BadRequestException;
@@ -20,6 +21,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    @Transactional
     public String register(RegisterRequest request) {
         validateNewEmail(request.getEmail());
         var user = User.builder()
@@ -33,6 +35,7 @@ public class AuthenticationService {
         return "User registered successfully!";
     }
 
+    @Transactional
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
