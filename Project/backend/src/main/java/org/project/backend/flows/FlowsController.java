@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/flows")
@@ -18,9 +18,10 @@ public class FlowsController {
         this.flowsService = flowsService;
     }
 
+
     @GetMapping("/getPackages")
-    public ResponseEntity<FlowsResponse> getPackages() {
-        FlowsResponse response = flowsService.getPackages();
+    public ResponseEntity<Mono<String>> getPackages() {
+        Mono<String> response = flowsService.obtainSecuredResource();
         return ResponseEntity.ok(response);
     }
 }
