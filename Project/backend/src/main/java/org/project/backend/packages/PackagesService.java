@@ -37,7 +37,6 @@ public class PackagesService {
 
     private final CredentialRepository credentialsRepository;
 
-    //private static final Logger LOG = (Logger) LoggerFactory.getLogger(FlowsService.class);
 
     public PackagesResponseDTO obtainSecuredResource() throws JsonProcessingException {
         // Obtain the current authentication details
@@ -104,10 +103,51 @@ public class PackagesService {
                 });
     }
 
+    public PackageDetailsResponseDTO getPackageDetails(String packageId) throws JsonProcessingException {
+        // Obtain the current authentication details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    public PackagesResponse getPackages() {
-        return new PackagesResponse("all good");
+        // Check if the user is authenticated
+        if (authentication != null && authentication.isAuthenticated()) {
+            // Retrieve the user details
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
 
+            // Now you have the username, you can use it to retrieve the user from the repository
+            Optional<User> user = userRepository.findByEmail(username);
 
+            // Rest of your code remains the same...
+            Credential credentials = credentialsRepository.findByUserId(user.get().getId());
+
+            String clientId = credentials.getClientId();
+            String clientSecret = credentials.getClientSecret();
+            log.debug("clientId: {}", clientId);
+            log.debug("clientSecret: {}", clientSecret);
+
+            String accessTokenValue = obtainAccessToken(clientId, clientSecret).block();
+            log.debug("Access token: {}", accessTokenValue);
+
+            // Use the packageId parameter in the URI for the specific package details
+            String packageDetailsUri = externalApiBaseUrl + "/api/v1/IntegrationPackages" + "('" + packageId + "')" + "/IntegrationDesigntimeArtifacts";
+
+            String jsonResponse = webClientBuilder.build()
+                    .get()
+                    .uri(packageDetailsUri)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenValue)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .retrieve()
+                    .bodyToMono(String.class).block();
+
+            // Deserialize JSON into PackageDetailsResponseDTO object
+            ObjectMapper objectMapper = new ObjectMapper();
+            PackageDetailsResponseDTO packageDetailsResponse = objectMapper.readValue(jsonResponse, PackageDetailsResponseDTO.class);
+
+            return packageDetailsResponse;
+        } else {
+            // Handle the case where the user is not authenticated
+            throw new RuntimeException("User not authenticated");
+        }
     }
+
+
 }
