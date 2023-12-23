@@ -5,6 +5,7 @@ import { HomeComponent } from "./pages/home/home.component";  // Import HomeComp
 import { authGuard } from "./services/auth/auth.guard";
 import {PackagesComponent} from "./pages/packages/packages.component";
 import {CredentialsComponent} from "./pages/credentials/credentials.component";
+import {PackageDetailComponent} from "./pages/package-detail/package-detail.component";
 
 export const routes: Routes = [
   {
@@ -35,4 +36,8 @@ export const routes: Routes = [
     component: CredentialsComponent,
     canActivate: [authGuard]
   },
+  { path: 'package-detail/:id',
+    component: PackageDetailComponent,
+    canActivate: [authGuard]
+  }
 ];
