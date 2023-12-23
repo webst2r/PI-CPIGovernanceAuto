@@ -1,24 +1,17 @@
-package org.project.backend.flows;
+package org.project.backend.packages;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.LogManager;
-import org.springframework.http.HttpStatus;
 
 import org.project.backend.credential.Credential;
 import org.project.backend.user.User;
 import org.project.backend.user.UserRepository;
 import org.project.backend.credential.CredentialRepository;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.logging.LoggingSystemFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,13 +21,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Base64;
-import java.util.logging.Logger;
+import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class FlowsService {
+public class PackagesService {
 
     @Value("${external.api.baseurl}")
     private String externalApiBaseUrl;
@@ -47,30 +39,49 @@ public class FlowsService {
 
     //private static final Logger LOG = (Logger) LoggerFactory.getLogger(FlowsService.class);
 
-    public PackagesResponseDTO obtainSecuredResource(Integer userId) throws JsonProcessingException {
-        User user = userRepository.findById(userId).orElseThrow();
+    public PackagesResponseDTO obtainSecuredResource() throws JsonProcessingException {
+        // Obtain the current authentication details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Credential credentials = credentialsRepository.findByUserId(user.getId());
-        String clientId = credentials.getClientId();
-        String clientSecret = credentials.getClientSecret();
+        // Check if the user is authenticated
+        if (authentication != null && authentication.isAuthenticated()) {
+            // Retrieve the user details
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
 
-        String accessTokenValue = obtainAccessToken(clientId, clientSecret).block();
-        log.debug("Access token: {}", accessTokenValue);
+            // Now you have the username, you can use it to retrieve the user from the repository
+            Optional<User> user = userRepository.findByEmail(username);
 
-        String jsonResponse = webClientBuilder.build()
-                .get()
-                .uri("https://45438691trial.it-cpitrial05.cfapps.us10-001.hana.ondemand.com/api/v1/IntegrationPackages")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenValue)
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .retrieve()
-                .bodyToMono(String.class).block();
+            // Rest of your code remains the same...
+            Credential credentials = credentialsRepository.findByUserId(user.get().getId());
 
-        // Deserialize JSON into IntegrationPackage object
-        ObjectMapper objectMapper = new ObjectMapper();
-        PackagesResponseDTO packagesResponse = objectMapper.readValue(jsonResponse, PackagesResponseDTO.class);
+            String clientId = credentials.getClientId();
+            String clientSecret = credentials.getClientSecret();
+            log.debug("clientId: {}", clientId);
+            log.debug("clientSecret: {}", clientSecret);
 
-        return packagesResponse;
+            String accessTokenValue = obtainAccessToken(clientId, clientSecret).block();
+            log.debug("Access token: {}", accessTokenValue);
+
+            String jsonResponse = webClientBuilder.build()
+                    .get()
+                    .uri("https://45438691trial.it-cpitrial05.cfapps.us10-001.hana.ondemand.com/api/v1/IntegrationPackages")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenValue)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .retrieve()
+                    .bodyToMono(String.class).block();
+
+            // Deserialize JSON into IntegrationPackage object
+            ObjectMapper objectMapper = new ObjectMapper();
+            PackagesResponseDTO packagesResponse = objectMapper.readValue(jsonResponse, PackagesResponseDTO.class);
+
+            return packagesResponse;
+        } else {
+            // Handle the case where the user is not authenticated
+            throw new RuntimeException("User not authenticated");
+        }
     }
+
 
     private Mono<String> obtainAccessToken(String clientId, String clientSecret) {
         return webClientBuilder.build()
@@ -94,8 +105,8 @@ public class FlowsService {
     }
 
 
-    public FlowsResponse getPackages() {
-        return new FlowsResponse("all good");
+    public PackagesResponse getPackages() {
+        return new PackagesResponse("all good");
 
 
     }

@@ -3,7 +3,7 @@ import { LoginComponent } from "./pages/login/login.component";
 import { RegisterComponent } from "./pages/register/register.component";
 import { HomeComponent } from "./pages/home/home.component";  // Import HomeComponent
 import { authGuard } from "./services/auth/auth.guard";
-import {FlowsComponent} from "./pages/flows/flows.component";
+import {PackagesComponent} from "./pages/packages/packages.component";
 import {CredentialsComponent} from "./pages/credentials/credentials.component";
 
 export const routes: Routes = [
@@ -26,8 +26,8 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'flows',
-    component: FlowsComponent,
+    path: 'packages',
+    component: PackagesComponent,
     canActivate: [authGuard]
   },
   {

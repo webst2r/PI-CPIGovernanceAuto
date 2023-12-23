@@ -1,6 +1,5 @@
-package org.project.backend.flows;
+package org.project.backend.packages;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

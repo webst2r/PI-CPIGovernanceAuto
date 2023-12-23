@@ -1,4 +1,4 @@
-package org.project.backend.flows;
+package org.project.backend.packages;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
