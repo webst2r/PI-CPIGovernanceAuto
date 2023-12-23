@@ -1,8 +1,7 @@
-package org.project.backend.flows;
+package org.project.backend.packages;
 
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FlowsResponse {
+public class PackagesResponse {
 
     private String message;
 

@@ -1,4 +1,4 @@
-package org.project.backend.flows;
+package org.project.backend.packages;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

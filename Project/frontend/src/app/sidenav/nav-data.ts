@@ -10,9 +10,9 @@ export const navbarData = [
     label: 'Home'
   },
   {
-    routeLink: 'flows',
+    routeLink: 'packages',
     icon: 'fas fa-project-diagram',
-    label: 'Flows'
+    label: 'Packages'
   },
   {
     routeLink: 'credentials',
