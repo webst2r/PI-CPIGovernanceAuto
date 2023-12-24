@@ -38,7 +38,7 @@ public class PackagesService {
     private final CredentialRepository credentialsRepository;
 
 
-    public PackagesResponseDTO obtainSecuredResource() throws JsonProcessingException {
+    public PackagesResponseDTO getPackages() throws JsonProcessingException {
         // Obtain the current authentication details
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -56,15 +56,19 @@ public class PackagesService {
 
             String clientId = credentials.getClientId();
             String clientSecret = credentials.getClientSecret();
+            String uri = credentials.getBaseUrl() + "/api/v1/IntegrationPackages";
+            String tokenUrl = credentials.getTokenUrl();
             log.debug("clientId: {}", clientId);
             log.debug("clientSecret: {}", clientSecret);
+            log.debug("base uri: {}", uri);
+            log.debug("tokenUrl: {}", tokenUrl);
 
-            String accessTokenValue = obtainAccessToken(clientId, clientSecret).block();
+            String accessTokenValue = obtainAccessToken(clientId, clientSecret, tokenUrl).block();
             log.debug("Access token: {}", accessTokenValue);
 
             String jsonResponse = webClientBuilder.build()
                     .get()
-                    .uri("https://45438691trial.it-cpitrial05.cfapps.us10-001.hana.ondemand.com/api/v1/IntegrationPackages")
+                    .uri(uri)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenValue)
                     .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                     .retrieve()
@@ -82,10 +86,11 @@ public class PackagesService {
     }
 
 
-    private Mono<String> obtainAccessToken(String clientId, String clientSecret) {
+    private Mono<String> obtainAccessToken(String clientId, String clientSecret, String tokenUri) {
+
         return webClientBuilder.build()
                 .post()
-                .uri("https://45438691trial.authentication.us10.hana.ondemand.com/oauth/token")
+                .uri(tokenUri)
                 .body(BodyInserters.fromFormData("grant_type", "client_credentials")
                         .with("client_id", clientId)
                         .with("client_secret", clientSecret))
@@ -121,14 +126,15 @@ public class PackagesService {
 
             String clientId = credentials.getClientId();
             String clientSecret = credentials.getClientSecret();
+            String packageDetailsUri = credentials.getBaseUrl() + "/api/v1/IntegrationPackages" + "('" + packageId + "')" + "/IntegrationDesigntimeArtifacts";
+            String tokenUrl = credentials.getTokenUrl();
             log.debug("clientId: {}", clientId);
             log.debug("clientSecret: {}", clientSecret);
+            log.debug("base uri: {}", packageDetailsUri);
+            log.debug("tokenUrl: {}", tokenUrl);
 
-            String accessTokenValue = obtainAccessToken(clientId, clientSecret).block();
+            String accessTokenValue = obtainAccessToken(clientId, clientSecret, tokenUrl).block();
             log.debug("Access token: {}", accessTokenValue);
-
-            // Use the packageId parameter in the URI for the specific package details
-            String packageDetailsUri = externalApiBaseUrl + "/api/v1/IntegrationPackages" + "('" + packageId + "')" + "/IntegrationDesigntimeArtifacts";
 
             String jsonResponse = webClientBuilder.build()
                     .get()

@@ -11,7 +11,7 @@ export const navbarData = [
   },
   {
     routeLink: 'packages',
-    icon: 'fas fa-project-diagram',
+    icon: 'fas fa-folder-open',
     label: 'Packages'
   },
   {

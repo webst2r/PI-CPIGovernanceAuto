@@ -14,3 +14,18 @@ open-icon {
   width: 36px;
   border: none;
 }
+
+.open-icon:hover {
+  color: #0056b3;
+}
+
+
+.refresh-button {
+  background-color: transparent;
+  cursor: pointer;
+  margin-bottom: 2rem;
+}
+
+.refresh-button:hover {
+  background-color: #e0e0e0; /* Change the color on hover if desired */
+}

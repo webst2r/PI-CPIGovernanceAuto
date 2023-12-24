@@ -22,7 +22,7 @@ public class PackagesController {
 
     @GetMapping("/getPackages")
     public ResponseEntity<PackagesResponseDTO> getPackages() throws JsonProcessingException {
-        PackagesResponseDTO response = packagesService.obtainSecuredResource();
+        PackagesResponseDTO response = packagesService.getPackages();
         return ResponseEntity.ok(response);
     }
 
