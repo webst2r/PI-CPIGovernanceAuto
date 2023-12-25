@@ -204,7 +204,7 @@ public class PackagesService {
 
             Optional<User> user = userRepository.findByEmail(username);
 
-            Credential credentials = credentialsRepository.findByUserId(user.get().getId());
+            CredentialSapCpi credentials = credentialsRepository.findByUserId(user.get().getId());
 
             String clientId = credentials.getClientId();
             String clientSecret = credentials.getClientSecret();
