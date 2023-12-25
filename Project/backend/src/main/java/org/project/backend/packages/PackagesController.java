@@ -40,6 +40,15 @@ public class PackagesController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/getFlow/{id}/{version}")
+    public ResponseEntity<FlowResponseDTO> getFlow(
+            @PathVariable("id") String flowId,
+            @PathVariable("version") String flowVersion) throws JsonProcessingException {
+        FlowResponseDTO response = packagesService.getFlow(flowId, flowVersion);
+        return ResponseEntity.ok(response);
+    }
+
+
 
 
 }

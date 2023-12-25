@@ -193,4 +193,49 @@ public class PackagesService {
     }
 
 
+    public FlowResponseDTO getFlow(String flowId, String flowVersion) throws JsonProcessingException {
+        // Obtain the current authentication details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if the user is authenticated
+        if (authentication != null && authentication.isAuthenticated()) {
+            // Retrieve the user details
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+
+            Optional<User> user = userRepository.findByEmail(username);
+
+            Credential credentials = credentialsRepository.findByUserId(user.get().getId());
+
+            String clientId = credentials.getClientId();
+            String clientSecret = credentials.getClientSecret();
+            // https://45438691trial.it-cpitrial05.cfapps.us10-001.hana.ondemand.com/api/v1/IntegrationDesigntimeArtifacts(Id='my_integration_flow_pi',Version='active')
+            String flowDetailsUri = credentials.getBaseUrl() + "/api/v1/IntegrationDesigntimeArtifacts" + "(Id=" + "'" + flowId + "'" + ",Version=" + "'" + flowVersion + "'"+ ")";
+            String tokenUrl = credentials.getTokenUrl();
+            log.debug("clientId: {}", clientId);
+            log.debug("clientSecret: {}", clientSecret);
+            log.debug("base uri: {}", flowDetailsUri);
+            log.debug("tokenUrl: {}", tokenUrl);
+
+            String accessTokenValue = obtainAccessToken(clientId, clientSecret, tokenUrl).block();
+            log.debug("Access token: {}", accessTokenValue);
+
+            String jsonResponse = webClientBuilder.build()
+                    .get()
+                    .uri(flowDetailsUri)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenValue)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .retrieve()
+                    .bodyToMono(String.class).block();
+
+            // Deserialize JSON into PackageDetailsResponseDTO object
+            ObjectMapper objectMapper = new ObjectMapper();
+            FlowResponseDTO flowDetailsResponse = objectMapper.readValue(jsonResponse, FlowResponseDTO.class);
+
+            return flowDetailsResponse;
+        } else {
+            // Handle the case where the user is not authenticated
+            throw new RuntimeException("User not authenticated");
+        }
+    }
 }
