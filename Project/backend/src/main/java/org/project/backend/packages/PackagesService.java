@@ -3,6 +3,7 @@ package org.project.backend.packages;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +11,6 @@ import org.project.backend.credential.Credential;
 import org.project.backend.user.User;
 import org.project.backend.user.UserRepository;
 import org.project.backend.credential.CredentialRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -27,10 +27,6 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class PackagesService {
-
-    @Value("${external.api.baseurl}")
-    private String externalApiBaseUrl;
-
     private final WebClient.Builder webClientBuilder;
 
     private final UserRepository userRepository;
@@ -48,10 +44,8 @@ public class PackagesService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String username = userDetails.getUsername();
 
-            // Now you have the username, you can use it to retrieve the user from the repository
+            // retrieve the user from the repository
             Optional<User> user = userRepository.findByEmail(username);
-
-            // Rest of your code remains the same...
             Credential credentials = credentialsRepository.findByUserId(user.get().getId());
 
             String clientId = credentials.getClientId();
@@ -79,6 +73,51 @@ public class PackagesService {
             PackagesResponseDTO packagesResponse = objectMapper.readValue(jsonResponse, PackagesResponseDTO.class);
 
             return packagesResponse;
+        } else {
+            throw new RuntimeException("User not authenticated");
+        }
+    }
+
+    public IntegrationPackage getPackage(String packageId) throws JsonProcessingException {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if the user is authenticated
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+            Optional<User> user = userRepository.findByEmail(username);
+
+            Credential credentials = credentialsRepository.findByUserId(user.get().getId());
+            String clientId = credentials.getClientId();
+            String clientSecret = credentials.getClientSecret();
+            String uri = credentials.getBaseUrl() + "/api/v1/IntegrationPackages" + "('" + packageId + "')";
+            String tokenUrl = credentials.getTokenUrl();
+            log.debug("clientId: {}", clientId);
+            log.debug("clientSecret: {}", clientSecret);
+            log.debug("base uri: {}", uri);
+            log.debug("tokenUrl: {}", tokenUrl);
+
+            String accessTokenValue = obtainAccessToken(clientId, clientSecret, tokenUrl).block();
+            log.debug("Access token: {}", accessTokenValue);
+
+            String jsonResponse = webClientBuilder.build()
+                    .get()
+                    .uri(uri)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenValue)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .retrieve()
+                    .bodyToMono(String.class).block();
+
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            SimpleModule module = new SimpleModule();
+            module.addDeserializer(IntegrationPackage.class, new PackageResponseDTODeserializer());
+            objectMapper.registerModule(module);
+
+            IntegrationPackage packageResponse = objectMapper.readValue(jsonResponse, IntegrationPackage.class);
+
+            return packageResponse;
         } else {
             // Handle the case where the user is not authenticated
             throw new RuntimeException("User not authenticated");
@@ -108,7 +147,7 @@ public class PackagesService {
                 });
     }
 
-    public PackageDetailsResponseDTO getPackageDetails(String packageId) throws JsonProcessingException {
+    public PackageFlowsResponseDTO getPackageFlows(String packageId) throws JsonProcessingException {
         // Obtain the current authentication details
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -118,10 +157,8 @@ public class PackagesService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String username = userDetails.getUsername();
 
-            // Now you have the username, you can use it to retrieve the user from the repository
             Optional<User> user = userRepository.findByEmail(username);
 
-            // Rest of your code remains the same...
             Credential credentials = credentialsRepository.findByUserId(user.get().getId());
 
             String clientId = credentials.getClientId();
@@ -146,7 +183,7 @@ public class PackagesService {
 
             // Deserialize JSON into PackageDetailsResponseDTO object
             ObjectMapper objectMapper = new ObjectMapper();
-            PackageDetailsResponseDTO packageDetailsResponse = objectMapper.readValue(jsonResponse, PackageDetailsResponseDTO.class);
+            PackageFlowsResponseDTO packageDetailsResponse = objectMapper.readValue(jsonResponse, PackageFlowsResponseDTO.class);
 
             return packageDetailsResponse;
         } else {
