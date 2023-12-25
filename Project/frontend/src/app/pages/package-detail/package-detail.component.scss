@@ -1,0 +1,101 @@
+h4 {
+  margin-bottom: 1rem;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #263238;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  i {
+    font-size: 24px;
+    color: white;
+  }
+
+  h2 {
+    font-size: 24px;
+    margin: 0;
+  }
+}
+
+.header-container span {
+  font-weight: bold;
+  color: #007bff; /* Adjust the color as needed */
+}
+
+span {
+  font-weight: bold;
+}
+
+.go-back-button {
+  color: #fff;
+  background-color: #263238;
+  cursor: pointer;
+  font-size: 30px;
+  width: 36px;
+  border: none;
+}
+
+.go-back-button:hover {
+  color: #0056b3;
+}
+
+.open-flow-btn {
+  cursor: pointer;
+  background-color: transparent;
+  font-size: 24px;
+  border: none;
+  margin-right: 1rem;
+}
+
+.open-flow-btn:hover {
+  color: #0056b3;
+}
+
+.additional-info-container {
+  margin-bottom: 3rem;
+  margin-top: 20px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.info-item i {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.info-item p {
+  margin: 0;
+}
+
+.info-text {
+  margin: 10px 0; /* Increase the top and bottom margin */
+  font-weight: bold;
+  color: #333;
+}
+
+.highlight {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.table-container {
+  margin-bottom: 5rem;
+}
+
+/* Set a minimum width for the dialog */
+.mat-dialog-container {
+  min-width: 50vw;
+  max-width: 80vw;
+}
+

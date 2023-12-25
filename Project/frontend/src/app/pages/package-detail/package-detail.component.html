@@ -1,0 +1,143 @@
+<div class="header-container">
+  <i class="fas fa-folder-open"></i>
+  <h2>Package Details: <span>{{ packageId }}</span></h2>
+  <button class="go-back-button" (click)="goBack()">
+    <i class="fas fa-arrow-left"></i>
+  </button>
+</div>
+
+<div class="additional-info-container">
+  <div class="info-item">
+    <i class="fas fa-font"></i>
+    <p class="info-text">Name: <span class="highlight">{{ name }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-user"></i>
+    <p class="info-text">Created By: <span class="highlight">{{ createdBy }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-calendar"></i>
+    <p class="info-text">Creation Date: <span class="highlight">{{ creationDate }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-file-alt"></i>
+    <p class="info-text">Description: <span class="highlight">{{ description }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-id-card"></i>
+    <p class="info-text">ID: <span class="highlight">{{ id }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-cogs"></i>
+    <p class="info-text">Mode: <span class="highlight">{{ mode }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-pencil-alt"></i>
+    <p class="info-text">Modified By: <span class="highlight">{{ modifiedBy }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-calendar-check"></i>
+    <p class="info-text">Modified Date: <span class="highlight">{{ modifiedDate }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-cube"></i>
+    <p class="info-text">Partner Content: <span class="highlight">{{ partnerContent ? 'Yes' : 'No' }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-cube"></i>
+    <p class="info-text">Resource ID: <span class="highlight">{{ resourceId }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-font"></i>
+    <p class="info-text">Short Text: <span class="highlight">{{ shortText }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-desktop"></i>
+    <p class="info-text">Supported Platform: <span class="highlight">{{ supportedPlatform }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-arrow-up"></i>
+    <p class="info-text">Update Available: <span class="highlight">{{ updateAvailable ? 'Yes' : 'No' }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-industry"></i>
+    <p class="info-text">Vendor: <span class="highlight">{{ vendor }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-code"></i>
+    <p class="info-text">Version: <span class="highlight">{{ version }}</span></p>
+  </div>
+</div>
+
+
+<h4>Flows</h4>
+
+<div class="table-container">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="position">
+      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+
+    <!-- Version Column -->
+    <ng-container matColumnDef="version">
+      <th mat-header-cell *matHeaderCellDef> Version </th>
+      <td mat-cell *matCellDef="let element"> {{element.version}} </td>
+    </ng-container>
+
+    <!-- ModifiedBy Column -->
+    <ng-container matColumnDef="modifiedBy">
+      <th mat-header-cell *matHeaderCellDef> Modified By </th>
+      <td mat-cell *matCellDef="let element"> {{element.modifiedBy}} </td>
+    </ng-container>
+
+    <!-- ModifiedDate Column -->
+    <ng-container matColumnDef="modifiedDate">
+      <th mat-header-cell *matHeaderCellDef> Modified Date </th>
+      <td mat-cell *matCellDef="let element"> {{element.modifiedDate}} </td>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let element">
+        <button class="open-flow-btn" mat-icon-button (click)="openFlow(element)">
+          <i class="fas fa-project-diagram"></i>
+        </button>
+        <button class="open-flow-btn" mat-icon-button (click)="openFlow(element)">
+          <i class="fa fa-download" aria-hidden="true"></i>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Header and Rows -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+  </table>
+
+  <!-- Paginator -->
+  <mat-paginator [length]="dataSource.data.length" [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+</div>
