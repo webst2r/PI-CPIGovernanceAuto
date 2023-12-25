@@ -26,12 +26,17 @@ public class PackagesController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/getPackage/{id}")
+    public ResponseEntity<IntegrationPackage> getPackage(@PathVariable("id") String packageId) throws JsonProcessingException {
+        IntegrationPackage response = packagesService.getPackage(packageId);
+        return ResponseEntity.ok(response);
+    }
 
 
-    @GetMapping("/getPackageDetails/{id}")
-    public ResponseEntity<PackageDetailsResponseDTO> getPackageDetails(@PathVariable("id") String packageId) throws JsonProcessingException {
-        PackageDetailsResponseDTO response = packagesService.getPackageDetails(packageId);
 
+    @GetMapping("/getPackageFlows/{id}")
+    public ResponseEntity<PackageFlowsResponseDTO> getPackageFlows(@PathVariable("id") String packageId) throws JsonProcessingException {
+        PackageFlowsResponseDTO response = packagesService.getPackageFlows(packageId);
         return ResponseEntity.ok(response);
     }
 

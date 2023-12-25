@@ -10,18 +10,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PackageDetailsResponseDTODeserializer extends StdDeserializer<PackageDetailsResponseDTO> {
+public class PackageFlowsResponseDTODeserializer extends StdDeserializer<PackageFlowsResponseDTO> {
 
-    public PackageDetailsResponseDTODeserializer() {
+    public PackageFlowsResponseDTODeserializer() {
         this(null);
     }
 
-    public PackageDetailsResponseDTODeserializer(Class<?> vc) {
+    public PackageFlowsResponseDTODeserializer(Class<?> vc) {
         super(vc);
     }
 
     @Override
-    public PackageDetailsResponseDTO deserialize(JsonParser jp, DeserializationContext ctxt)
+    public PackageFlowsResponseDTO deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
         JsonNode resultsNode = node.get("d").get("results");
@@ -34,7 +34,7 @@ public class PackageDetailsResponseDTODeserializer extends StdDeserializer<Packa
             }
         }
 
-        PackageDetailsResponseDTO response = new PackageDetailsResponseDTO();
+        PackageFlowsResponseDTO response = new PackageFlowsResponseDTO();
         response.setResults(results);
         return response;
     }
