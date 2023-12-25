@@ -6,11 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.project.backend.credential.Credential;
+import org.project.backend.credential.sap_cpi.CredentialSapCpi;
+import org.project.backend.credential.sap_cpi.CredentialSapCpiRepository;
 import org.project.backend.user.User;
 import org.project.backend.user.UserRepository;
-import org.project.backend.credential.CredentialRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -31,7 +30,7 @@ public class PackagesService {
 
     private final UserRepository userRepository;
 
-    private final CredentialRepository credentialsRepository;
+    private final CredentialSapCpiRepository credentialsRepository;
 
 
     public PackagesResponseDTO getPackages() throws JsonProcessingException {
@@ -46,7 +45,7 @@ public class PackagesService {
 
             // retrieve the user from the repository
             Optional<User> user = userRepository.findByEmail(username);
-            Credential credentials = credentialsRepository.findByUserId(user.get().getId());
+            CredentialSapCpi credentials = credentialsRepository.findByUserId(user.get().getId());
 
             String clientId = credentials.getClientId();
             String clientSecret = credentials.getClientSecret();
@@ -88,7 +87,7 @@ public class PackagesService {
             String username = userDetails.getUsername();
             Optional<User> user = userRepository.findByEmail(username);
 
-            Credential credentials = credentialsRepository.findByUserId(user.get().getId());
+            CredentialSapCpi credentials = credentialsRepository.findByUserId(user.get().getId());
             String clientId = credentials.getClientId();
             String clientSecret = credentials.getClientSecret();
             String uri = credentials.getBaseUrl() + "/api/v1/IntegrationPackages" + "('" + packageId + "')";
@@ -159,7 +158,7 @@ public class PackagesService {
 
             Optional<User> user = userRepository.findByEmail(username);
 
-            Credential credentials = credentialsRepository.findByUserId(user.get().getId());
+            CredentialSapCpi credentials = credentialsRepository.findByUserId(user.get().getId());
 
             String clientId = credentials.getClientId();
             String clientSecret = credentials.getClientSecret();
