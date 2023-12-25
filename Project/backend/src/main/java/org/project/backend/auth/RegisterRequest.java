@@ -22,6 +22,6 @@ public class RegisterRequest {
     private String lastName;
     @NotBlank(message = "password " + ExceptionConstants.REQUIRED)
     private String password;
-    @NotBlank(message = "password " + ExceptionConstants.REQUIRED)
+    @NotBlank(message = "role " + ExceptionConstants.REQUIRED)
     private Role role;
 }

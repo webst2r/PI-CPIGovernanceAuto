@@ -54,6 +54,7 @@ public class AuthenticationService {
     }
 
     private void validateNewEmail(String email) throws BadRequestException {
+
         if (userRepository.existsByEmail(email)) {
             throw new BadRequestException("Email already exists", ExceptionType.EMAIL_ALREADY_EXISTS);
         }
