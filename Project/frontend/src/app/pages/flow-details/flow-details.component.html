@@ -1,0 +1,46 @@
+<div class="header-container">
+  <i class="fas fa-project-diagram"></i>
+  <h2><span>{{ flowDetails?.Name }}</span></h2>
+  <button class="go-back-button" (click)="closeDialog()">
+    <i class="fa fa-window-close" aria-hidden="true"></i>
+  </button>
+</div>
+
+<div class="additional-info-container">
+  <div class="info-item">
+    <i class="fas fa-font"></i>
+    <p class="info-text">Name: <span class="highlight">{{ flowDetails?.Id }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-user"></i>
+    <p class="info-text">Created By: <span class="highlight">{{ flowDetails?.CreatedBy }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-calendar"></i>
+    <p class="info-text">Creation Date: <span class="highlight">{{ flowDetails?.CreatedAt }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-file-alt"></i>
+    <p class="info-text">Description: <span class="highlight">{{ flowDetails?.Description }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-id-card"></i>
+    <p class="info-text">ID: <span class="highlight">{{ flowDetails?.Id }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-pencil-alt"></i>
+    <p class="info-text">Modified By: <span class="highlight">{{ flowDetails?.ModifiedBy }}</span></p>
+  </div>
+
+  <div class="info-item">
+    <i class="fas fa-calendar-check"></i>
+    <p class="info-text">Modified Date: <span class="highlight">{{ flowDetails?.ModifiedAt }}</span></p>
+  </div>
+</div>
+
+<h4>Artifacts</h4>

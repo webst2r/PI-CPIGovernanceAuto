@@ -1,0 +1,95 @@
+h4 {
+  margin-bottom: 1rem;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #263238;
+  padding: 15px;
+  border-radius: 8px 8px 0 0; /* Rounded corners at the top */
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  i {
+    font-size: 24px;
+    color: white;
+  }
+
+  h2 {
+    font-size: 24px;
+    margin: 0;
+  }
+}
+
+.header-container span {
+  font-weight: bold;
+  color: #007bff; /* Adjust the color as needed */
+}
+
+.go-back-button {
+  color: #fff;
+  background-color: #263238;
+  cursor: pointer;
+  font-size: 30px;
+  width: 36px;
+  border: none;
+}
+
+.go-back-button:hover {
+  color: #0056b3;
+}
+
+.additional-info-container {
+  margin-bottom: 3rem;
+  margin-top: 20px;
+  margin-left: 3rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.info-item i {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.info-item p {
+  margin: 0;
+}
+
+.info-text {
+  margin: 10px 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.highlight {
+  color: #007bff;
+  font-weight: bold;
+}
+
+
+h4 {
+  margin-left: 3rem;
+  margin-bottom: 1rem;
+}
+
+.table-container {
+  margin-bottom: 3rem;
+}
+
+.mat-dialog-container {
+  padding: 20px; /* Increased padding */
+  max-width: 800px; /* Set the maximum width of the dialog */
+  width: 100%;
+}
+
+.mat-elevation-z8 {
+  box-shadow: none;
+}
+
