@@ -37,11 +37,11 @@ public class CredentialSapCpiService {
         CredentialSapCpi credentialSapCpi = credentialSapCpiRepository.findById(credentialsDTO.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("CredentialSapCpi", "id", credentialsDTO.getId()));
 
-        credentialSapCpi.setName(credentialSapCpi.getName());
-        credentialSapCpi.setBaseUrl(credentialSapCpi.getBaseUrl());
-        credentialSapCpi.setTokenUrl(credentialSapCpi.getTokenUrl());
-        credentialSapCpi.setClientId(credentialSapCpi.getClientId());
-        credentialSapCpi.setClientSecret(credentialSapCpi.getClientSecret());
+        credentialSapCpi.setName(credentialsDTO.getName());
+        credentialSapCpi.setBaseUrl(credentialsDTO.getBaseUrl());
+        credentialSapCpi.setTokenUrl(credentialsDTO.getTokenUrl());
+        credentialSapCpi.setClientId(credentialsDTO.getClientId());
+        credentialSapCpi.setClientSecret(credentialsDTO.getClientSecret());
         return credentialSapCpiRepository.save(credentialSapCpi);
     }
 
