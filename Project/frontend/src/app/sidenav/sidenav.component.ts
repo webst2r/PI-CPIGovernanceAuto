@@ -1,7 +1,8 @@
-import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, inject, OnInit, Output} from '@angular/core';
 import {navbarData} from "./nav-data";
 import {RouterLink, RouterLinkActive} from "@angular/router";
 import {NgClass, NgForOf, NgIf} from "@angular/common";
+import {AuthenticationService} from "../services/authentication.service";
 
 interface SideNavToggle {
   screenWidth: number;
@@ -20,8 +21,9 @@ interface SideNavToggle {
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.scss'
 })
-export class SidenavComponent implements OnInit{
+export class SidenavComponent implements OnInit {
   @Output() onToggleSideNav: EventEmitter<SideNavToggle> = new EventEmitter();
+  private auth = inject(AuthenticationService)
   collapsed = false;
   screenWidth = 0;
   navData = navbarData;
@@ -29,7 +31,7 @@ export class SidenavComponent implements OnInit{
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.screenWidth = window.innerWidth;
-    if(this.screenWidth <= 768){
+    if (this.screenWidth <= 768) {
       this.collapsed = false;
       this.onToggleSideNav.emit({collapsed: this.collapsed, screenWidth: this.screenWidth});
     }
@@ -47,5 +49,6 @@ export class SidenavComponent implements OnInit{
 
   ngOnInit(): void {
     this.screenWidth = window.innerWidth;
+   // this.navData = this.navData.filter((data) => data.authRequired === this.auth.isAuthenticated())
   }
 }
