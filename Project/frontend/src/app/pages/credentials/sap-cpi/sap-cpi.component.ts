@@ -4,6 +4,7 @@ import {SapCpiCredentialsService} from "../../../services/sap-cpi-credentials.se
 import {MatInputModule} from "@angular/material/input";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {catchError, filter, Observable, of, switchMap, tap} from "rxjs";
 import {
   SapCpiCredentials,
@@ -53,7 +54,7 @@ export class SapCpiComponent {
 
   editMode: Signal<boolean> = computed(() => this.credentialsSig() !== undefined && this.credentialsSig() !== null);
 
-  constructor() {
+  constructor(private snackBar: MatSnackBar) {
     effect(() => {
       const credentials = this.credentialsSig();
       if (credentials) {
@@ -75,7 +76,7 @@ export class SapCpiComponent {
 
     const formData = this.form.value;
     const credentialsRequest: SapCpiCredentialsCreateRequest | SapCpiCredentialsUpdateRequest = this.editMode()
-      ? {...formData, id: this.credentialsSig()!.id} as SapCpiCredentialsUpdateRequest
+      ? { ...formData, id: this.credentialsSig()!.id } as SapCpiCredentialsUpdateRequest
       : formData as SapCpiCredentialsCreateRequest;
 
     const serviceOperation = this.editMode()
@@ -83,9 +84,13 @@ export class SapCpiComponent {
       : this.credentialsService.create(credentialsRequest as SapCpiCredentialsCreateRequest);
 
     serviceOperation.pipe(
-      tap(_ => this.reloadSig.set(randomNumber())),
+      tap(_ => {
+        this.reloadSig.set(randomNumber());
+        this.showSuccessToast(this.editMode() ? 'Credentials updated successfully' : 'Credentials created successfully');
+      }),
     ).subscribe();
   }
+
 
   onDelete() {
     if (!this.credentialsSig()) {
@@ -100,7 +105,16 @@ export class SapCpiComponent {
           console.error('Error opening confirmation dialog:', err);
           return of()
         })
-      ).subscribe()
+      ) .subscribe(
+      _ => {
+        this.reloadSig.set(randomNumber());
+        this.showSuccessToast('Credentials deleted successfully');
+      },
+      error => {
+        console.error('Error deleting credentials:', error);
+        // this.showErrorToast('Failed to delete credentials');
+      }
+    );
   }
 
   private delete() {
@@ -108,4 +122,12 @@ export class SapCpiComponent {
       tap(_ => this.reloadSig.set(randomNumber())),
     );
   }
+
+  showSuccessToast(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: 'success-toast',
+    }).onAction().subscribe(() => this.snackBar.dismiss());
+  }
+
 }
