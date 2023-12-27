@@ -11,7 +11,9 @@ import org.project.backend.credential.sap_cpi.CredentialSapCpiRepository;
 import org.project.backend.user.User;
 import org.project.backend.user.UserRepository;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -237,4 +239,41 @@ public class PackagesService {
             throw new RuntimeException("User not authenticated");
         }
     }
+
+    public ResponseEntity<byte[]> downloadFlow(String flowId, String flowVersion) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+
+            Optional<User> user = userRepository.findByEmail(username);
+            CredentialSapCpi credentials = credentialsRepository.findByUserId(user.get().getId());
+            String clientId = credentials.getClientId();
+            String clientSecret = credentials.getClientSecret();
+            String flowDownloadUri = credentials.getBaseUrl() + "/api/v1/IntegrationDesigntimeArtifacts" +
+                    "(Id=" + "'" + flowId + "'" + ",Version=" + "'" + flowVersion + "'" + ")" + "/$value?";
+            String tokenUrl = credentials.getTokenUrl();
+
+            String accessTokenValue = obtainAccessToken(clientId, clientSecret, tokenUrl).block();
+
+            byte[] fileContent = webClientBuilder.build()
+                    .get()
+                    .uri(flowDownloadUri)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenValue)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                    .retrieve()
+                    .bodyToMono(byte[].class)
+                    .block();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "integration-flow.xml");
+
+            return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+        } else {
+            throw new RuntimeException("User not authenticated");
+        }
+    }
+
 }

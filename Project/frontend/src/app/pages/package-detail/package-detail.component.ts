@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import {MatPaginator, MatPaginatorModule} from "@angular/material/paginator";
 import {MatDialog} from "@angular/material/dialog";
 import {FlowDetailsComponent} from "../flow-details/flow-details.component";
+import { saveAs } from 'file-saver';
 
 
 @Component({
@@ -135,10 +136,24 @@ export class PackageDetailComponent implements OnInit {
     });
   }
 
+  downloadFlow(element: any) {
+    const flowId = element.name;
+    const flowVersion = element.version;
 
+    // Make a request to download the flow
+    const apiUrl = `http://localhost:9001/api/packages/downloadFlow/${flowId}/${flowVersion}`;
 
-
-
+    this.httpClient.get(apiUrl, { responseType: 'blob' }).subscribe(
+      (response: Blob) => {
+        // Use file-saver library to save the blob as a file
+        saveAs(response, `${flowId}_${flowVersion}.xml`);
+      },
+      (error) => {
+        console.error('Error downloading flow:', error);
+        // Handle the error as needed (e.g., show an error message)
+      }
+    );
+  }
 
   goBack() {
     // Navigate back to the '/packages' route
