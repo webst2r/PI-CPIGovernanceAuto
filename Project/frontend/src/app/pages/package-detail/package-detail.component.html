@@ -123,14 +123,15 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef> Actions </th>
       <td mat-cell *matCellDef="let element">
-        <button class="open-flow-btn" mat-icon-button (click)="openFlow(element)">
+        <button class="open-flow-btn" mat-icon-button (click)="openFlow(element)" matTooltip="Open Flow">
           <i class="fas fa-project-diagram"></i>
         </button>
-        <button class="open-flow-btn" mat-icon-button (click)="downloadFlow(element)">
+        <button class="open-flow-btn" mat-icon-button (click)="downloadFlow(element)" matTooltip="Download Flow">
           <i class="fa fa-download" aria-hidden="true"></i>
         </button>
       </td>
     </ng-container>
+
 
     <!-- Header and Rows -->
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

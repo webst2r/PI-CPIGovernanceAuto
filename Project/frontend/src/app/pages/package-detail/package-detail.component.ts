@@ -8,6 +8,8 @@ import {MatPaginator, MatPaginatorModule} from "@angular/material/paginator";
 import {MatDialog} from "@angular/material/dialog";
 import {FlowDetailsComponent} from "../flow-details/flow-details.component";
 import { saveAs } from 'file-saver';
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatButtonModule} from "@angular/material/button";
 
 
 @Component({
@@ -17,7 +19,9 @@ import { saveAs } from 'file-saver';
   imports: [
     MatTableModule,
     MatIconModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatTooltipModule,
+    MatButtonModule
   ],
   styleUrls: ['./package-detail.component.scss']
 })
