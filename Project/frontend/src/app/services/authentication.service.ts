@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {AuthenticationResponse} from "../models/authentication-response";
 import {RegisterRequest} from "../models/register-request";
@@ -27,6 +27,10 @@ export class AuthenticationService {
   ) {
     return this.http.post<AuthenticationResponse>
     (AppConstant.API_URL+ AppConstant.API_PATHS.AUTH.LOGIN, authRequest);
+  }
+
+  logout(){
+    this.storageService.clearData();
   }
 
   getToken(): string | null{
