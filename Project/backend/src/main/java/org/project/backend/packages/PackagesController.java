@@ -49,6 +49,16 @@ public class PackagesController {
     }
 
 
+    @GetMapping("/downloadFlow/{id}/{version}")
+    public ResponseEntity<byte[]> downloadFlow( @PathVariable("id") String flowId, @PathVariable("version") String flowVersion) {
+        ResponseEntity<byte[]> response = packagesService.downloadFlow(flowId, flowVersion);
+        return ResponseEntity.ok(response.getBody());
+    }
+
+
+
+
+
 
 
 }
