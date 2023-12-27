@@ -22,5 +22,11 @@ export const navbarData = [
     icon: 'fa fa-key',
     label: 'Credentials',
     authRequired: true
+  },
+  {
+    routeLink: 'logout',
+    icon: 'fas fa-sign-out-alt',
+    label: 'Logout',
+    authRequired: true
   }
 ];

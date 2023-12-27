@@ -6,6 +6,8 @@ import { authGuard } from "./services/auth/auth.guard";
 import {PackagesComponent} from "./pages/packages/packages.component";
 import {CredentialsComponent} from "./pages/credentials/credentials.component";
 import {PackageDetailComponent} from "./pages/package-detail/package-detail.component";
+import {publicGuard} from "./services/auth/public.guard";
+import {LogoutComponent} from "./pages/logout/logout.component";
 
 export const routes: Routes = [
   {
@@ -15,11 +17,18 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginComponent
+    component: LoginComponent,
+    canActivate: [publicGuard]
   },
   {
     path: 'register',
-    component: RegisterComponent
+    component: RegisterComponent,
+    canActivate: [publicGuard]
+  },
+  {
+    path: 'logout',
+    component: LogoutComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'home',

@@ -3,14 +3,14 @@ import {inject} from "@angular/core";
 import {AuthenticationService} from "../authentication.service";
 import {Observable} from "rxjs";
 
-export const authGuard = (): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree => {
+export const publicGuard = ():  Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree => {
 
   const router = inject(Router);
   const auth = inject(AuthenticationService)
 
-  if (auth.isAuthenticated()) {
+  if (!auth.isAuthenticated()) {
     return true;
   }
 
-  return router.parseUrl('/login');
+  return router.parseUrl('/home');
 };

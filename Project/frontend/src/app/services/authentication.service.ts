@@ -11,37 +11,40 @@ import {JwtHelperService} from "@auth0/angular-jwt";
   providedIn: 'root'
 })
 export class AuthenticationService {
-  constructor( private http: HttpClient,
-               private readonly storageService: StorageService,
-               private jwtHelperService:  JwtHelperService) { }
+  constructor(private http: HttpClient,
+              private readonly storageService: StorageService,
+              private jwtHelperService: JwtHelperService) {
+  }
+
+  isLoggedInSig = signal(false);
 
   register(
     registerRequest: RegisterRequest
   ) {
     return this.http.post
-    (AppConstant.API_URL+AppConstant.API_PATHS.AUTH.REGISTER, registerRequest, {responseType: "text"});
+    (AppConstant.API_URL + AppConstant.API_PATHS.AUTH.REGISTER, registerRequest, {responseType: "text"});
   }
 
   login(
     authRequest: AuthenticationRequest
   ) {
     return this.http.post<AuthenticationResponse>
-    (AppConstant.API_URL+ AppConstant.API_PATHS.AUTH.LOGIN, authRequest);
+    (AppConstant.API_URL + AppConstant.API_PATHS.AUTH.LOGIN, authRequest);
   }
 
-  logout(){
+  logout() {
     this.storageService.clearData();
   }
 
-  getToken(): string | null{
+  getToken(): string | null {
     return this.storageService.getData(StorageKey.TOKEN);
   }
 
-  saveToken(token: string){
+  saveToken(token: string) {
     this.storageService.saveData(StorageKey.TOKEN, token);
   }
 
-  saveUser(user: AuthenticationResponse){
+  saveUser(user: AuthenticationResponse) {
     this.storageService.saveData(StorageKey.USER, JSON.stringify(user));
   }
 
@@ -57,9 +60,17 @@ export class AuthenticationService {
     const token = this.storageService.getData(StorageKey.TOKEN);
     // Check whether the token is expired and return
     // true or false
-    if(token !== null) {
-      return !this.jwtHelperService.isTokenExpired(token);
+    if (token !== null) {
+      if (this.jwtHelperService.isTokenExpired(token)) {
+        this.isLoggedInSig.set(false);
+        return false;
+      }
+
+      this.isLoggedInSig.set(true);
+      return true;
     }
+
+    this.isLoggedInSig.set(false)
     return false;
   }
 }
