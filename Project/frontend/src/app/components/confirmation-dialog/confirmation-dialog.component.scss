@@ -1,0 +1,9 @@
+mat-dialog-actions {
+  display: flex;
+  justify-content: end;
+
+  .btn-confirm {
+    background-color: rgb(5, 55, 7);
+    color: white;
+  }
+}
