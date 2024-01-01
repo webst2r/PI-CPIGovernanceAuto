@@ -1,60 +1,35 @@
-import { Component } from '@angular/core';
-import { MatTableModule } from "@angular/material/table";
-import { HttpClient } from "@angular/common/http";
+import { Component, OnInit } from '@angular/core';
+import { PackagesService, PackagesElement } from '../../services/packages.service';
 import { Router } from '@angular/router';
-import {MatIconModule} from "@angular/material/icon";
-
-export interface PackagesElement {
-  position: number;
-  name: string;
-  version: string;
-  modifiedBy: string;
-  modifiedDate: string;
-}
+import {MatTableModule} from "@angular/material/table";
 
 @Component({
   selector: 'app-packages',
   standalone: true,
-  imports: [
-    MatTableModule,
-    MatIconModule
-  ],
   templateUrl: './packages.component.html',
-  styleUrls: ['./packages.component.scss']
+  styleUrls: ['./packages.component.scss'],
+  imports: [
+    MatTableModule
+  ]
 })
-export class PackagesComponent {
+export class PackagesComponent implements OnInit {
   displayedColumns: string[] = ['position', 'name', 'version', 'modifiedBy', 'modifiedDate', 'actions'];
   dataSource: PackagesElement[] = [];
 
-  constructor(private httpClient: HttpClient, private router: Router) {}
+  constructor(private packagesService: PackagesService, private router: Router) {}
 
   ngOnInit() {
     this.getPackages();
   }
 
   getPackages() {
-    const apiUrl = 'http://localhost:9001/api/packages/getPackages';
-
-    this.httpClient.get(apiUrl, { responseType: 'json' }).subscribe(
-      (response: any) => {
-        // Assuming the response has a 'results' property which is an array
-        this.dataSource = response.results.map((result: any, index: number) => ({
-          position: index + 1,
-          name: result.Name,
-          version: result.Version,
-          modifiedBy: result.ModifiedBy,
-          modifiedDate: result.ModifiedDate
-        }));
-        console.log(response);
-      },
-      (error) => {
-        console.error('Error fetching packages:', error);
-      }
-    );
+    this.packagesService.getPackages().subscribe((packages) => {
+      this.dataSource = packages;
+      console.log('Packages fetched successfully:', packages);
+    });
   }
 
   openPackage(element: PackagesElement) {
-    // Navigate to the package detail view or perform any action you want when a row is clicked
-    this.router.navigate(['/package-detail', element.name]); // Update with your actual detail route
+    this.router.navigate(['/package-detail', element.name]);
   }
 }
