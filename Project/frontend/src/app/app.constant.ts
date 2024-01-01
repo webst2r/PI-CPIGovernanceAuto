@@ -8,6 +8,9 @@ export class AppConstant {
       LOGIN: 'auth/authenticate',
       REGISTER: 'auth/register',
     },
+    FLOW_DETAILS: {
+      GET_FLOW: 'api/packages/getFlow',
+    },
   }
 
   public static readonly REGEX = {

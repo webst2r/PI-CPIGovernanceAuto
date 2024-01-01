@@ -1,16 +1,14 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import {MatTableDataSource, MatTableModule} from "@angular/material/table";
-import {MatIconModule} from "@angular/material/icon";
-import { Router } from '@angular/router';
-import {MatPaginator, MatPaginatorModule} from "@angular/material/paginator";
-import {MatDialog} from "@angular/material/dialog";
-import {FlowDetailsComponent} from "../flow-details/flow-details.component";
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
+import { FlowDetailsComponent } from '../flow-details/flow-details.component';
 import { saveAs } from 'file-saver';
-import {MatTooltipModule} from "@angular/material/tooltip";
-import {MatButtonModule} from "@angular/material/button";
-
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonModule } from '@angular/material/button';
+import { PackageDetailService, PackageDetails, FlowElement } from '../../services/package-detail.service';
 
 @Component({
   selector: 'app-package-detail',
@@ -21,75 +19,56 @@ import {MatButtonModule} from "@angular/material/button";
     MatIconModule,
     MatPaginatorModule,
     MatTooltipModule,
-    MatButtonModule
+    MatButtonModule,
   ],
-  styleUrls: ['./package-detail.component.scss']
+  styleUrls: ['./package-detail.component.scss'],
 })
 export class PackageDetailComponent implements OnInit {
   packageId: string = '';
-  dataSource: MatTableDataSource<any>;
+  dataSource: MatTableDataSource<FlowElement>;
   displayedColumns: string[] = ['position', 'name', 'version', 'modifiedBy', 'modifiedDate', 'actions'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  // Additional fields for package details
-  createdBy: string = '';
-  creationDate: string = '';
-  description: string = '';
-  id: string = '';
-  mode: string = '';
-  modifiedBy: string = '';
-  modifiedDate: string = '';
-  name: string = '';
-  partnerContent: boolean = false;
-  resourceId: string = '';
-  shortText: string = '';
-  supportedPlatform: string = '';
-  updateAvailable: boolean = false;
-  vendor: string = '';
-  version: string = '';
-
+  packageDetails: PackageDetails = {
+    createdBy: '',
+    creationDate: '',
+    description: '',
+    id: '',
+    mode: '',
+    modifiedBy: '',
+    modifiedDate: '',
+    name: '',
+    partnerContent: false,
+    resourceId: '',
+    shortText: '',
+    supportedPlatform: '',
+    updateAvailable: false,
+    vendor: '',
+    version: '',
+  };
 
   constructor(
     private route: ActivatedRoute,
-    private httpClient: HttpClient,
-    private router: Router,
+    private packageDetailService: PackageDetailService,
     private dialog: MatDialog // Inject MatDialog
   ) {
-    this.dataSource = new MatTableDataSource<any>();
+    this.dataSource = new MatTableDataSource<FlowElement>();
   }
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
       this.packageId = params['id'];
       this.fetchPackageDetails();
-      this.fetchPackageFlows(); // Assuming this method is used to fetch flows
+      this.fetchPackageFlows();
     });
   }
 
   fetchPackageDetails() {
-    const apiUrl = `http://localhost:9001/api/packages/getPackage/${this.packageId}`;
-
-    this.httpClient.get(apiUrl, { responseType: 'json' }).subscribe(
-      (response: any) => {
-        // Extract details from the response and assign to the corresponding fields
-        this.createdBy = response.CreatedBy;
-        this.creationDate = response.CreationDate;
-        this.description = response.Description;
-        this.id = response.Id;
-        this.mode = response.Mode;
-        this.modifiedBy = response.ModifiedBy;
-        this.modifiedDate = response.ModifiedDate;
-        this.name = response.Name;
-        this.partnerContent = response.PartnerContent;
-        this.resourceId = response.ResourceId;
-        this.shortText = response.ShortText;
-        this.supportedPlatform = response.SupportedPlatform;
-        this.updateAvailable = response.UpdateAvailable;
-        this.vendor = response.Vendor;
-        this.version = response.Version;
-
-        console.log(response);
+    this.packageDetailService.getPackageDetails(this.packageId).subscribe(
+      (packageDetails) => {
+        this.packageDetails = packageDetails;
+        console.log(packageDetails);
       },
       (error) => {
         console.error('Error fetching package details:', error);
@@ -98,69 +77,43 @@ export class PackageDetailComponent implements OnInit {
   }
 
   fetchPackageFlows() {
-    const apiUrl = `http://localhost:9001/api/packages/getPackageFlows/${this.packageId}`;
-
-    this.httpClient.get(apiUrl, { responseType: 'json' }).subscribe(
-      (response: any) => {
-        // Assuming the response has a 'results' property which is an array
-        this.dataSource.data = response.results.map((result: any, index: number) => ({
-          position: index + 1,
-          name: result.Name,
-          version: result.Version,
-          modifiedBy: result.ModifiedBy,
-          modifiedDate: result.ModifiedDate
-        }));
-
-        // Set up paginator after data is loaded
+    this.packageDetailService.getPackageFlows(this.packageId).subscribe(
+      (flows) => {
+        this.dataSource.data = flows;
         this.dataSource.paginator = this.paginator;
-
-        console.log(response);
+        console.log(flows);
       },
       (error) => {
-        console.error('Error fetching package details:', error);
+        console.error('Error fetching package flows:', error);
       }
     );
   }
 
-  openFlow(element: any) {
-    const flowId = element.name;
-    const flowVersion = element.version; // Assuming 'version' is the correct property name
-
-    // Open the flow details dialog
+  openFlow(element: FlowElement) {
     const dialogRef = this.dialog.open(FlowDetailsComponent, {
       data: {
-        name: flowId,
-        version: flowVersion, // Pass the version to the dialog
-      }
+        name: element.name,
+        version: element.version,
+      },
     });
 
-    // Subscribe to dialog close event
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
     });
   }
 
-  downloadFlow(element: any) {
-    const flowId = element.name;
-    const flowVersion = element.version;
-
-    // Make a request to download the flow
-    const apiUrl = `http://localhost:9001/api/packages/downloadFlow/${flowId}/${flowVersion}`;
-
-    this.httpClient.get(apiUrl, { responseType: 'blob' }).subscribe(
-      (response: Blob) => {
-        // Use file-saver library to save the blob as a file
-        saveAs(response, `${flowId}_${flowVersion}.xml`);
+  downloadFlow(element: FlowElement) {
+    this.packageDetailService.downloadFlow(element.name, element.version).subscribe(
+      (response) => {
+        saveAs(response, `${element.name}_${element.version}.xml`);
       },
       (error) => {
         console.error('Error downloading flow:', error);
-        // Handle the error as needed (e.g., show an error message)
       }
     );
   }
 
   goBack() {
-    // Navigate back to the '/packages' route
-    this.router.navigate(['/packages']);
+    // Implement goBack logic
   }
 }
