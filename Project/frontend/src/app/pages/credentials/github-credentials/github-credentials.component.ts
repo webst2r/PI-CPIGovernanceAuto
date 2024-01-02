@@ -14,6 +14,7 @@ import {toObservable, toSignal} from "@angular/core/rxjs-interop";
 import {GithubCredentialsService} from "../../../services/github-credentials.service";
 import {randomNumber} from "../../../helpers/random-number";
 import {ConfirmationDialogService} from "../../../services/confirmation-dialog.service";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-github-credentials',
@@ -24,7 +25,8 @@ import {ConfirmationDialogService} from "../../../services/confirmation-dialog.s
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TranslateModule
   ],
   templateUrl: './github-credentials.component.html',
   styleUrl: './github-credentials.component.scss'
@@ -32,7 +34,8 @@ import {ConfirmationDialogService} from "../../../services/confirmation-dialog.s
 export class GithubCredentialsComponent {
   private credentialsService = inject(GithubCredentialsService);
   private confirmDialogService = inject(ConfirmationDialogService);
-
+  translate= inject(TranslateService)
+// TODO: add toast with messages
   @ViewChild('formDirective') private formDirective!: NgForm;
 
   hideAccessToken = true;
@@ -91,7 +94,7 @@ export class GithubCredentialsComponent {
       return
     }
 
-    this.confirmDialogService.showDialog('Are you sure you want to delete the credentials for Github?')
+    this.confirmDialogService.showDialog(this.translate.instant('credentials.github.confirmation_delete'))
       .pipe(
         filter(res => res.save),
         switchMap(_ => this.delete()),

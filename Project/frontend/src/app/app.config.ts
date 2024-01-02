@@ -23,7 +23,7 @@ export const appConfig: ApplicationConfig = {
     provideNoopAnimations(),
     provideHttpClient( withInterceptors([authenticatorInterceptor])),
     TranslateModule.forRoot({
-      defaultLanguage: 'pt',
+      defaultLanguage: 'en',
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,

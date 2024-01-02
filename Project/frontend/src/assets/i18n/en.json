@@ -1,0 +1,81 @@
+{
+  "loginPage": {
+    "login": "Login",
+    "email": "Email",
+    "password": "Password",
+    "wrongCredentials": "Email ou password incorrect",
+    "invalidEmail": "Invalid email",
+    "invalidPassword": "Password must have at least 8 characters"
+  },
+  "registerPage": {
+    "register": "Register",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "firstNameRequired": "First name is mandatory",
+    "lastNameRequired": "Last name is mandatory",
+    "emailAlreadyExists": "An account with that email already exists."
+  },
+  "credentials": {
+    "credentials": "Credentials",
+    "example": "E.g: ",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "success_delete": "Credentials deleted successfully",
+    "success_update": "Credentials updated successfully",
+    "success_create": "Credentials created successfully",
+    "github": {
+      "name": "Name",
+      "ex_name":"github_credentials",
+      "username": "Username",
+      "ex_username":"joe123",
+      "access_token": "Access Token",
+      "ex_access_token": "sajdsjkdkjdfckjdabcasiodx",
+      "confirmation_delete": "Are you sure you want to delete the credentials for Github?"
+    },
+    "sap_cpi": {
+      "name": "Name",
+      "ex_name": "cpi_credentials",
+      "base_url": "Base Url",
+      "ex_base_url": "https://45438691trial.it-cpitrial05.cfapps.us10-001.hana.ondemand.com",
+      "token_url": "Token Url",
+      "ex_token_url": "https://51516582trial.authentication.us10.hana.ondemand.com/oauth/token",
+      "client_id": "Client Id",
+      "ex_client_id": "4a-7e1e7f9-4491-a1a9-392b-a8eb4a7321ba5be7541!2293b|i!556b672b",
+      "client_secret": "Client Secret",
+      "ex_client_secret": "JcYWqT-9z8Ijo4GhZAnr0EXV52S7x6iBtL3FseW1HvpdRCQlfDgObPNyKkMFUauqmXHo1zYIDh-84ETs-WgDfBC5wr2KQJVRrG3de0",
+      "confirmation_delete": "Are you sure you want to delete the credentials for SAP-CPI?"
+    }
+  },
+  "package":{
+    "packages": "Packages",
+    "details": "Package Details",
+    "name": "Name",
+    "created_by": "Created By",
+    "creation_date":"Creation Date",
+    "description": "Description",
+    "id":"ID",
+    "mode": "Mode",
+    "modified_by":"Modified By",
+    "modified_date": "Modified Date",
+    "partner_content": "Partner Content",
+    "resource_id": "Resource ID",
+    "short_text": "Short Text",
+    "supported_platform": "Supported Platform",
+    "update_available":"Update Available",
+    "vendor": "Vendor",
+    "version": "Version",
+    "flows": "Flows",
+    "number": "No.",
+    "actions": "Actions",
+    "open_flow": "Open Flow",
+    "download_flow": "Download Flow"
+  },
+  "side_nav": {
+    "login": "Login",
+    "home": "Home",
+    "packages": "Packages",
+    "credentials": "Credentials",
+    "logout": "Logout"
+  }
+}

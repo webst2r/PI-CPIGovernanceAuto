@@ -2,16 +2,16 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {catchError, Observable, of, tap} from "rxjs";
 import {GithubCredentials, GithubCredentialsCreateRequest, GithubCredentialsUpdateRequest} from "../models/credentials";
+import {AppConstant} from "../app.constant";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GithubCredentialsService {
   private http = inject(HttpClient)
-  private apiUrl = 'http://localhost:9001/api/credentials/github';
 
   get(): Observable<GithubCredentials> {
-    const endpoint = `${this.apiUrl}/key`;
+    const endpoint = AppConstant.API_URL+ AppConstant.API_PATHS.CREDENTIALS.GITHUB.GET;
     return this.http.get<GithubCredentials>(endpoint)
       .pipe(
         catchError(err => {
@@ -22,7 +22,7 @@ export class GithubCredentialsService {
   }
 
   create(formData: GithubCredentialsCreateRequest): Observable<GithubCredentials> {
-    const endpoint = `${this.apiUrl}/save`;
+    const endpoint = AppConstant.API_URL+ AppConstant.API_PATHS.CREDENTIALS.GITHUB.CREATE;
     return this.http.post<GithubCredentials>(endpoint, formData)
       .pipe(
         tap(res => console.log('Successfully created credentials:', res)),
@@ -34,7 +34,7 @@ export class GithubCredentialsService {
   }
 
   update(formData: GithubCredentialsUpdateRequest): Observable<GithubCredentials> {
-    const endpoint = `${this.apiUrl}/update`;
+    const endpoint = AppConstant.API_URL+ AppConstant.API_PATHS.CREDENTIALS.GITHUB.UPDATE;
     return this.http.post<GithubCredentials>(endpoint, formData)
       .pipe(
         tap(res => console.log('Successfully updated credentials:', res)),
@@ -46,7 +46,7 @@ export class GithubCredentialsService {
   }
 
   delete(id: number): Observable<void> {
-    const endpoint = `${this.apiUrl}/delete`;
+    const endpoint =AppConstant.API_URL+ AppConstant.API_PATHS.CREDENTIALS.GITHUB.DELETE;
     const params = new HttpParams()
       .set('id', id);
     return this.http.delete<void>(endpoint, {params})

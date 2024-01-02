@@ -3,6 +3,7 @@ import {navbarData} from "./nav-data";
 import {RouterLink, RouterLinkActive} from "@angular/router";
 import {NgClass, NgForOf, NgIf} from "@angular/common";
 import {AuthenticationService} from "../services/authentication.service";
+import {TranslateModule} from "@ngx-translate/core";
 
 interface SideNavToggle {
   screenWidth: number;
@@ -17,7 +18,8 @@ interface SideNavToggle {
     NgIf,
     NgForOf,
     NgClass,
-    RouterLinkActive
+    RouterLinkActive,
+    TranslateModule
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.scss'

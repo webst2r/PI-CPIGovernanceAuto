@@ -9,6 +9,7 @@ import { saveAs } from 'file-saver';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { PackageDetailService, PackageDetails, FlowElement } from '../../services/package-detail.service';
+import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-package-detail',
@@ -20,6 +21,7 @@ import { PackageDetailService, PackageDetails, FlowElement } from '../../service
     MatPaginatorModule,
     MatTooltipModule,
     MatButtonModule,
+    TranslateModule
   ],
   styleUrls: ['./package-detail.component.scss'],
 })

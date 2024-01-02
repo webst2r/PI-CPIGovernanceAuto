@@ -14,6 +14,8 @@ import {
 import {toObservable, toSignal} from "@angular/core/rxjs-interop";
 import {randomNumber} from "../../../helpers/random-number";
 import {ConfirmationDialogService} from "../../../services/confirmation-dialog.service";
+import {AppConstant} from "../../../app.constant";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-sap-cpi',
@@ -22,7 +24,8 @@ import {ConfirmationDialogService} from "../../../services/confirmation-dialog.s
     ReactiveFormsModule,
     MatInputModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    TranslateModule
   ],
   templateUrl: './sap-cpi.component.html',
   styleUrl: './sap-cpi.component.scss'
@@ -30,6 +33,7 @@ import {ConfirmationDialogService} from "../../../services/confirmation-dialog.s
 export class SapCpiComponent {
   private credentialsService = inject(SapCpiCredentialsService);
   private confirmDialogService = inject(ConfirmationDialogService);
+  translate= inject(TranslateService)
 
   @ViewChild('formDirective') private formDirective!: NgForm;
 
@@ -37,8 +41,8 @@ export class SapCpiComponent {
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required]),
-    baseUrl: new FormControl('', [Validators.required, Validators.pattern(/^(ftp|http|https):\/\/[^ "]+$/)]),
-    tokenUrl: new FormControl('', [Validators.required, Validators.pattern(/^(ftp|http|https):\/\/[^ "]+$/)]),
+    baseUrl: new FormControl('', [Validators.required, Validators.pattern(AppConstant.REGEX.base_url_SAP_CPI)]),
+    tokenUrl: new FormControl('', [Validators.required, Validators.pattern(AppConstant.REGEX.token_url_SAP_CPI)]),
     clientId: new FormControl('', [Validators.required]),
     clientSecret: new FormControl('', [Validators.required]),
   });
@@ -86,7 +90,7 @@ export class SapCpiComponent {
     serviceOperation.pipe(
       tap(_ => {
         this.reloadSig.set(randomNumber());
-        this.showSuccessToast(this.editMode() ? 'Credentials updated successfully' : 'Credentials created successfully');
+        this.showSuccessToast(this.editMode() ? this.translate.instant("credentials.success_update") : this.translate.instant("credentials.success_create"));
       }),
     ).subscribe();
   }
@@ -97,7 +101,7 @@ export class SapCpiComponent {
       return
     }
 
-    this.confirmDialogService.showDialog('Are you sure you want to delete the credentials for SAP-CPI?')
+    this.confirmDialogService.showDialog(this.translate.instant("credentials.sap_cpi.confirmation_delete"))
       .pipe(
         filter(res => res.save),
         switchMap(_ => this.delete()),
@@ -108,7 +112,7 @@ export class SapCpiComponent {
       ) .subscribe(
       _ => {
         this.reloadSig.set(randomNumber());
-        this.showSuccessToast('Credentials deleted successfully');
+        this.showSuccessToast(this.translate.instant("credentials.success_delete"));
       },
       error => {
         console.error('Error deleting credentials:', error);

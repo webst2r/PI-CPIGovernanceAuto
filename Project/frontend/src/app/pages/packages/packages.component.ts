@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PackagesService, PackagesElement } from '../../services/packages.service';
 import { Router } from '@angular/router';
 import {MatTableModule} from "@angular/material/table";
+import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-packages',
@@ -9,7 +10,8 @@ import {MatTableModule} from "@angular/material/table";
   templateUrl: './packages.component.html',
   styleUrls: ['./packages.component.scss'],
   imports: [
-    MatTableModule
+    MatTableModule,
+    TranslateModule
   ]
 })
 export class PackagesComponent implements OnInit {
