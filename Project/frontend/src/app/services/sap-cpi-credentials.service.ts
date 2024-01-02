@@ -2,16 +2,15 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {catchError, Observable, of, tap} from 'rxjs';
 import {SapCpiCredentials, SapCpiCredentialsCreateRequest, SapCpiCredentialsUpdateRequest} from "../models/credentials";
+import {AppConstant} from "../app.constant";
 
 @Injectable({
   providedIn: 'root',
 })
 export class SapCpiCredentialsService {
   private http = inject(HttpClient)
-  private apiUrl = 'http://localhost:9001/api/credentials/sap_cpi';
-
   get(): Observable<SapCpiCredentials> {
-    const endpoint = `${this.apiUrl}/key`;
+    const endpoint = AppConstant.API_URL+ AppConstant.API_PATHS.CREDENTIALS.SAP_CPI.GET;
     return this.http.get<SapCpiCredentials>(endpoint)
       .pipe(
         catchError(err => {
@@ -22,7 +21,7 @@ export class SapCpiCredentialsService {
   }
 
   create(formData: SapCpiCredentialsCreateRequest): Observable<SapCpiCredentials> {
-    const endpoint = `${this.apiUrl}/save`;
+    const endpoint = AppConstant.API_URL+ AppConstant.API_PATHS.CREDENTIALS.SAP_CPI.CREATE;
     return this.http.post<SapCpiCredentials>(endpoint, formData)
       .pipe(
         tap(res => console.log('Successfully created credentials:', res)),
@@ -34,7 +33,7 @@ export class SapCpiCredentialsService {
   }
 
   update(formData: SapCpiCredentialsUpdateRequest): Observable<SapCpiCredentials> {
-    const endpoint = `${this.apiUrl}/update`;
+    const endpoint = AppConstant.API_URL+ AppConstant.API_PATHS.CREDENTIALS.SAP_CPI.UPDATE;
     return this.http.post<SapCpiCredentials>(endpoint, formData)
       .pipe(
         tap(res => console.log('Successfully updated credentials:', res)),
@@ -46,7 +45,7 @@ export class SapCpiCredentialsService {
   }
 
   delete(id: number): Observable<void> {
-    const endpoint = `${this.apiUrl}/delete`;
+    const endpoint = AppConstant.API_URL+ AppConstant.API_PATHS.CREDENTIALS.SAP_CPI.DELETE;
     const params = new HttpParams()
       .set('id', id);
     return this.http.delete<void>(endpoint, {params})

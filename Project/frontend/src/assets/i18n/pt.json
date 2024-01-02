@@ -15,5 +15,68 @@
     "firstNameRequired": "O nome próprio é obrigatório",
     "lastNameRequired": "O apelido é obrigatório",
     "emailAlreadyExists": "Já existe uma conta com esse email."
+  },
+  "credentials": {
+    "credentials": "Credenciais",
+    "example": "Ex: ",
+    "create": "Criar",
+    "update": "Atualizar",
+    "delete": "Remover",
+    "success_delete": "Credenciais excluídas com sucesso!",
+    "success_update": "Credenciais atualizadas com sucesso!",
+    "success_create": "Credenciais criadas com sucesso!",
+    "github": {
+      "name": "Nome",
+      "ex_name":"github_credenciais",
+      "username": "Nome de utilizador",
+      "ex_username":"joe123",
+      "access_token": "Token de acesso",
+      "ex_access_token": "sajdsjkdkjdfckjdabcasiodx",
+      "confirmation_delete": "Tem certeza de que deseja excluir as credenciais do Github?"
+    },
+    "sap_cpi": {
+      "name": "Nome",
+      "ex_name": "cpi_credenciais",
+      "base_url": "URL base",
+      "ex_base_url": "https://45438691trial.it-cpitrial05.cfapps.us10-001.hana.ondemand.com",
+      "token_url": "URL do token",
+      "ex_token_url": "https://51516582trial.authentication.us10.hana.ondemand.com/oauth/token",
+      "client_id": "ID do Cliente",
+      "ex_client_id": "4a-7e1e7f9-4491-a1a9-392b-a8eb4a7321ba5be7541!2293b|i!556b672b",
+      "client_secret": "Segredo do cliente",
+      "ex_client_secret": "JcYWqT-9z8Ijo4GhZAnr0EXV52S7x6iBtL3FseW1HvpdRCQlfDgObPNyKkMFUauqmXHo1zYIDh-84ETs-WgDfBC5wr2KQJVRrG3de0",
+      "confirmation_delete": "Tem certeza de que deseja excluir as credenciais do SAP-CPI?"
+    }
+  },
+  "package":{
+    "packages": "Pacotes",
+    "details": "Detalhes do pacote",
+    "name": "Nome",
+    "created_by": "Criado por",
+    "creation_date":"Data de criação",
+    "description": "Descrição",
+    "id":"ID",
+    "mode": "Modo",
+    "modified_by":"Modificado por",
+    "modified_date": "Data de modificação",
+    "partner_content": "Conteúdo de parceiro",
+    "resource_id": "ID do recurso",
+    "short_text": "Texto curto",
+    "supported_platform": "Plataforma Suportada",
+    "update_available":"Atualização disponível",
+    "vendor": "Vendor",
+    "version": "Versão",
+    "flows": "Fluxos",
+    "number": "No.",
+    "actions": "Ações",
+    "open_flow": "Abrir fluxo",
+    "download_flow": "Download fluxo"
+  },
+  "side_nav": {
+    "login": "Login",
+    "home": "Início",
+    "packages": "Pacotes",
+    "credentials": "Credenciais",
+    "logout": "Sair"
   }
 }
