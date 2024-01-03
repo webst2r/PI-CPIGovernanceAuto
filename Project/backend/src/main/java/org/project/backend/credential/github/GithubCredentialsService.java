@@ -58,4 +58,5 @@ public class GithubCredentialsService {
         userService.save(user);
         githubCredentialsRepository.deleteById(id);
     }
+
 }

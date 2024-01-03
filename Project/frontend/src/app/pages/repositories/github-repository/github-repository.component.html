@@ -20,17 +20,30 @@
     </mat-form-field>
   </p>
 
-  <!-- Secondary Branches Input -->
-  <p class="repository-input">
-    <mat-form-field appearance="outline" floatLabel="always" class="wide-input">
-      <mat-label>{{"repositories.secondary_branches"| translate}}</mat-label>
-      <input matInput [placeholder]="'repositories.secondary_branches' | translate" formControlName="secondaryBranches">
-      <mat-icon matSuffix>call_split</mat-icon>
-      <mat-hint class="small-hint">
-        {{"repositories.example"| translate}} {{"repositories.ex_secondary_branches"| translate}}
-      </mat-hint>
-    </mat-form-field>
-  </p>
+  <!-- Secondary Branches Input with Mat Chips -->
+  <mat-form-field class="branches-chip-list">
+    <mat-label>{{"repositories.secondary_branches"| translate}}</mat-label>
+    <mat-chip-grid class="branches-chip-grid" #chipGrid aria-label="Enter secondary branches">
+      <mat-chip-row *ngFor="let branch of secondaryBranches; let i = index"
+                    (removed)="remove(branch)"
+                    [editable]="true"
+                    (edited)="edit(branch, $event)"
+                    [aria-description]="'press enter to edit ' + branch.name"
+                    [color]=>
+        {{branch.name}}
+        <button matChipRemove [attr.aria-label]="'remove ' + branch.name">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip-row>
+      <input placeholder="Type branch name and press ENTER..."
+             [matChipInputFor]="chipGrid"
+             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+             [matChipInputAddOnBlur]="addOnBlur"
+             (matChipInputTokenEnd)="add($event)"/>
+    </mat-chip-grid>
+  </mat-form-field>
+
+
 
   <!-- Credentials Input (dropdown/select) -->
   <p class="repository-input">
