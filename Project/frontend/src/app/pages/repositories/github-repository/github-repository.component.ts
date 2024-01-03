@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Observable } from 'rxjs';
 
 import { GithubRepository } from '../../../models/repositories';
+import { GithubRepositoryService } from '../../../services/github-repository.service';
 
 import { GithubCredentials } from '../../../models/credentials';
 import { GithubCredentialsService } from '../../../services/github-credentials.service';
@@ -41,6 +42,8 @@ interface Branch {
   styleUrls: ['./github-repository.component.scss'],
 })
 export class GithubRepositoryComponent implements OnInit {
+  private credentialsService = inject(GithubCredentialsService);
+  private repositoriesService = inject(GithubRepositoryService);
   private confirmDialogService = inject(ConfirmationDialogService);
   private snackBar = inject(MatSnackBar);
   translate = inject(TranslateService);
@@ -65,7 +68,6 @@ export class GithubRepositoryComponent implements OnInit {
     credentials: new FormControl('', [Validators.required]),
   });
 
-  constructor(private credentialsService: GithubCredentialsService) {}
 
   ngOnInit() {
     this.credentialsService.get().subscribe((credentials) => {
@@ -73,13 +75,12 @@ export class GithubRepositoryComponent implements OnInit {
         this.credentialsList = [credentials];
       }
     });
-  /*
+
     this.repositoriesService.get().subscribe((repository) => {
       if(repository) {
-        this.initializeFormValues(repository);
+        this.initializeFormValues(this.credentialsList[0], repository);
       }
       });
-  */
   }
 
   private initializeFormValues(credentials: GithubCredentials, repository: GithubRepository): void {
