@@ -1,0 +1,61 @@
+<form [formGroup]="form" (ngSubmit)="submit()" #formDirective="ngForm">
+
+  <!-- Name Input -->
+  <p class="repository-input">
+    <mat-form-field appearance="outline" floatLabel="always" class="wide-input">
+      <mat-label>{{"repositories.name"| translate}}</mat-label>
+      <input matInput [placeholder]="'repositories.name' | translate" formControlName="name">
+      <mat-icon matSuffix>description</mat-icon>
+      <mat-hint class="small-hint">{{"repositories.example"| translate}} {{"repositories.ex_name"| translate}}</mat-hint>
+    </mat-form-field>
+  </p>
+
+  <!-- Main Branch Input -->
+  <p class="repository-input">
+    <mat-form-field appearance="outline" floatLabel="always" class="wide-input">
+      <mat-label>{{"repositories.main_branch"| translate}}</mat-label>
+      <input matInput [placeholder]="'repositories.main_branch' | translate" formControlName="mainBranch">
+      <mat-icon matSuffix>call_split</mat-icon>
+      <mat-hint class="small-hint">{{"repositories.example"| translate}} {{"repositories.ex_main_branch"| translate}}</mat-hint>
+    </mat-form-field>
+  </p>
+
+  <!-- Secondary Branches Input -->
+  <p class="repository-input">
+    <mat-form-field appearance="outline" floatLabel="always" class="wide-input">
+      <mat-label>{{"repositories.secondary_branches"| translate}}</mat-label>
+      <input matInput [placeholder]="'repositories.secondary_branches' | translate" formControlName="secondaryBranches">
+      <mat-icon matSuffix>call_split</mat-icon>
+      <mat-hint class="small-hint">
+        {{"repositories.example"| translate}} {{"repositories.ex_secondary_branches"| translate}}
+      </mat-hint>
+    </mat-form-field>
+  </p>
+
+  <!-- Credentials Input (dropdown/select) -->
+  <p class="repository-input">
+    <mat-form-field appearance="outline" floatLabel="always" class="wide-input">
+      <mat-label>{{"repositories.credentials"| translate}}</mat-label>
+
+      <mat-select formControlName="credentials">
+        <mat-option *ngFor="let credential of credentialsList" [value]="credential.id">
+          {{ credential.name }}
+        </mat-option>
+      </mat-select>
+
+      <mat-icon matSuffix>key</mat-icon>
+    </mat-form-field>
+  </p>
+
+  <!-- Submit Button -->
+  <div class="btn-container">
+    <button type="submit" [disabled]="!form.valid" mat-raised-button color="primary">
+      {{ editMode() ? translate.instant("repositories.update") : translate.instant("repositories.create") }}
+    </button>
+
+    <button type="button" [disabled]="!credentialsSig()" mat-raised-button color="warn" (click)="onDelete()">
+      {{"repositories.delete"| translate}}
+    </button>
+  </div>
+
+</form>

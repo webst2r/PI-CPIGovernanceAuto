@@ -1,0 +1,23 @@
+form {
+  max-width: 40rem;
+  margin: 3rem auto 0;
+}
+
+.wide-input {
+  width: 100%;
+}
+
+.repository-input {
+  margin-bottom: 2.5rem;
+}
+
+.small-hint {
+  font-size: 12px;
+  color: gray;
+}
+
+.btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
