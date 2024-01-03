@@ -33,6 +33,15 @@
       "ex_access_token": "sajdsjkdkjdfckjdabcasiodx",
       "confirmation_delete": "Are you sure you want to delete the credentials for Github?"
     },
+    "jenkins": {
+      "name": "Name",
+      "ex_name":"jenkins_credentials",
+      "username": "Username",
+      "ex_username":"joe123",
+      "access_token": "Access Token",
+      "ex_access_token": "sajdsjkdkjdfckjdabcasiodx",
+      "confirmation_delete": "Are you sure you want to delete the credentials for Jenkins?"
+    },
     "sap_cpi": {
       "name": "Name",
       "ex_name": "cpi_credentials",

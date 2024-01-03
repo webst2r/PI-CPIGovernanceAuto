@@ -23,6 +23,12 @@ export class AppConstant {
         UPDATE: 'credentials/github/update',
         GET:'credentials/github/key',
         DELETE:'credentials/github/delete'
+      },
+      JENKINS:{
+        CREATE: 'credentials/jenkins/save',
+        UPDATE: 'credentials/jenkins/update',
+        GET:'credentials/jenkins/key',
+        DELETE:'credentials/jenkins/delete'
       }
     }
   }

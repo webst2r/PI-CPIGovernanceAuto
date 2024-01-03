@@ -34,6 +34,15 @@
       "ex_access_token": "sajdsjkdkjdfckjdabcasiodx",
       "confirmation_delete": "Tem certeza de que deseja excluir as credenciais do Github?"
     },
+    "jenkins": {
+      "name": "Nome",
+      "ex_name":"jenkins_credenciais",
+      "username": "Nome de utilizador",
+      "ex_username":"joe123",
+      "access_token": "Token de acesso",
+      "ex_access_token": "sajdsjkdkjdfckjdabcasiodx",
+      "confirmation_delete": "Tem certeza de que deseja excluir as credenciais do Jenkins?"
+    },
     "sap_cpi": {
       "name": "Nome",
       "ex_name": "cpi_credenciais",
