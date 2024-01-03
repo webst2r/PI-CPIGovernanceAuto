@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.project.backend.credential.github.GithubCredentials;
+import org.project.backend.credential.jenkins.JenkinsCredentials;
 import org.project.backend.credential.sap_cpi.CredentialSapCpi;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -59,6 +60,10 @@ public class User implements UserDetails {
     @JsonIgnore
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private GithubCredentials githubCredentials;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private JenkinsCredentials jenkinsCredentials;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

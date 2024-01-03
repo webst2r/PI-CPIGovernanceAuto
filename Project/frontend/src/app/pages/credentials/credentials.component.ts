@@ -3,6 +3,9 @@ import {MatTabsModule} from "@angular/material/tabs";
 import {GithubCredentialsComponent} from "./github-credentials/github-credentials.component";
 import {SapCpiComponent} from "./sap-cpi/sap-cpi.component";
 import {TranslateModule} from "@ngx-translate/core";
+import {JenkinsCredentialsComponent} from "./jenkins-credentials/jenkins-credentials.component";
+import {AllCredentialsComponent} from "./all-credentials/all-credentials.component";
+import {MatIconModule} from "@angular/material/icon";
 
 @Component({
   selector: 'app-credentials',
@@ -11,7 +14,10 @@ import {TranslateModule} from "@ngx-translate/core";
     MatTabsModule,
     GithubCredentialsComponent,
     SapCpiComponent,
-    TranslateModule
+    TranslateModule,
+    JenkinsCredentialsComponent,
+    AllCredentialsComponent,
+    MatIconModule
   ],
   templateUrl: './credentials.component.html',
   styleUrls: ['./credentials.component.scss']
