@@ -1,17 +1,11 @@
 package org.project.backend.github;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.backend.credential.github.GithubCredentials;
 import org.project.backend.credential.github.GithubCredentialsRepository;
-import org.project.backend.credential.sap_cpi.CredentialSapCpi;
-import org.project.backend.credential.sap_cpi.CredentialSapCpiRepository;
-import org.project.backend.packages.PackagesResponseDTO;
 import org.project.backend.user.User;
 import org.project.backend.user.UserRepository;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

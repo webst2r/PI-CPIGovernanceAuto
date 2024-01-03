@@ -17,6 +17,7 @@
   },
   "credentials": {
     "credentials": "Credentials",
+    "all_credentials":  "All Credentials",
     "example": "E.g: ",
     "create": "Create",
     "update": "Update",
@@ -80,11 +81,30 @@
     "open_flow": "Open Flow",
     "download_flow": "Download Flow"
   },
+  "repositories": {
+    "repositories": "Repositories",
+    "example": "E.g: ",
+    "all_repositories": "All Repositories",
+    "name": "Name",
+    "ex_name":"github_repository",
+    "main_branch": "Main Branch",
+    "ex_main_branch":"main",
+    "secondary_branches": "Secondary Branches",
+    "ex_secondary_branches": "joe_branch",
+    "credentials": "Credentials",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "success_delete": "Credentials deleted successfully",
+    "success_update": "Credentials updated successfully",
+    "success_create": "Credentials created successfully"
+  },
   "side_nav": {
     "login": "Login",
     "home": "Home",
     "packages": "Packages",
     "credentials": "Credentials",
+    "repositories": "Repositories",
     "logout": "Logout"
   }
 }

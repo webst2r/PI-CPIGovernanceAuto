@@ -8,6 +8,7 @@ import {CredentialsComponent} from "./pages/credentials/credentials.component";
 import {PackageDetailComponent} from "./pages/package-detail/package-detail.component";
 import {publicGuard} from "./services/auth/public.guard";
 import {LogoutComponent} from "./pages/logout/logout.component";
+import {RepositoriesComponent} from "./pages/repositories/repositories.component";
 
 export const routes: Routes = [
   {
@@ -43,6 +44,11 @@ export const routes: Routes = [
   {
     path: 'credentials',
     component: CredentialsComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'repositories',
+    component: RepositoriesComponent,
     canActivate: [authGuard]
   },
   { path: 'package-detail/:id',
