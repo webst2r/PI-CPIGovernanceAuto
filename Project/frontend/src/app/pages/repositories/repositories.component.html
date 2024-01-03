@@ -1,0 +1,19 @@
+<h1>{{"repositories.repositories" | translate}}</h1>
+
+<mat-tab-group class="repositories-container" dynamicHeight>
+  <mat-tab label="Github">
+    <ng-template mat-tab-label>
+      <i class="fab fa-github" style="margin-right: 8px;"></i>
+      <span>GitHub</span>
+    </ng-template>
+    <app-github-repository></app-github-repository>
+  </mat-tab>
+  <mat-tab label="All Repositories">
+    <ng-template mat-tab-label>
+      <i class="fas fa-database" style="margin-right: 8px;"></i>
+      <span>{{"repositories.all_repositories" | translate}}</span>
+    </ng-template>
+    <app-all-repositories></app-all-repositories>
+  </mat-tab>
+</mat-tab-group>
+
