@@ -255,25 +255,63 @@ public class PackagesService {
                     "(Id=" + "'" + flowId + "'" + ",Version=" + "'" + flowVersion + "'" + ")" + "/$value?";
             String tokenUrl = credentials.getTokenUrl();
 
+            // Obtain the access token
             String accessTokenValue = obtainAccessToken(clientId, clientSecret, tokenUrl).block();
 
-            byte[] fileContent = webClientBuilder.build()
+            // Make the request to the external API
+            ResponseEntity<byte[]> responseEntity = webClientBuilder.build()
                     .get()
                     .uri(flowDownloadUri)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessTokenValue)
                     .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                    .retrieve()
-                    .bodyToMono(byte[].class)
+                    .exchange()
+                    .block()
+                    .toEntity(byte[].class)
                     .block();
 
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", "integration-flow.xml");
 
-            return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+            // Check if the Content-Disposition header is present in the response
+            String contentDisposition = responseEntity.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION);
+            if (contentDisposition != null) {
+                // Extract the filename from the Content-Disposition header
+                String fileName = extractFileName(contentDisposition);
+                System.out.println("Filename: " + fileName);
+
+                // Set the filename in the response headers
+                headers.setContentDispositionFormData("attachment", fileName);
+            } else {
+                // If Content-Disposition is not present, use a default filename
+                headers.setContentDispositionFormData("attachment", "default_filename.xml");
+            }
+
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+            return new ResponseEntity<>(responseEntity.getBody(), headers, HttpStatus.OK);
         } else {
             throw new RuntimeException("User not authenticated");
         }
     }
+
+    private String extractFileName(String contentDisposition) {
+        if (contentDisposition != null && contentDisposition.contains("filename=")) {
+            int startIndex = contentDisposition.indexOf("filename=") + 9;
+            int endIndex = contentDisposition.indexOf(";", startIndex);
+
+            if (endIndex == -1) {
+                endIndex = contentDisposition.length();
+            }
+
+            String fileName = contentDisposition.substring(startIndex, endIndex);
+
+            // Remove surrounding quotes, if present
+            fileName = fileName.replaceAll("^\"|\"$", "");
+
+            return fileName;
+        }
+
+        return "defaultFileName"; // Provide a default if filename is not found
+    }
+
 
 }

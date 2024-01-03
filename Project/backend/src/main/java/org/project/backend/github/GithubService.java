@@ -19,10 +19,13 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -141,16 +144,22 @@ public class GithubService {
     private static String createTree(String baseTreeSha, String filePath, String blobSha, String apiUrl, String token)
             throws IOException, InterruptedException {
         String url = apiUrl + "/git/trees";
-        String json = String.format("{\"base_tree\":\"%s\",\"tree\":[{\"path\":\"%s\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"%s\"}]}", baseTreeSha, filePath, blobSha);
+
+        // Encode only the filePath, not the entire JSON request
+        String encodedFilePath = URLEncoder.encode(filePath, StandardCharsets.UTF_8);
+
+        // Create the JSON request with the encoded file path
+        String json = String.format("{\"base_tree\":\"%s\",\"tree\":[{\"path\":\"%s\",\"mode\":\"100644\",\"type\":\"blob\",\"sha\":\"%s\"}]}", baseTreeSha, encodedFilePath, blobSha);
+
         HttpResponse<String> response = sendPostRequest(url, json, token);
-        //System.out.println(response);
+
         String responseBody = response.body();
-        //System.out.println(responseBody);
 
         JSONObject jsonResponse = new JSONObject(responseBody);
         return jsonResponse.getString("sha");
-
     }
+
+
 
     private static String createCommit(String treeSha, String apiUrl, String token) throws IOException, InterruptedException {
         String url = apiUrl + "/git/commits";
@@ -211,7 +220,7 @@ public class GithubService {
         return HttpClient.newHttpClient().send(request, responseBodyHandler());
     }
 
-    public void sendFlowToGitHub(String branch, String filePath) throws IOException, InterruptedException {
+    public void sendFlowToGitHub(String branch, String filePath, byte[] fileContentBytes) throws IOException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()) {
@@ -223,52 +232,39 @@ public class GithubService {
 
             String githubToken = githubCredentials.getAccessToken();
             String githubUsername = githubCredentials.getUsername();
-            System.out.println("githubToken: " + githubToken);
-            System.out.println("githubUsername: " + githubUsername);
 
             String repo = "testPOSTMANapi";
-
-
-            String githubApiUrl = "https://api.github.com/repos/"+githubUsername+"/"+repo;
+            String githubApiUrl = "https://api.github.com/repos/" + githubUsername + "/" + repo;
 
             if (isTokenValid(githubApiUrl, githubToken) && isRepoValid(githubApiUrl, githubToken)) {
-                log.debug("DEBUG 1 --- PASSED HERE -----------------------");
 
                 // 0. Verificar se a branch existe, se não existir, criar uma nova
-                if (!isBranchExist(branch,githubApiUrl, githubToken)) {
+                if (!isBranchExist(branch, githubApiUrl, githubToken)) {
                     System.out.println("Branch doesn't exist, creating a new one...");
                     createBranch(branch, githubApiUrl, githubToken);
                 }
 
                 // 1. Obter SHA da última confirmação na branch desejada
-                String commitSha = getLatestCommitSha(branch,githubApiUrl, githubToken);
+                String commitSha = getLatestCommitSha(branch, githubApiUrl, githubToken);
                 System.out.println("last commit SHA: " + commitSha);
-                // log.debug("last commit SHA: " + commitSha);
 
                 // 1.1 Read file
-                String diretorioAtual = System.getProperty("user.dir");
-
-                String caminhoCompleto = Paths.get(diretorioAtual, filePath).toString();
-                String fileContent = readFileContent(caminhoCompleto);
-
+                String fileContent = Base64.getEncoder().encodeToString(fileContentBytes);
 
                 // 2. Criar um novo blob no repositório
                 String blobSha = createBlob(fileContent, githubApiUrl, githubToken);
                 System.out.println("SHA of Blob: " + blobSha);
-                //log.debug("SHA of Blob: " + blobSha);
 
                 // 3. Criar uma nova árvore contendo o blob
-                String newTreeSha = createTree(commitSha, filePath, blobSha,githubApiUrl, githubToken);
+                String newTreeSha = createTree(commitSha, filePath, blobSha, githubApiUrl, githubToken);
                 System.out.println("SHA of Tree: " + newTreeSha);
-                //log.debug("SHA of Tree: " + newTreeSha);
 
                 // 4. Criar um novo commit apontando para a nova árvore
-                String newCommitSha = createCommit(newTreeSha,githubApiUrl, githubToken);
+                String newCommitSha = createCommit(newTreeSha, githubApiUrl, githubToken);
                 System.out.println("SHA of new Commit: " + newCommitSha);
-                //log.debug("SHA of new Commit: " + newCommitSha);
 
                 // 5. Atualizar a referência da branch para o novo commit
-                updateBranchReference(branch, newCommitSha,githubApiUrl, githubToken);
+                updateBranchReference(branch, newCommitSha, githubApiUrl, githubToken);
 
                 System.out.println("Success on push!");
             }
@@ -277,4 +273,59 @@ public class GithubService {
             throw new RuntimeException("User not authenticated");
         }
     }
+
+    public void sendZipToGitHub(String branch, String filePath, byte[] zipContentBytes) throws IOException, InterruptedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+
+            Optional<User> user = userRepository.findByEmail(username);
+            GithubCredentials githubCredentials = credentialsRepository.findByUserId(user.get().getId());
+
+            String githubToken = githubCredentials.getAccessToken();
+            String githubUsername = githubCredentials.getUsername();
+
+            String repo = "testPOSTMANapi";
+            String githubApiUrl = "https://api.github.com/repos/" + githubUsername + "/" + repo;
+
+            if (isTokenValid(githubApiUrl, githubToken) && isRepoValid(githubApiUrl, githubToken)) {
+
+                // 0. Verificar se a branch existe, se não existir, criar uma nova
+                if (!isBranchExist(branch, githubApiUrl, githubToken)) {
+                    System.out.println("Branch doesn't exist, creating a new one...");
+                    createBranch(branch, githubApiUrl, githubToken);
+                }
+
+                // 1. Obter SHA da última confirmação na branch desejada
+                String commitSha = getLatestCommitSha(branch, githubApiUrl, githubToken);
+                System.out.println("last commit SHA: " + commitSha);
+
+                // 1.1 Read ZIP file content
+                String zipContent = Base64.getEncoder().encodeToString(zipContentBytes);
+
+                // 2. Criar um novo blob no repositório
+                String blobSha = createBlob(zipContent, githubApiUrl, githubToken);
+                System.out.println("SHA of Blob: " + blobSha);
+
+                // 3. Criar uma nova árvore contendo o blob
+                String newTreeSha = createTree(commitSha, filePath, blobSha, githubApiUrl, githubToken);
+                System.out.println("SHA of Tree: " + newTreeSha);
+
+                // 4. Criar um novo commit apontando para a nova árvore
+                String newCommitSha = createCommit(newTreeSha, githubApiUrl, githubToken);
+                System.out.println("SHA of new Commit: " + newCommitSha);
+
+                // 5. Atualizar a referência da branch para o novo commit
+                updateBranchReference(branch, newCommitSha, githubApiUrl, githubToken);
+
+                System.out.println("Success on push!");
+            }
+
+        } else {
+            throw new RuntimeException("User not authenticated");
+        }
+    }
+
 }
