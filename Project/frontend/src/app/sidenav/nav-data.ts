@@ -24,6 +24,12 @@ export const navbarData = [
     authRequired: true
   },
   {
+    routeLink: 'repositories',
+    icon: 'fas fa-database',
+    label: 'side_nav.repositories',
+    authRequired: true
+  },
+  {
     routeLink: 'logout',
     icon: 'fas fa-sign-out-alt',
     label: 'side_nav.logout',

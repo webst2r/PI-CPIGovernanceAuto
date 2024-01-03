@@ -18,6 +18,7 @@
   },
   "credentials": {
     "credentials": "Credenciais",
+    "all_credentials":  "Todas as Credenciais",
     "example": "Ex: ",
     "create": "Criar",
     "update": "Atualizar",
@@ -81,11 +82,29 @@
     "open_flow": "Abrir fluxo",
     "download_flow": "Download fluxo"
   },
+  "repositories": {
+    "repositories": "Repositórios",
+    "all_repositories": "Todos os Repositórios",
+    "name": "Nome",
+    "ex_name":"github_repository",
+    "main_branch": "Branch Principal",
+    "ex_main_branch":"main",
+    "secondary_branches": "Branches Secundárias",
+    "ex_secondary_branches": "joe_branch",
+    "credentials": "Credenciais",
+    "create": "Criar",
+    "update": "Atualizar",
+    "delete": "Remover",
+    "success_delete": "Credenciais excluídas com sucesso!",
+    "success_update": "Credenciais atualizadas com sucesso!",
+    "success_create": "Credenciais criadas com sucesso!"
+  },
   "side_nav": {
     "login": "Login",
     "home": "Início",
     "packages": "Pacotes",
     "credentials": "Credenciais",
+    "repositories": "Repositórios",
     "logout": "Sair"
   }
 }
