@@ -80,7 +80,8 @@
     "number": "No.",
     "actions": "Ações",
     "open_flow": "Abrir fluxo",
-    "download_flow": "Download fluxo"
+    "download_flow": "Download fluxo",
+    "enable_jenkins": "Começar Jenkins Pipeline"
   },
   "repositories": {
     "repositories": "Repositórios",

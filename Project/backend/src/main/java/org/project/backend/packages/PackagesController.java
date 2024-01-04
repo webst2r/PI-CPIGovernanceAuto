@@ -3,14 +3,12 @@ package org.project.backend.packages;
 import lombok.extern.slf4j.Slf4j;
 import org.project.backend.github.GithubService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.project.backend.jenkins.JenkinsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,10 +25,31 @@ public class PackagesController {
 
     private final GithubService gitHubService;
 
+    private final JenkinsService jenkinsService;
+
     @Autowired
-    public PackagesController(PackagesService packagesService, GithubService gitHubService) {
+    public PackagesController(PackagesService packagesService, GithubService gitHubService, JenkinsService jenkinsService) {
         this.packagesService = packagesService;
         this.gitHubService = gitHubService;
+        this.jenkinsService = jenkinsService;
+    }
+
+    @GetMapping("/createAndExecutePipeline/{jobName}")
+    public ResponseEntity<String> enableJenkins(
+            @PathVariable("jobName") String jobName,
+            @RequestParam("path") String path) {
+        try {
+            // Create Jenkins job
+            jenkinsService.create(jobName, path);
+
+            // Execute Jenkins job
+            jenkinsService.execute(jobName);
+
+            return ResponseEntity.ok("Pipeline created and executed successfully!");
+        } catch (Exception e) {
+            log.error("Error creating and executing pipeline", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create and execute pipeline");
+        }
     }
 
     @GetMapping("/getPackages")
@@ -89,6 +108,7 @@ public class PackagesController {
 
         return ResponseEntity.ok(response.getBody());
     }
+
 
     private byte[] convertBytesToZip(byte[] xmlContentBytes, String fileName) throws IOException {
         try (ByteArrayOutputStream zipStream = new ByteArrayOutputStream();

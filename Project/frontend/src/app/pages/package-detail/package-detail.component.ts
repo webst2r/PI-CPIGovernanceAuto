@@ -118,4 +118,17 @@ export class PackageDetailComponent implements OnInit {
   goBack() {
     // Implement goBack logic
   }
+
+  enableJenkins(element: FlowElement) {
+    let path = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project\\backend\\file.xml";
+    this.packageDetailService.enableJenkins(element.name, path).subscribe(
+      (response) => {
+        console.log('Jenkins enabled successfully:', response);
+      },
+      (error) => {
+        console.error('Error enabling Jenkins for the flow:', error);
+      }
+    );
+  }
+
 }
