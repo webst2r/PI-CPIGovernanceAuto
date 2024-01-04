@@ -80,7 +80,8 @@
     "actions": "Actions",
     "open_flow": "Open Flow",
     "download_flow": "Download Flow",
-    "enable_jenkins": "Enable Jenkins Pipeline"
+    "enable_jenkins": "Enable Jenkins Pipeline",
+    "enable_github": "Enable Github Versioning"
   },
   "repositories": {
     "repositories": "Repositories",

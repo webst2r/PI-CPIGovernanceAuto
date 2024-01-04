@@ -81,7 +81,8 @@
     "actions": "Ações",
     "open_flow": "Abrir fluxo",
     "download_flow": "Download fluxo",
-    "enable_jenkins": "Começar Jenkins Pipeline"
+    "enable_jenkins": "Ativar Pipeline do Jenkins",
+    "enable_github": "Ativar Versionamento no Github"
   },
   "repositories": {
     "repositories": "Repositórios",

@@ -250,17 +250,17 @@ public class GithubRepositoryService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String username = userDetails.getUsername();
 
+            // Obter o user
             Optional<User> user = userRepository.findByEmail(username);
+
+            // Obter as credenciais
             GithubCredentials githubCredentials = credentialsRepository.findByUserId(user.get().getId());
-
-            // GithubRepository githubRepository = githubRepository.
-
             String githubToken = githubCredentials.getAccessToken();
             String githubUsername = githubCredentials.getUsername();
 
-            String repo = "testPOSTMANapi";
-
-            //String repo = "";
+            // Obter o repositorio associado às credenciais de github
+            Optional<GithubRepository> githubRepository = githubRepositoryRepository.findByCredentials(githubCredentials);
+            String repo = githubRepository.get().getName();
 
             String githubApiUrl = "https://api.github.com/repos/" + githubUsername + "/" + repo;
 
