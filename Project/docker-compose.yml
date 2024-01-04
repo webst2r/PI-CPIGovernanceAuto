@@ -11,7 +11,8 @@ services:
 #      project-network:
 
   jenkins:
-    image: jenkins/jenkins:lts
+    #image: jenkins/jenkins:lts
+    build: ./jenkins-docker
     restart: unless-stopped
     privileged: true
     user: root
