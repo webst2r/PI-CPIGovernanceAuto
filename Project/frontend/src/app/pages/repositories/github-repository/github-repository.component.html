@@ -20,6 +20,7 @@
     </mat-form-field>
   </p>
 
+
   <!-- Secondary Branches Input with Mat Chips -->
   <mat-form-field class="branches-chip-list">
     <mat-label>{{"repositories.secondary_branches"| translate}}</mat-label>
@@ -44,23 +45,24 @@
   </mat-form-field>
 
 
-
   <!-- Credentials Input (dropdown/select) -->
-  <p class="repository-input">
-    <mat-form-field appearance="outline" floatLabel="always" class="wide-input">
-      <mat-label>{{"repositories.credentials"| translate}}</mat-label>
 
-      <mat-select formControlName="credentials">
-        <mat-option *ngFor="let credential of credentialsList" [value]="credential.id">
-          {{ credential.name }}
-        </mat-option>
-      </mat-select>
+ <p class="repository-input">
+   <mat-form-field appearance="outline" floatLabel="always" class="wide-input">
+     <mat-label>{{"repositories.credentials"| translate}}</mat-label>
 
-      <mat-icon matSuffix>key</mat-icon>
-    </mat-form-field>
-  </p>
+     <mat-select formControlName="credentials">
+       <mat-option *ngFor="let credential of credentialsList" [value]="credential.id">
+         {{ credential.name }}
+       </mat-option>
+     </mat-select>
 
-  <!-- Submit Button -->
+     <mat-icon matSuffix>key</mat-icon>
+   </mat-form-field>
+ </p>
+
+
+ <!-- Submit Button -->
   <div class="btn-container">
     <button type="submit" [disabled]="!form.valid" mat-raised-button color="primary">
       {{ editMode() ? translate.instant("repositories.update") : translate.instant("repositories.create") }}

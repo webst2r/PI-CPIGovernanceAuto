@@ -33,7 +33,6 @@ export class GithubCredentialsComponent {
   private confirmDialogService = inject(ConfirmationDialogService);
   private snackBar = inject(MatSnackBar);
   translate = inject(TranslateService);
-  // TODO: add toast with messages
   @ViewChild('formDirective') private formDirective!: NgForm;
 
   hideAccessToken = true;

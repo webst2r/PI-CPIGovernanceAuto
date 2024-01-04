@@ -1,15 +1,21 @@
-import {Component, inject, OnInit, ViewChild, Signal, signal, computed} from '@angular/core';
+import {Component, inject, OnInit, ViewChild, Signal, signal, computed, effect} from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { Observable } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { GithubRepository, GithubRepositoryCreateRequest } from '../../../models/repositories';
+import {catchError, filter, Observable, of, switchMap, tap, throwError} from 'rxjs';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {
+  GithubRepository,
+  GithubRepositoryCreateRequest,
+  GithubRepositoryUpdateRequest
+} from '../../../models/repositories';
 import { GithubRepositoryService } from '../../../services/github-repository.service';
-import { GithubCredentials } from '../../../models/credentials';
+import {
+  GithubCredentials,
+} from '../../../models/credentials';
 import { GithubCredentialsService } from '../../../services/github-credentials.service';
 import { ConfirmationDialogService } from '../../../services/confirmation-dialog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,6 +24,7 @@ import { ENTER, COMMA } from "@angular/cdk/keycodes";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { LiveAnnouncer } from "@angular/cdk/a11y";
 import { NgForOf } from "@angular/common";
+import {randomNumber} from "../../../helpers/random-number";
 
 interface Branch {
   name: string;
@@ -40,30 +47,13 @@ interface Branch {
   templateUrl: './github-repository.component.html',
   styleUrls: ['./github-repository.component.scss'],
 })
-export class GithubRepositoryComponent implements OnInit {
+export class GithubRepositoryComponent {
   private credentialsService = inject(GithubCredentialsService);
   private repositoriesService = inject(GithubRepositoryService);
   private confirmDialogService = inject(ConfirmationDialogService);
   private snackBar = inject(MatSnackBar);
   translate = inject(TranslateService);
-
-  // Secondary Branches Chips
-  readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  addOnBlur = true;
-  announcer = inject(LiveAnnouncer);
-  secondaryBranches: Branch[] = [];
-
   @ViewChild('formDirective') private formDirective: any;
-
-  // Use Observable to handle asynchronous data fetching
-  credentials$: Observable<GithubCredentials> = this.credentialsService.get();
-
-  credentialsList: GithubCredentials[] = [];
-
-  // Repository Signal
-  repositorySig: Signal<GithubRepository | undefined> = signal<GithubRepository | undefined>(undefined);
-
-  editMode: Signal<boolean> = computed(() => this.repositorySig() !== undefined && this.repositorySig() !== null);
 
   form: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -72,16 +62,35 @@ export class GithubRepositoryComponent implements OnInit {
     credentials: new FormControl('', [Validators.required]),
   });
 
-  ngOnInit() {
-    this.credentialsService.get().subscribe((credentials) => {
-      if (credentials) {
-        this.credentialsList = [credentials];
-      }
-    });
+  reloadSig = signal<number>(0); // change the value of this signal to reactively update everything on the page
 
-    this.repositoriesService.get().subscribe((repository) => {
+  // Secondary Branches Chips
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  addOnBlur = true;
+  announcer = inject(LiveAnnouncer);
+  secondaryBranches: Branch[] = [];
+
+
+  credentialsList: GithubCredentials[] = [];
+
+  repository$: Observable<GithubRepository | undefined> = toObservable(this.reloadSig)
+    .pipe(
+      switchMap(_ => this.repositoriesService.get())
+    );
+  repositorySig: Signal<GithubRepository | undefined> = toSignal(this.repository$);
+  editMode: Signal<boolean> = computed(() => this.repositorySig() !== undefined && this.repositorySig() !== null);
+
+  constructor() {
+    effect(() => {
+      // obter as credenciais disponiveis para github
+      this.credentialsService.get().subscribe((credentials) => {
+        if (credentials) {
+          this.credentialsList = [credentials];
+        }
+      });
+
+      const repository = this.repositorySig();
       if (repository) {
-        this.repositorySig();  // Set the value of the repository signal
         this.initializeFormValues(this.credentialsList[0], repository);
       }
     });
@@ -90,26 +99,47 @@ export class GithubRepositoryComponent implements OnInit {
   private initializeFormValues(credentials: GithubCredentials, repository: GithubRepository): void {
     this.form.get('name')?.setValue(repository.name);
     this.form.get('mainBranch')?.setValue(repository.mainBranch);
+    this.form.get('secondaryBranches')?.setValue(repository.secondaryBranches);
     this.form.get('credentials')?.setValue(credentials);
   }
 
   submit() {
     if (!this.form.valid) {
+      console.log("form is not valid");
       return;
     }
 
     // Extracting form values
-    const name = this.form.get('name')?.value;
-    const mainBranch = this.form.get('mainBranch')?.value;
-    const credentials = this.form.get('credentials')?.value;
-    // Handle other form controls as needed
+    const formData = this.form.value;
 
+    // Create a request object
+    const repositoryRequest: GithubRepositoryCreateRequest | GithubRepositoryUpdateRequest = this.editMode()
+      ? { ...formData, id: this.repositorySig()!.id } as GithubRepositoryUpdateRequest
+      : formData as GithubRepositoryCreateRequest;
+
+    const serviceOperation = this.editMode()
+      ? this.repositoriesService.update(repositoryRequest as GithubRepositoryUpdateRequest)
+      : this.repositoriesService.create(repositoryRequest as GithubRepositoryCreateRequest);
+
+    serviceOperation.pipe(
+      tap(_ => {
+        this.reloadSig.set(randomNumber());
+        this.showSuccessToast(this.editMode() ? this.translate.instant("repositories.success_update") : this.translate.instant("repositories.success_create"));
+      }),
+      catchError(error => {
+        console.error('Error occurred:', error);
+        return throwError(error);
+      })
+    ).subscribe();
+
+    /*
+    // WORKS
     // Create a request object
     const repositoryCreateRequest: GithubRepositoryCreateRequest = {
       name,
       mainBranch,
-      credentials,
-      secondaryBranches: this.secondaryBranches.map(branch => branch.name),
+      secondaryBranches: secondaryBranches.map(branch => branch.name),
+      credentials
     };
 
     // Call the service function to create the repository
@@ -128,13 +158,32 @@ export class GithubRepositoryComponent implements OnInit {
         // Optionally, display an error message to the user
       }
     );
+     */
   }
 
   onDelete() {
-    const currentRepository = this.repositorySig();  // Get the current value of the repository signal
-    if (currentRepository) {
-      // Delete logic
+    if (!this.repositorySig()) {
+      return
     }
+
+    this.confirmDialogService.showDialog(this.translate.instant('repositories.github.confirmation_delete'))
+      .pipe(
+        filter(res => res.save),
+        switchMap(_ => this.delete()),
+        catchError(err => {
+          console.error('Error opening confirmation dialog:', err);
+          return of()
+        })
+      ).subscribe()
+  }
+
+  delete() {
+    return this.repositoriesService.delete(this.repositorySig()!.id).pipe(
+      tap(_ => {
+        this.reloadSig.set(randomNumber());
+        this.showSuccessToast(this.translate.instant("repositories.success_delete"));
+      }),
+    );
   }
 
   showSuccessToast(message: string): void {
