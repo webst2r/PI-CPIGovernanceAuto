@@ -51,7 +51,7 @@
    <mat-form-field appearance="outline" floatLabel="always" class="wide-input">
      <mat-label>{{"repositories.credentials"| translate}}</mat-label>
 
-     <mat-select formControlName="credentials">
+     <mat-select formControlName="githubCredentials">
        <mat-option *ngFor="let credential of credentialsList" [value]="credential">
          {{ credential.name }}
        </mat-option>

@@ -5,7 +5,7 @@ export interface GithubRepository {
   name: string;
   mainBranch: string;
   secondaryBranches: string[];
-  credentials: GithubCredentials;
+  githubCredentials: GithubCredentials;
 }
 
 export type GithubRepositoryUpdateRequest = Omit<GithubRepository, "id" | "createdAt">;

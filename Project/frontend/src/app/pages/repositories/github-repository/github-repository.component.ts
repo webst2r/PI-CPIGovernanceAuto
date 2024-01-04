@@ -59,7 +59,7 @@ export class GithubRepositoryComponent {
     name: ['', [Validators.required]],
     mainBranch: ['', [Validators.required]],
     secondaryBranches: this.formBuilder.array([]),
-    credentials: ['', [Validators.required]],
+    githubCredentials: ['', [Validators.required]],
   });
 
   get secondaryBranchesFormArray() {
@@ -102,7 +102,7 @@ export class GithubRepositoryComponent {
     this.form.patchValue({
       name: repository.name,
       mainBranch: repository.mainBranch,
-      credentials: credentials,
+      githubCredentials: credentials,
     });
 
     this.secondaryBranchesFormArray.clear(); // Clear existing branches
