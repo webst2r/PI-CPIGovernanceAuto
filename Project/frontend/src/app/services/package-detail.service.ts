@@ -105,6 +105,18 @@ export class PackageDetailService {
 
     return this.httpClient.get(apiUrl, { responseType: 'blob' });
   }
+
+  enableJenkins(jobName: string, path: string): Observable<string> {
+    const apiUrl = `${this.apiUrl}/createAndExecutePipeline/${jobName}?path=${encodeURIComponent(path)}`;
+    return this.httpClient.get(apiUrl, { responseType: 'text' }).pipe(
+      map((response: any) => response),
+      catchError((error) => {
+        console.error('Error enabling Jenkins for the flow:', error);
+        return of('Failed to enable Jenkins for the flow');
+      })
+    );
+  }
+
 }
 
 export interface PackageDetails {

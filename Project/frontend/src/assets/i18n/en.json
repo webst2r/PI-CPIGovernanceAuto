@@ -79,7 +79,8 @@
     "number": "No.",
     "actions": "Actions",
     "open_flow": "Open Flow",
-    "download_flow": "Download Flow"
+    "download_flow": "Download Flow",
+    "enable_jenkins": "Enable Jenkins Pipeline"
   },
   "repositories": {
     "repositories": "Repositories",
