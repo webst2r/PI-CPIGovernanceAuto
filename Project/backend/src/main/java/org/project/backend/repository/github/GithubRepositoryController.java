@@ -34,6 +34,7 @@ public class GithubRepositoryController {
         return ResponseEntity.ok(repository);
     }
 
+
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteRepository(@RequestParam Integer id) {
         githubRepositoryService.delete(Long.valueOf(id));

@@ -1,9 +1,9 @@
 package org.project.backend.packages;
 
 import lombok.extern.slf4j.Slf4j;
-import org.project.backend.github.GithubService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.project.backend.jenkins.JenkinsService;
+import org.project.backend.repository.github.GithubRepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,12 +23,12 @@ public class PackagesController {
 
     private final PackagesService packagesService;
 
-    private final GithubService gitHubService;
+    private final GithubRepositoryService gitHubService;
 
     private final JenkinsService jenkinsService;
 
     @Autowired
-    public PackagesController(PackagesService packagesService, GithubService gitHubService, JenkinsService jenkinsService) {
+    public PackagesController(PackagesService packagesService, GithubRepositoryService gitHubService, JenkinsService jenkinsService) {
         this.packagesService = packagesService;
         this.gitHubService = gitHubService;
         this.jenkinsService = jenkinsService;
