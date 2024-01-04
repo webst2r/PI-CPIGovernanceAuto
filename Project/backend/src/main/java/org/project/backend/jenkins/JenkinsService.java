@@ -28,6 +28,7 @@ public class JenkinsService {
     private final UserRepository userRepository;
 
     private final JenkinsCredentialsRepository credentialsRepository;
+
     public void create(String jobName, String path) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
