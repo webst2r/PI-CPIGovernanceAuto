@@ -81,7 +81,8 @@
     "actions": "Ações",
     "open_flow": "Abrir fluxo",
     "download_flow": "Download fluxo",
-    "enable_jenkins": "Começar Jenkins Pipeline"
+    "enable_jenkins": "Ativar Pipeline do Jenkins",
+    "enable_github": "Ativar Versionamento no Github"
   },
   "repositories": {
     "repositories": "Repositórios",
@@ -96,9 +97,12 @@
     "create": "Criar",
     "update": "Atualizar",
     "delete": "Remover",
-    "success_delete": "Credenciais excluídas com sucesso!",
-    "success_update": "Credenciais atualizadas com sucesso!",
-    "success_create": "Credenciais criadas com sucesso!"
+    "success_delete": "Repositório eliminado com sucesso!",
+    "success_update": "Repositório atualizado com sucesso!",
+    "success_create": "Repositório criado com sucesso!",
+    "github": {
+      "confirmation_delete": "Tem a certeza de que deseja eliminar o repositório Github?"
+    }
   },
   "side_nav": {
     "login": "Login",

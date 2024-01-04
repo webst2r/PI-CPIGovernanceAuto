@@ -1,9 +1,9 @@
 package org.project.backend.packages;
 
 import lombok.extern.slf4j.Slf4j;
-import org.project.backend.github.GithubService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.project.backend.jenkins.JenkinsService;
+import org.project.backend.repository.github.GithubRepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,12 +23,12 @@ public class PackagesController {
 
     private final PackagesService packagesService;
 
-    private final GithubService gitHubService;
+    private final GithubRepositoryService gitHubService;
 
     private final JenkinsService jenkinsService;
 
     @Autowired
-    public PackagesController(PackagesService packagesService, GithubService gitHubService, JenkinsService jenkinsService) {
+    public PackagesController(PackagesService packagesService, GithubRepositoryService gitHubService, JenkinsService jenkinsService) {
         this.packagesService = packagesService;
         this.gitHubService = gitHubService;
         this.jenkinsService = jenkinsService;
@@ -79,33 +79,31 @@ public class PackagesController {
     }
 
     @GetMapping("/downloadFlow/{id}/{version}")
-    public ResponseEntity<byte[]> downloadFlow(@PathVariable("id") String flowId, @PathVariable("version") String flowVersion) throws IOException, InterruptedException {
-        // Fazer download do Flow para as transferências
+    public ResponseEntity<byte[]> downloadFlow(@PathVariable("id") String flowId, @PathVariable("version") String flowVersion) {
+        ResponseEntity<byte[]> response = packagesService.downloadFlow(flowId, flowVersion);
+        return ResponseEntity.ok(response.getBody());
+    }
+
+    @GetMapping("/enableGithub/{id}/{version}")
+    public ResponseEntity<byte[]> enableGithub(@PathVariable("id") String flowId, @PathVariable("version") String flowVersion) throws IOException, InterruptedException {
+        // Download flow
         ResponseEntity<byte[]> response = packagesService.downloadFlow(flowId, flowVersion);
 
         // Enviar o Flow para o GitHub
         String branch = "teste";
-
-        // Verificar se o cabeçalho Content-Disposition está presente
         HttpHeaders headers = response.getHeaders();
         String contentDisposition = headers.getFirst(HttpHeaders.CONTENT_DISPOSITION);
-
-        // Extrair o nome do arquivo do cabeçalho Content-Disposition
         String fileName = extractFileName(contentDisposition);
 
         try {
-            // Convert the downloaded XML content to a ZIP file
             byte[] zipContentBytes = convertBytesToZip(response.getBody(), fileName);
             String zipFileName = fileName.replace(".xml", ".zip");
             System.out.println("Zip Filename: " + zipFileName);
-
-            // Send the ZIP file to GitHub
             gitHubService.sendZipToGitHub(branch, zipFileName, zipContentBytes);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
         return ResponseEntity.ok(response.getBody());
     }
 

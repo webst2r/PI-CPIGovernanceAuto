@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, inject, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { PackageDetailService, PackageDetails, FlowElement } from '../../services/package-detail.service';
 import {TranslateModule} from "@ngx-translate/core";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-package-detail',
@@ -26,6 +27,7 @@ import {TranslateModule} from "@ngx-translate/core";
   styleUrls: ['./package-detail.component.scss'],
 })
 export class PackageDetailComponent implements OnInit {
+  private snackBar = inject(MatSnackBar);
   packageId: string = '';
   dataSource: MatTableDataSource<FlowElement>;
   displayedColumns: string[] = ['position', 'name', 'version', 'modifiedBy', 'modifiedDate', 'actions'];
@@ -53,7 +55,8 @@ export class PackageDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private packageDetailService: PackageDetailService,
-    private dialog: MatDialog // Inject MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {
     this.dataSource = new MatTableDataSource<FlowElement>();
   }
@@ -108,6 +111,7 @@ export class PackageDetailComponent implements OnInit {
     this.packageDetailService.downloadFlow(element.name, element.version).subscribe(
       (response) => {
         saveAs(response, `${element.name}_${element.version}.xml`);
+        this.showSuccessToast(`${element.name}_${element.version}.xml downloaded successfully`);
       },
       (error) => {
         console.error('Error downloading flow:', error);
@@ -116,7 +120,7 @@ export class PackageDetailComponent implements OnInit {
   }
 
   goBack() {
-    // Implement goBack logic
+    this.router.navigate(['/packages']);
   }
 
   enableJenkins(element: FlowElement) {
@@ -124,6 +128,7 @@ export class PackageDetailComponent implements OnInit {
     this.packageDetailService.enableJenkins(element.name, path).subscribe(
       (response) => {
         console.log('Jenkins enabled successfully:', response);
+        this.showSuccessToast('Jenkins enabled successfully');
       },
       (error) => {
         console.error('Error enabling Jenkins for the flow:', error);
@@ -131,4 +136,25 @@ export class PackageDetailComponent implements OnInit {
     );
   }
 
+  enableGithub(element: FlowElement) {
+    this.packageDetailService.enableGithub(element.name, element.version).subscribe(
+      (response) => {
+        console.log('Github enabled successfully');
+        this.showSuccessToast('Github enabled successfully');
+      },
+      (error) => {
+        console.error('Error enabling Github for the flow:', error);
+      }
+    );
+  }
+
+  showSuccessToast(message: string): void {
+    this.snackBar
+      .open(message, 'Close', {
+        duration: 5000,
+        panelClass: 'success-toast',
+      })
+      .onAction()
+      .subscribe(() => this.snackBar.dismiss());
+  }
 }

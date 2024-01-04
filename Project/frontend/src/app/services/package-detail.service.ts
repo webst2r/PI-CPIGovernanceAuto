@@ -117,6 +117,18 @@ export class PackageDetailService {
     );
   }
 
+  enableGithub(flowId: string, flowVersion: string): Observable<string> {
+    // enviar flow para o github
+    const apiUrl = `${this.apiUrl}/enableGithub/${flowId}/${flowVersion}`;
+
+    return this.httpClient.get(apiUrl, { responseType: 'text' }).pipe(
+      map((response: any) => response),
+      catchError((error) => {
+        console.error('Error enabling Github for the flow:', error);
+        return of('Failed to enable Github for the flow');
+      })
+    );
+  }
 }
 
 export interface PackageDetails {

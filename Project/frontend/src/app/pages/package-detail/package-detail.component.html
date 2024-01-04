@@ -123,12 +123,19 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef> {{"package.actions" | translate}} </th>
       <td mat-cell *matCellDef="let element">
+        <!-- BUTTON: Open Flow -->
         <button class="open-flow-btn" mat-icon-button (click)="openFlow(element)" matTooltip= "{{'package.open_flow' | translate}}">
           <i class="fas fa-project-diagram"></i>
         </button>
+        <!-- BUTTON: Download Flow -->
         <button class="open-flow-btn" mat-icon-button (click)="downloadFlow(element)" matTooltip="{{'package.download_flow' | translate}}">
           <i class="fa fa-download" aria-hidden="true"></i>
         </button>
+        <!-- BUTTON: Enable Github Versioning -->
+        <button class="open-flow-btn" mat-icon-button (click)="enableGithub(element)" matTooltip="{{'package.enable_github' | translate}}">
+          <i class="fab fa-github" aria-hidden="true"></i>
+        </button>
+        <!-- BUTTON: Enable Jenkins -->
         <button class="open-flow-btn" mat-icon-button (click)="enableJenkins(element)" matTooltip="{{'package.enable_jenkins' | translate}}">
           <i class="fab fa-jenkins" aria-hidden="true"></i>
         </button>
