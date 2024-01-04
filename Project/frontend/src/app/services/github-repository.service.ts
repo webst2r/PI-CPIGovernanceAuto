@@ -23,7 +23,14 @@ export class GithubRepositoryService {
 
   create(formData: GithubRepositoryCreateRequest): Observable<GithubRepository> {
     const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.REPOSITORIES.GITHUB.CREATE;
-    return this.http.post<GithubRepository>(endpoint, formData)
+
+    // Set headers to specify that the payload is JSON
+    const headers = { 'Content-Type': 'application/json' };
+
+    // Log the request payload before making the actual request
+    console.log('Request Payload:', formData);
+
+    return this.http.post<GithubRepository>(endpoint, formData, { headers })
       .pipe(
         tap(res => console.log('Successfully created repository:', res)),
         catchError(err => {

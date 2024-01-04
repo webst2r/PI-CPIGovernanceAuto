@@ -20,8 +20,13 @@ public class GithubRepositoryService {
 
     @Transactional
     public GithubRepository save(GithubRepositoryRegisterRequest githubRepositoryRegisterRequest) {
-
         var githubCredentials = githubRepositoryRegisterRequest.getGithubCredentials();
+
+
+        System.out.println("Repository name: " + githubRepositoryRegisterRequest.getName());
+        System.out.println("Repository main branch: " + githubRepositoryRegisterRequest.getMainBranch());
+        System.out.println("Repository secondary branches: " + githubRepositoryRegisterRequest.getSecondaryBranches());
+        System.out.println("Repository credentials: " + githubRepositoryRegisterRequest.getGithubCredentials());
 
         var githubRepository = GithubRepository.builder()
                 .name(githubRepositoryRegisterRequest.getName())
