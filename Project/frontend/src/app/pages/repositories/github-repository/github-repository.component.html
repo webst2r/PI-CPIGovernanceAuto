@@ -29,10 +29,9 @@
                     (removed)="remove(branch)"
                     [editable]="true"
                     (edited)="edit(branch, $event)"
-                    [aria-description]="'press enter to edit ' + branch.name"
-                    [color]=>
-        {{branch.name}}
-        <button matChipRemove [attr.aria-label]="'remove ' + branch.name">
+                    [aria-description]="'press enter to edit ' + branch">
+        {{ branch }}
+        <button matChipRemove [attr.aria-label]="'remove ' + branch">
           <mat-icon>cancel</mat-icon>
         </button>
       </mat-chip-row>
@@ -45,6 +44,7 @@
   </mat-form-field>
 
 
+
   <!-- Credentials Input (dropdown/select) -->
 
  <p class="repository-input">
@@ -52,7 +52,7 @@
      <mat-label>{{"repositories.credentials"| translate}}</mat-label>
 
      <mat-select formControlName="credentials">
-       <mat-option *ngFor="let credential of credentialsList" [value]="credential.id">
+       <mat-option *ngFor="let credential of credentialsList" [value]="credential">
          {{ credential.name }}
        </mat-option>
      </mat-select>

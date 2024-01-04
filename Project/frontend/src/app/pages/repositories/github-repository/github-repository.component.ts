@@ -1,5 +1,5 @@
 import {Component, inject, OnInit, ViewChild, Signal, signal, computed, effect} from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
+import {FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule, FormArray} from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -55,12 +55,16 @@ export class GithubRepositoryComponent {
   translate = inject(TranslateService);
   @ViewChild('formDirective') private formDirective: any;
 
-  form: FormGroup = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    mainBranch: new FormControl('', [Validators.required]),
-    secondaryBranches: new FormControl('', [Validators.required]),
-    credentials: new FormControl('', [Validators.required]),
+  form: FormGroup = this.formBuilder.group({
+    name: ['', [Validators.required]],
+    mainBranch: ['', [Validators.required]],
+    secondaryBranches: this.formBuilder.array([]),
+    credentials: ['', [Validators.required]],
   });
+
+  get secondaryBranchesFormArray() {
+    return this.form.get('secondaryBranches') as FormArray;
+  }
 
   reloadSig = signal<number>(0); // change the value of this signal to reactively update everything on the page
 
@@ -68,19 +72,17 @@ export class GithubRepositoryComponent {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   addOnBlur = true;
   announcer = inject(LiveAnnouncer);
-  secondaryBranches: Branch[] = [];
-
+  secondaryBranches: string[] = [];
 
   credentialsList: GithubCredentials[] = [];
 
-  repository$: Observable<GithubRepository | undefined> = toObservable(this.reloadSig)
-    .pipe(
-      switchMap(_ => this.repositoriesService.get())
-    );
+  repository$: Observable<GithubRepository | undefined> = toObservable(this.reloadSig).pipe(
+    switchMap((_) => this.repositoriesService.get())
+  );
   repositorySig: Signal<GithubRepository | undefined> = toSignal(this.repository$);
   editMode: Signal<boolean> = computed(() => this.repositorySig() !== undefined && this.repositorySig() !== null);
 
-  constructor() {
+  constructor(private formBuilder: FormBuilder) {
     effect(() => {
       // obter as credenciais disponiveis para github
       this.credentialsService.get().subscribe((credentials) => {
@@ -97,20 +99,32 @@ export class GithubRepositoryComponent {
   }
 
   private initializeFormValues(credentials: GithubCredentials, repository: GithubRepository): void {
-    this.form.get('name')?.setValue(repository.name);
-    this.form.get('mainBranch')?.setValue(repository.mainBranch);
-    this.form.get('secondaryBranches')?.setValue(repository.secondaryBranches);
-    this.form.get('credentials')?.setValue(credentials);
+    this.form.patchValue({
+      name: repository.name,
+      mainBranch: repository.mainBranch,
+      credentials: credentials,
+    });
+
+    this.secondaryBranchesFormArray.clear(); // Clear existing branches
+
+    // Add branches to the form array
+    repository.secondaryBranches.forEach((branch: string) => {
+      this.secondaryBranchesFormArray.push(this.formBuilder.control(branch));
+    });
   }
+
 
   submit() {
     if (!this.form.valid) {
-      console.log("form is not valid");
+      console.log('form is not valid');
       return;
     }
 
     // Extracting form values
     const formData = this.form.value;
+
+    // Add secondary branches to formData
+    formData.secondaryBranches = this.secondaryBranches;
 
     // Create a request object
     const repositoryRequest: GithubRepositoryCreateRequest | GithubRepositoryUpdateRequest = this.editMode()
@@ -121,76 +135,59 @@ export class GithubRepositoryComponent {
       ? this.repositoriesService.update(repositoryRequest as GithubRepositoryUpdateRequest)
       : this.repositoriesService.create(repositoryRequest as GithubRepositoryCreateRequest);
 
-    serviceOperation.pipe(
-      tap(_ => {
-        this.reloadSig.set(randomNumber());
-        this.showSuccessToast(this.editMode() ? this.translate.instant("repositories.success_update") : this.translate.instant("repositories.success_create"));
-      }),
-      catchError(error => {
-        console.error('Error occurred:', error);
-        return throwError(error);
-      })
-    ).subscribe();
-
-    /*
-    // WORKS
-    // Create a request object
-    const repositoryCreateRequest: GithubRepositoryCreateRequest = {
-      name,
-      mainBranch,
-      secondaryBranches: secondaryBranches.map(branch => branch.name),
-      credentials
-    };
-
-    // Call the service function to create the repository
-    this.repositoriesService.create(repositoryCreateRequest).subscribe(
-      (createdRepository) => {
-        // Handle the success case
-        console.log('Repository created successfully:', createdRepository);
-        this.showSuccessToast('Repository created successfully');
-        this.repositorySig();
-        // Optionally, you can reset the form after a successful submission
-        this.formDirective.resetForm();
-      },
-      (error) => {
-        // Handle the error case
-        console.error('Error creating repository:', error);
-        // Optionally, display an error message to the user
-      }
-    );
-     */
+    serviceOperation
+      .pipe(
+        tap((_) => {
+          this.reloadSig.set(randomNumber());
+          this.showSuccessToast(
+            this.editMode()
+              ? this.translate.instant('repositories.success_update')
+              : this.translate.instant('repositories.success_create')
+          );
+        }),
+        catchError((error) => {
+          console.error('Error occurred:', error);
+          return throwError(error);
+        })
+      )
+      .subscribe();
   }
 
   onDelete() {
     if (!this.repositorySig()) {
-      return
+      return;
     }
 
-    this.confirmDialogService.showDialog(this.translate.instant('repositories.github.confirmation_delete'))
+    this.confirmDialogService
+      .showDialog(this.translate.instant('repositories.github.confirmation_delete'))
       .pipe(
-        filter(res => res.save),
-        switchMap(_ => this.delete()),
-        catchError(err => {
+        filter((res) => res.save),
+        switchMap((_) => this.delete()),
+        catchError((err) => {
           console.error('Error opening confirmation dialog:', err);
-          return of()
+          return of();
         })
-      ).subscribe()
+      )
+      .subscribe();
   }
 
   delete() {
     return this.repositoriesService.delete(this.repositorySig()!.id).pipe(
-      tap(_ => {
+      tap((_) => {
         this.reloadSig.set(randomNumber());
-        this.showSuccessToast(this.translate.instant("repositories.success_delete"));
-      }),
+        this.showSuccessToast(this.translate.instant('repositories.success_delete'));
+      })
     );
   }
 
   showSuccessToast(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 5000,
-      panelClass: 'success-toast',
-    }).onAction().subscribe(() => this.snackBar.dismiss());
+    this.snackBar
+      .open(message, 'Close', {
+        duration: 5000,
+        panelClass: 'success-toast',
+      })
+      .onAction()
+      .subscribe(() => this.snackBar.dismiss());
   }
 
   add(event: MatChipInputEvent): void {
@@ -198,14 +195,14 @@ export class GithubRepositoryComponent {
 
     // Add our branch
     if (value) {
-      this.secondaryBranches.push({ name: value });
+      this.secondaryBranches.push(value);
     }
 
     // Clear the input value
     event.chipInput!.clear();
   }
 
-  remove(branch: Branch): void {
+  remove(branch: string): void {
     const index = this.secondaryBranches.indexOf(branch);
 
     if (index >= 0) {
@@ -215,7 +212,7 @@ export class GithubRepositoryComponent {
     }
   }
 
-  edit(branch: Branch, event: MatChipEditedEvent) {
+  edit(branch: string, event: MatChipEditedEvent) {
     const value = event.value.trim();
 
     // Remove branch if it no longer has a name
@@ -227,7 +224,7 @@ export class GithubRepositoryComponent {
     // Edit existing branch
     const index = this.secondaryBranches.indexOf(branch);
     if (index >= 0) {
-      this.secondaryBranches[index].name = value;
+      this.secondaryBranches[index] = value;
     }
   }
 }

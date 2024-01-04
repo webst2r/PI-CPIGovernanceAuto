@@ -6,6 +6,7 @@ import org.project.backend.repository.github.dto.GithubRepositoryRegisterRequest
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/api/repositories/github")
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class GithubRepositoryController {
 
     @PostMapping("/save")
     public ResponseEntity<GithubRepository> saveRepository(@RequestBody GithubRepositoryRegisterRequest githubRepositoryRegisterRequest) {
-       var repository =  githubRepositoryService.save(githubRepositoryRegisterRequest);
+        var repository =  githubRepositoryService.save(githubRepositoryRegisterRequest);
         return ResponseEntity.ok(repository);
     }
 
