@@ -210,7 +210,6 @@ public class PackagesService {
 
             String clientId = credentials.getClientId();
             String clientSecret = credentials.getClientSecret();
-            // https://45438691trial.it-cpitrial05.cfapps.us10-001.hana.ondemand.com/api/v1/IntegrationDesigntimeArtifacts(Id='my_integration_flow_pi',Version='active')
             String flowDetailsUri = credentials.getBaseUrl() + "/api/v1/IntegrationDesigntimeArtifacts" + "(Id=" + "'" + flowId + "'" + ",Version=" + "'" + flowVersion + "'"+ ")";
             String tokenUrl = credentials.getTokenUrl();
             log.debug("clientId: {}", clientId);
@@ -271,17 +270,11 @@ public class PackagesService {
 
             HttpHeaders headers = new HttpHeaders();
 
-            // Check if the Content-Disposition header is present in the response
             String contentDisposition = responseEntity.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION);
             if (contentDisposition != null) {
-                // Extract the filename from the Content-Disposition header
                 String fileName = extractFileName(contentDisposition);
-                System.out.println("Filename: " + fileName);
-
-                // Set the filename in the response headers
                 headers.setContentDispositionFormData("attachment", fileName);
             } else {
-                // If Content-Disposition is not present, use a default filename
                 headers.setContentDispositionFormData("attachment", "default_filename.xml");
             }
 
