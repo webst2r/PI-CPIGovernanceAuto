@@ -1,8 +1,6 @@
 package org.project.backend.repository.github;
 
 import lombok.RequiredArgsConstructor;
-import org.project.backend.credential.github.GithubCredentials;
-import org.project.backend.credential.github.dto.GithubCredentialsEditRequest;
 import org.project.backend.repository.github.dto.GithubRepositoryEditRequest;
 import org.project.backend.repository.github.dto.GithubRepositoryRegisterRequest;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +14,14 @@ public class GithubRepositoryController {
     public final GithubRepositoryService githubRepositoryService;
 
     @PostMapping("/save")
-    public ResponseEntity<GithubRepository> saveCredentials(@RequestBody GithubRepositoryRegisterRequest githubRepositoryRegisterRequest) {
+    public ResponseEntity<GithubRepository> saveRepository(@RequestBody GithubRepositoryRegisterRequest githubRepositoryRegisterRequest) {
        var repository =  githubRepositoryService.save(githubRepositoryRegisterRequest);
         return ResponseEntity.ok(repository);
     }
 
 
     @PostMapping("/update")
-    public ResponseEntity<GithubRepository> editCredentials(@RequestBody GithubRepositoryEditRequest githubRepositoryEditRequest) {
+    public ResponseEntity<GithubRepository> editRepository(@RequestBody GithubRepositoryEditRequest githubRepositoryEditRequest) {
         var repository =  githubRepositoryService.update(githubRepositoryEditRequest);
         return ResponseEntity.ok(repository);
     }

@@ -1,20 +1,19 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import {FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule} from '@angular/forms';
+import {Component, inject, OnInit, ViewChild, Signal, signal, computed} from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { Observable } from 'rxjs';
-
-import { GithubRepository } from '../../../models/repositories';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { GithubRepository, GithubRepositoryCreateRequest } from '../../../models/repositories';
 import { GithubRepositoryService } from '../../../services/github-repository.service';
-
 import { GithubCredentials } from '../../../models/credentials';
 import { GithubCredentialsService } from '../../../services/github-credentials.service';
 import { ConfirmationDialogService } from '../../../services/confirmation-dialog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from "@angular/material/chips";
+import { MatChipEditedEvent, MatChipInputEvent, MatChipsModule } from "@angular/material/chips";
 import { ENTER, COMMA } from "@angular/cdk/keycodes";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { LiveAnnouncer } from "@angular/cdk/a11y";
@@ -61,13 +60,17 @@ export class GithubRepositoryComponent implements OnInit {
 
   credentialsList: GithubCredentials[] = [];
 
+  // Repository Signal
+  repositorySig: Signal<GithubRepository | undefined> = signal<GithubRepository | undefined>(undefined);
+
+  editMode: Signal<boolean> = computed(() => this.repositorySig() !== undefined && this.repositorySig() !== null);
+
   form: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required]),
     mainBranch: new FormControl('', [Validators.required]),
     secondaryBranches: new FormControl('', [Validators.required]),
     credentials: new FormControl('', [Validators.required]),
   });
-
 
   ngOnInit() {
     this.credentialsService.get().subscribe((credentials) => {
@@ -77,10 +80,11 @@ export class GithubRepositoryComponent implements OnInit {
     });
 
     this.repositoriesService.get().subscribe((repository) => {
-      if(repository) {
+      if (repository) {
+        this.repositorySig();  // Set the value of the repository signal
         this.initializeFormValues(this.credentialsList[0], repository);
       }
-      });
+    });
   }
 
   private initializeFormValues(credentials: GithubCredentials, repository: GithubRepository): void {
@@ -93,29 +97,44 @@ export class GithubRepositoryComponent implements OnInit {
     if (!this.form.valid) {
       return;
     }
-    const selectedCredentialControl = this.form.get('credentials');
 
-    if (selectedCredentialControl && selectedCredentialControl.value !== null) {
-      const selectedCredentialId = selectedCredentialControl.value;
-      // ...
+    // Extracting form values
+    const name = this.form.get('name')?.value;
+    const mainBranch = this.form.get('mainBranch')?.value;
+    const credentials = this.form.get('credentials')?.value;
+    // Handle other form controls as needed
 
-    } else {
-      console.error('Form control "credentials" or its value is null');
-    }
-  }
+    // Create a request object
+    const repositoryCreateRequest: GithubRepositoryCreateRequest = {
+      name,
+      mainBranch,
+      credentials,
+      secondaryBranches: this.secondaryBranches.map(branch => branch.name),
+    };
 
-  credentialsSig() {
-    return false;
+    // Call the service function to create the repository
+    this.repositoriesService.create(repositoryCreateRequest).subscribe(
+      (createdRepository) => {
+        // Handle the success case
+        console.log('Repository created successfully:', createdRepository);
+        this.showSuccessToast('Repository created successfully');
+        this.repositorySig();
+        // Optionally, you can reset the form after a successful submission
+        this.formDirective.resetForm();
+      },
+      (error) => {
+        // Handle the error case
+        console.error('Error creating repository:', error);
+        // Optionally, display an error message to the user
+      }
+    );
   }
 
   onDelete() {
-    if (!this.credentialsSig()) {
-      return;
+    const currentRepository = this.repositorySig();  // Get the current value of the repository signal
+    if (currentRepository) {
+      // Delete logic
     }
-  }
-
-  editMode() {
-    return false;
   }
 
   showSuccessToast(message: string): void {
@@ -128,7 +147,7 @@ export class GithubRepositoryComponent implements OnInit {
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
 
-    // Add our fruit
+    // Add our branch
     if (value) {
       this.secondaryBranches.push({ name: value });
     }

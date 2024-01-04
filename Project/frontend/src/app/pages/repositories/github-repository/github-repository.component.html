@@ -66,7 +66,7 @@
       {{ editMode() ? translate.instant("repositories.update") : translate.instant("repositories.create") }}
     </button>
 
-    <button type="button" [disabled]="!credentialsSig()" mat-raised-button color="warn" (click)="onDelete()">
+    <button type="button" [disabled]="!repositorySig()" mat-raised-button color="warn" (click)="onDelete()">
       {{"repositories.delete"| translate}}
     </button>
   </div>
