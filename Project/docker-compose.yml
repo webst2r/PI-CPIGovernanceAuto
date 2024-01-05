@@ -1,18 +1,10 @@
 services:
-#  cpilint:
-#    container_name: cpilint
-#    image: cpilint
-#    build:
-#      context: .
-#      dockerfile: ./cpilint-1.0.4/Dockerfile
-#    ports:
-#      - "8081:8081"
-#    networks:
-#      project-network:
 
   jenkins:
     #image: jenkins/jenkins:lts
-    build: ./jenkins-docker
+    build:
+      context: ./jenkins
+      dockerfile: ./Dockerfile
     restart: unless-stopped
     privileged: true
     user: root
@@ -20,7 +12,7 @@ services:
       - 8080:8080
     container_name: jenkins
     volumes:
-      - ~/jenkins:/var/jenkins_home
+      - /tmp/jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/local/bin/docker
     networks:
@@ -78,8 +70,10 @@ services:
       - backend
     networks:
       project-network:
+
 volumes:
   mysql_db:
   jenkins_data:
+
 networks:
   project-network:
