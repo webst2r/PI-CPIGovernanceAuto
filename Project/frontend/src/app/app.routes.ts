@@ -9,6 +9,7 @@ import {PackageDetailComponent} from "./pages/package-detail/package-detail.comp
 import {publicGuard} from "./services/auth/public.guard";
 import {LogoutComponent} from "./pages/logout/logout.component";
 import {RepositoriesComponent} from "./pages/repositories/repositories.component";
+import {RulesComponent} from "./pages/rules/rules.component";
 
 export const routes: Routes = [
   {
@@ -49,6 +50,11 @@ export const routes: Routes = [
   {
     path: 'repositories',
     component: RepositoriesComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'rules',
+    component: RulesComponent,
     canActivate: [authGuard]
   },
   { path: 'package-detail/:id',
