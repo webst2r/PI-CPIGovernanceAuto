@@ -12,6 +12,7 @@ import { PackageDetailService, PackageDetails, FlowElement } from '../../service
 import {TranslateModule} from "@ngx-translate/core";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {GithubDialogComponent} from "../github-dialog/github-dialog.component";
+import {JenkinsDialogComponent} from "../jenkins-dialog/jenkins-dialog.component";
 
 @Component({
   selector: 'app-package-detail',
@@ -120,19 +121,6 @@ export class PackageDetailComponent implements OnInit {
     );
   }
 
-  enableJenkins(element: FlowElement) {
-    let path = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project\\backend\\file.xml";
-    this.packageDetailService.enableJenkins(element.name, path).subscribe(
-      (response) => {
-        console.log('Jenkins enabled successfully:', response);
-        this.showSuccessToast('Jenkins enabled successfully');
-      },
-      (error) => {
-        console.error('Error enabling Jenkins for the flow:', error);
-      }
-    );
-  }
-
   openGithub(element: FlowElement) {
     const dialogRef = this.dialog.open(GithubDialogComponent, {
       data: {
@@ -145,21 +133,17 @@ export class PackageDetailComponent implements OnInit {
     });
   }
 
-  /*
+  openJenkins(element: FlowElement) {
+    const dialogRef = this.dialog.open(JenkinsDialogComponent, {
+      data: {
+        flowElement: element, // Pass the flow element directly
+      },
+    });
 
-    enableGithub(element: FlowElement) {
-      this.packageDetailService.enableGithub(element.name, element.version).subscribe(
-        (response) => {
-          console.log('Github enabled successfully');
-          this.showSuccessToast('Github enabled successfully');
-        },
-        (error) => {
-          console.error('Error enabling Github for the flow:', error);
-        }
-      );
-    }
-
-   */
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The Jenkins dialog was closed');
+    });
+  }
 
   goBack() {
     this.router.navigate(['/packages']);

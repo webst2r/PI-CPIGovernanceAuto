@@ -30,6 +30,12 @@ export const navbarData = [
     authRequired: true
   },
   {
+    routeLink: 'rules',
+    icon: 'fas fa-file-alt',
+    label: 'side_nav.rules',
+    authRequired: true
+  },
+  {
     routeLink: 'logout',
     icon: 'fas fa-sign-out-alt',
     label: 'side_nav.logout',
