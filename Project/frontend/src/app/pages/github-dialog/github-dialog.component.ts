@@ -9,6 +9,7 @@ import {NgForOf} from "@angular/common";
 import {MatButtonModule} from "@angular/material/button";
 import {FlowElement, PackageDetailService} from "../../services/package-detail.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {GithubRepositoryService} from "../../services/github-repository.service";
 
 @Component({
   selector: 'app-github-dialog',
@@ -26,14 +27,16 @@ import {MatSnackBar} from "@angular/material/snack-bar";
   styleUrls: ['./github-dialog.component.scss']
 })
 export class GithubDialogComponent implements OnInit {
+  private githubRepositoryService = inject(GithubRepositoryService);
   private snackBar = inject(MatSnackBar);
-  branches: string[] = ['main', 'rodrigo_branch', 'daniel_branch'];
+  branches: string[] = [];
   flowElement!: FlowElement | null;
 
   ngOnInit() {
     this.dialogRef.updateSize('50%', '50%');
-    const initialBranch = this.branches[0]; // You can set the initial branch as needed
-    this.form.patchValue({ selectedBranch: initialBranch });
+
+    // fetch branches from the backend
+    this.fetchBranches();
 
     // Access the flow element from the dialog data
     if (this.data && this.data.flowElement) {
@@ -52,10 +55,19 @@ export class GithubDialogComponent implements OnInit {
     private packageDetailService: PackageDetailService,
   ) {}
 
-  closeDialog() {
-    this.dialogRef.close();
+  fetchBranches() {
+    // Fetch branches from the backend
+    this.githubRepositoryService.getBranches().subscribe(
+      (branches) => {
+        this.branches = branches;
+        const initialBranch = this.branches[0];
+        this.form.patchValue({ selectedBranch: initialBranch });
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
   }
-
 
 
   enableGithub() {
@@ -65,7 +77,8 @@ export class GithubDialogComponent implements OnInit {
 
       this.packageDetailService.enableGithub(
         this.flowElement.name,
-        this.flowElement.version
+        this.flowElement.version,
+        selectedBranch  // Pass the selected branch to the backend
       ).subscribe(
         (response) => {
           console.log('Github enabled successfully');
@@ -88,5 +101,9 @@ export class GithubDialogComponent implements OnInit {
       })
       .onAction()
       .subscribe(() => this.snackBar.dismiss());
+  }
+
+  closeDialog() {
+    this.dialogRef.close();
   }
 }

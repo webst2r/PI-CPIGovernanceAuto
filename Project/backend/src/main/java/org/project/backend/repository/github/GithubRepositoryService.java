@@ -26,7 +26,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -299,5 +301,33 @@ public class GithubRepositoryService {
         } else {
             throw new RuntimeException("User not authenticated");
         }
+    }
+
+    public List<String> getAllBranches() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        List<String> secondaryBranches = new ArrayList<>();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+
+            // Obter o user
+            Optional<User> user = userRepository.findByEmail(username);
+
+            // Obter as credenciais
+            GithubCredentials githubCredentials = credentialsRepository.findByUserId(user.get().getId());
+            String githubToken = githubCredentials.getAccessToken();
+            String githubUsername = githubCredentials.getUsername();
+
+            // Obter o repositorio associado às credenciais de github
+            Optional<GithubRepository> githubRepository = githubRepositoryRepository.findByCredentials(githubCredentials);
+            secondaryBranches = githubRepository.get().getSecondaryBranches();
+            // print every branch
+            for (String branch : secondaryBranches) {
+                System.out.println(branch);
+            }
+        }
+        return secondaryBranches;
     }
 }

@@ -84,13 +84,17 @@ public class PackagesController {
         return ResponseEntity.ok(response.getBody());
     }
 
-    @GetMapping("/enableGithub/{id}/{version}")
-    public ResponseEntity<byte[]> enableGithub(@PathVariable("id") String flowId, @PathVariable("version") String flowVersion) throws IOException, InterruptedException {
-        // Download flow
+    @GetMapping("/enableGithub/{id}/{version}/{branch}")
+    public ResponseEntity<byte[]> enableGithub(
+            @PathVariable("id") String flowId,
+            @PathVariable("version") String flowVersion,
+            @PathVariable("branch") String branch
+    ) {
+
+        // Fazer o download do Flow
         ResponseEntity<byte[]> response = packagesService.downloadFlow(flowId, flowVersion);
 
         // Enviar o Flow para o GitHub
-        String branch = "teste";
         HttpHeaders headers = response.getHeaders();
         String contentDisposition = headers.getFirst(HttpHeaders.CONTENT_DISPOSITION);
         String fileName = extractFileName(contentDisposition);
@@ -106,7 +110,6 @@ public class PackagesController {
         }
         return ResponseEntity.ok(response.getBody());
     }
-
 
     private byte[] convertBytesToZip(byte[] xmlContentBytes, String fileName) throws IOException {
         try (ByteArrayOutputStream zipStream = new ByteArrayOutputStream();

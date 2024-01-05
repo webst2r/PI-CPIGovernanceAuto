@@ -6,6 +6,8 @@ import org.project.backend.repository.github.dto.GithubRepositoryRegisterRequest
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/repositories/github")
@@ -39,5 +41,11 @@ public class GithubRepositoryController {
     public ResponseEntity<String> deleteRepository(@RequestParam Integer id) {
         githubRepositoryService.delete(Long.valueOf(id));
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/branches")
+    public ResponseEntity<List<String>> getBranches() {
+        List<String> branches = githubRepositoryService.getAllBranches();
+        return ResponseEntity.ok(branches);
     }
 }

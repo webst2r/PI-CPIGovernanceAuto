@@ -60,4 +60,15 @@ export class GithubRepositoryService {
         })
       );
   }
+
+  getBranches(): Observable<string[]> {
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.REPOSITORIES.GITHUB.BRANCHES;
+    return this.http.get<string[]>(endpoint)
+      .pipe(
+        catchError(err => {
+          console.error('Error getting Github branches:', err);
+          return of();
+        })
+      );
+  }
 }

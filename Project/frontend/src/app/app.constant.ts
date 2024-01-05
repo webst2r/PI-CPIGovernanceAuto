@@ -36,7 +36,8 @@ export class AppConstant {
         CREATE: 'repositories/github/save',
         UPDATE: 'repositories/github/update',
         GET:'repositories/github/key',
-        DELETE:'repositories/github/delete'
+        DELETE:'repositories/github/delete',
+        BRANCHES: 'repositories/github/branches'
       }
     }
   }

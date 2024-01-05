@@ -105,13 +105,18 @@ export class GithubRepositoryComponent {
       githubCredentials: credentials,
     });
 
-    this.secondaryBranchesFormArray.clear(); // Clear existing branches
+    // Update secondary branches array
+    this.secondaryBranches = [...repository.secondaryBranches];
+
+    // Clear existing branches from the form array
+    this.secondaryBranchesFormArray.clear();
 
     // Add branches to the form array
     repository.secondaryBranches.forEach((branch: string) => {
       this.secondaryBranchesFormArray.push(this.formBuilder.control(branch));
     });
   }
+
 
 
   submit() {

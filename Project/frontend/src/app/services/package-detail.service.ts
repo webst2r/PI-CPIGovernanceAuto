@@ -117,9 +117,8 @@ export class PackageDetailService {
     );
   }
 
-  enableGithub(flowId: string, flowVersion: string): Observable<string> {
-    // enviar flow para o github
-    const apiUrl = `${this.apiUrl}/enableGithub/${flowId}/${flowVersion}`;
+  enableGithub(flowId: string, flowVersion: string, branch: string): Observable<string> {
+    const apiUrl = `${this.apiUrl}/enableGithub/${flowId}/${flowVersion}/${branch}`;
 
     return this.httpClient.get(apiUrl, { responseType: 'text' }).pipe(
       map((response: any) => response),
