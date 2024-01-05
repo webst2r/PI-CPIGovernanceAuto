@@ -107,7 +107,8 @@ export class PackageDetailService {
   }
 
   enableJenkins(jobName: string, path: string): Observable<string> {
-    const apiUrl = `${this.apiUrl}/createAndExecutePipeline/${jobName}?path=${encodeURIComponent(path)}`;
+    let pathUsed = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project\\backend\\file.xml"
+    const apiUrl = `${this.apiUrl}/createAndExecutePipeline/${jobName}?path=${encodeURIComponent(pathUsed)}`;
     return this.httpClient.get(apiUrl, { responseType: 'text' }).pipe(
       map((response: any) => response),
       catchError((error) => {
@@ -117,9 +118,8 @@ export class PackageDetailService {
     );
   }
 
-  enableGithub(flowId: string, flowVersion: string): Observable<string> {
-    // enviar flow para o github
-    const apiUrl = `${this.apiUrl}/enableGithub/${flowId}/${flowVersion}`;
+  enableGithub(flowId: string, flowVersion: string, branch: string): Observable<string> {
+    const apiUrl = `${this.apiUrl}/enableGithub/${flowId}/${flowVersion}/${branch}`;
 
     return this.httpClient.get(apiUrl, { responseType: 'text' }).pipe(
       map((response: any) => response),
@@ -129,6 +129,23 @@ export class PackageDetailService {
       })
     );
   }
+
+  /*
+    enableJenkins(element: FlowElement) {
+    let path = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project\\backend\\file.xml";
+    this.packageDetailService.enableJenkins(element.name, path).subscribe(
+      (response) => {
+        console.log('Jenkins enabled successfully:', response);
+        this.showSuccessToast('Jenkins enabled successfully');
+      },
+      (error) => {
+        console.error('Error enabling Jenkins for the flow:', error);
+      }
+    );
+  }
+   */
+
+
 }
 
 export interface PackageDetails {

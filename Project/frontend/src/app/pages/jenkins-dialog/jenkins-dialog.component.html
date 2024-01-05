@@ -1,0 +1,27 @@
+<div class="header-container">
+  <i class="fab fa-jenkins"></i>
+  <h2><span>{{ 'package.enable_jenkins' | translate }}</span></h2>
+  <button class="go-back-button" (click)="closeDialog()">
+    <i class="fa fa-window-close" aria-hidden="true"></i>
+  </button>
+</div>
+
+<div class="form-container">
+  <form [formGroup]="form" (ngSubmit)="enableJenkins()">
+    <mat-form-field appearance="fill">
+      <mat-label>Select Rule File</mat-label>
+      <mat-select formControlName="selectedRuleFile">
+        <mat-option *ngFor="let ruleFile of ruleFiles" [value]="ruleFile">
+          {{ ruleFile }}
+        </mat-option>
+      </mat-select>
+      <mat-icon>git_branch</mat-icon>
+    </mat-form-field>
+
+    <button mat-raised-button class="submitBtn" type="submit" color="primary">
+      Submit
+    </button>
+
+  </form>
+</div>
+

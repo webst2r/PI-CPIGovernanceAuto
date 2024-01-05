@@ -110,6 +110,7 @@
     "packages": "Packages",
     "credentials": "Credentials",
     "repositories": "Repositories",
+    "rules": "Rules",
     "logout": "Logout"
   }
 }

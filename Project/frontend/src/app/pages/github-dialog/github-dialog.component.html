@@ -1,0 +1,27 @@
+<div class="header-container">
+  <i class="fab fa-github"></i>
+  <h2><span>{{ 'package.enable_github' | translate }}</span></h2>
+  <button class="go-back-button" (click)="closeDialog()">
+    <i class="fa fa-window-close" aria-hidden="true"></i>
+  </button>
+</div>
+
+<div class="form-container">
+  <form [formGroup]="form" (ngSubmit)="enableGithub()">
+    <mat-form-field appearance="fill">
+      <mat-label>Select Branch</mat-label>
+      <mat-select formControlName="selectedBranch">
+        <mat-option *ngFor="let branch of branches" [value]="branch">
+          {{ branch }}
+        </mat-option>
+      </mat-select>
+      <mat-icon>git_branch</mat-icon>
+    </mat-form-field>
+
+    <button mat-raised-button class="submitBtn" type="submit" color="primary">
+      Submit
+    </button>
+
+  </form>
+</div>
+

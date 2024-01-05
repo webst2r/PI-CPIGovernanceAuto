@@ -18,7 +18,7 @@ export class FlowDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.dialogRef.updateSize('80%', '80%');
+    this.dialogRef.updateSize('50%', '50%');
 
     // Check if data is available
     if (this.data && this.data.name) {

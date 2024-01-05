@@ -11,6 +11,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { PackageDetailService, PackageDetails, FlowElement } from '../../services/package-detail.service';
 import {TranslateModule} from "@ngx-translate/core";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {GithubDialogComponent} from "../github-dialog/github-dialog.component";
+import {JenkinsDialogComponent} from "../jenkins-dialog/jenkins-dialog.component";
 
 @Component({
   selector: 'app-package-detail',
@@ -119,33 +121,32 @@ export class PackageDetailComponent implements OnInit {
     );
   }
 
+  openGithub(element: FlowElement) {
+    const dialogRef = this.dialog.open(GithubDialogComponent, {
+      data: {
+        flowElement: element, // Pass the flow element directly
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The GitHub dialog was closed');
+    });
+  }
+
+  openJenkins(element: FlowElement) {
+    const dialogRef = this.dialog.open(JenkinsDialogComponent, {
+      data: {
+        flowElement: element, // Pass the flow element directly
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The Jenkins dialog was closed');
+    });
+  }
+
   goBack() {
     this.router.navigate(['/packages']);
-  }
-
-  enableJenkins(element: FlowElement) {
-    let path = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project\\backend\\file.xml";
-    this.packageDetailService.enableJenkins(element.name, path).subscribe(
-      (response) => {
-        console.log('Jenkins enabled successfully:', response);
-        this.showSuccessToast('Jenkins enabled successfully');
-      },
-      (error) => {
-        console.error('Error enabling Jenkins for the flow:', error);
-      }
-    );
-  }
-
-  enableGithub(element: FlowElement) {
-    this.packageDetailService.enableGithub(element.name, element.version).subscribe(
-      (response) => {
-        console.log('Github enabled successfully');
-        this.showSuccessToast('Github enabled successfully');
-      },
-      (error) => {
-        console.error('Error enabling Github for the flow:', error);
-      }
-    );
   }
 
   showSuccessToast(message: string): void {

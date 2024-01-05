@@ -110,6 +110,7 @@
     "packages": "Pacotes",
     "credentials": "Credenciais",
     "repositories": "Repositórios",
+    "rules": "Regras",
     "logout": "Sair"
   }
 }
