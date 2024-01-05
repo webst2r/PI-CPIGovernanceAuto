@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { PackageDetailService, PackageDetails, FlowElement } from '../../services/package-detail.service';
 import {TranslateModule} from "@ngx-translate/core";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {GithubDialogComponent} from "../github-dialog/github-dialog.component";
 
 @Component({
   selector: 'app-package-detail',
@@ -119,10 +120,6 @@ export class PackageDetailComponent implements OnInit {
     );
   }
 
-  goBack() {
-    this.router.navigate(['/packages']);
-  }
-
   enableJenkins(element: FlowElement) {
     let path = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project\\backend\\file.xml";
     this.packageDetailService.enableJenkins(element.name, path).subscribe(
@@ -136,16 +133,36 @@ export class PackageDetailComponent implements OnInit {
     );
   }
 
-  enableGithub(element: FlowElement) {
-    this.packageDetailService.enableGithub(element.name, element.version).subscribe(
-      (response) => {
-        console.log('Github enabled successfully');
-        this.showSuccessToast('Github enabled successfully');
+  openGithub(element: FlowElement) {
+    const dialogRef = this.dialog.open(GithubDialogComponent, {
+      data: {
+        flowElement: element, // Pass the flow element directly
       },
-      (error) => {
-        console.error('Error enabling Github for the flow:', error);
-      }
-    );
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The GitHub dialog was closed');
+    });
+  }
+
+  /*
+
+    enableGithub(element: FlowElement) {
+      this.packageDetailService.enableGithub(element.name, element.version).subscribe(
+        (response) => {
+          console.log('Github enabled successfully');
+          this.showSuccessToast('Github enabled successfully');
+        },
+        (error) => {
+          console.error('Error enabling Github for the flow:', error);
+        }
+      );
+    }
+
+   */
+
+  goBack() {
+    this.router.navigate(['/packages']);
   }
 
   showSuccessToast(message: string): void {
