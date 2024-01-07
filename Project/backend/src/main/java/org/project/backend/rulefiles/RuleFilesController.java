@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/credentials/rule-files")
+@RequestMapping("/api/rulefiles")
 @RequiredArgsConstructor
 public class RuleFilesController {
 
@@ -38,10 +38,16 @@ public class RuleFilesController {
                 return new ResponseEntity<>(ruleFile.getFileContent(), headers, HttpStatus.OK);
         }
 
-        @GetMapping
+        @GetMapping("/all")
         public ResponseEntity<List<RuleFile>> getAllRuleFiles() {
                 List<RuleFile> ruleFiles = ruleFilesService.getAllRuleFiles();
                 return ResponseEntity.ok(ruleFiles);
+        }
+
+        @GetMapping("/exists/{fileName}")
+        public ResponseEntity<Boolean> checkFileExists(@PathVariable String fileName) {
+                boolean fileExists = ruleFilesService.doesFileExist(fileName);
+                return ResponseEntity.ok(fileExists);
         }
 
 }

@@ -26,4 +26,8 @@ public class RuleFilesService {
     public List<RuleFile> getAllRuleFiles() {
         return ruleFileRepository.findAll();
     }
+
+    public boolean doesFileExist(String fileName) {
+        return ruleFileRepository.getByFileName(fileName).isPresent();
+    }
 }

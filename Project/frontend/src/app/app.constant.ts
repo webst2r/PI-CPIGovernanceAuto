@@ -39,6 +39,12 @@ export class AppConstant {
         DELETE:'repositories/github/delete',
         BRANCHES: 'repositories/github/branches'
       }
+    },
+    RULEFILES: {
+      CREATE: 'rulefiles/save',
+      UPDATE: 'rulefiles/update',
+      DELETE: 'rulefiles/delete',
+      CHECK_EXISTENCE: 'rulefiles/exists',
     }
   }
 

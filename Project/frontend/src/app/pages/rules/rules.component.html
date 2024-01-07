@@ -1,16 +1,19 @@
-<h1>Rules</h1>
+<h1>{{"rules.rules" | translate}}</h1>
 
-<form [formGroup]="ruleFileForm" (ngSubmit)="onSubmit()">
-  <div class="file-input-container">
-    <label for="file">Upload Rule File:</label>
-    <div class="file-input">
-      <input type="file" id="file" name="file" (change)="onFileChange($event)" />
-      <span class="file-icon"><i class="fas fa-upload"></i></span> <!-- Font Awesome file icon -->
-    </div>
-    <div class="error-message" *ngIf="ruleFileForm.get('file')?.invalid && ruleFileForm.get('file')?.touched">
-      Please choose a rule file.
-    </div>
-  </div>
+<mat-tab-group class="rules-container" dynamicHeight>
+  <mat-tab label="Rule File">
+    <ng-template mat-tab-label>
+      <i class="fas fa-file-alt" style="margin-right: 8px;"></i>
+      <span>Create new Rule</span>
+    </ng-template>
+    <app-rulefiles></app-rulefiles>
+  </mat-tab>
+  <mat-tab label="All Rules">
+    <ng-template mat-tab-label>
+      <i class="fas fa-file-alt" style="margin-right: 8px;"></i>
+      <span>{{"rules.all_rules" | translate}}</span>
+    </ng-template>
+    <app-all-rule-files></app-all-rule-files>
+  </mat-tab>
+</mat-tab-group>
 
-  <button type="submit" [disabled]="ruleFileForm.invalid">Upload</button>
-</form>

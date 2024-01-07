@@ -124,7 +124,7 @@ export class PackageDetailComponent implements OnInit {
   openGithub(element: FlowElement) {
     const dialogRef = this.dialog.open(GithubDialogComponent, {
       data: {
-        flowElement: element, // Pass the flow element directly
+        flowElement: element,
       },
     });
 
@@ -136,7 +136,7 @@ export class PackageDetailComponent implements OnInit {
   openJenkins(element: FlowElement) {
     const dialogRef = this.dialog.open(JenkinsDialogComponent, {
       data: {
-        flowElement: element, // Pass the flow element directly
+        flowElement: element,
       },
     });
 
