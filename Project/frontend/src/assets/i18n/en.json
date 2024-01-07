@@ -104,6 +104,10 @@
       "confirmation_delete": "Are you sure you want to delete the Github repository?"
     }
   },
+  "rules": {
+    "rules": "Rules",
+    "all_rules": "All Rules"
+  },
   "side_nav": {
     "login": "Login",
     "home": "Home",

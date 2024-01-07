@@ -1,0 +1,19 @@
+<form [formGroup]="ruleFileForm" (ngSubmit)="onSubmit()" (drop)="onDropFile($event)" (dragover)="onDragOver($event)">
+  <div class="file-input-container">
+    <label for="file">Upload Rule File:</label>
+    <div class="file-input" (click)="fileInput.click()">
+      <input type="file" id="file" name="file" #fileInput style="display: none" (change)="onFileChange($event)" />
+      <span class="file-icon" (drop)="onDropFile($event)" (dragover)="onDragOver($event)">
+        <i class="fas fa-upload"></i>
+      </span>
+    </div>
+    <div class="selected-file" *ngIf="ruleFileForm.get('file')?.value">
+      Selected File: {{ ruleFileForm.get('file')?.value?.name || 'No file selected' }}
+    </div>
+    <div class="error-message" *ngIf="ruleFileForm.get('file')?.invalid && ruleFileForm.get('file')?.touched">
+      Please choose a rule file.
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="ruleFileForm.invalid">Upload</button>
+</form>
