@@ -19,19 +19,22 @@ pipeline {
         stage('CPIlint') {
             steps {
                 echo 'CPIlint'
-                sh '/cp/cpilint-1.0.4/bin/cpilint -help'
+                sh "/cp/cpilint-1.0.4/bin/cpilint -rules /files/test.xml -files /files/firstflow.zip"
             }
         }
         stage('CodeNarc') {
             steps {
                 echo 'CodeNarc'
-                sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -help'
+                sh 'mkdir /files/unzip_flow'
+                sh 'unzip /files/firstflow.zip -d /files/unzip_flow'
+                sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/rules.groovy -basedir=/files/unzip_flow/src/main/resources/script'
+                sh 'rm -rf /files/unzip_flow'
             }
         }
         stage('Dependency check') {
             steps {
                 echo 'Dependency check'
-                sh '/cp/dependency-check/bin/dependency-check.sh -help'
+                //sh '/cp/dependency-check/bin/dependency-check.sh -scan path -project name'
             }
         }
     }
@@ -41,4 +44,5 @@ pipeline {
 </definition>
 <triggers/>
 <disabled>false</disabled>
-</flow-definition>
+</flow-definition>false</disabled>
+</flow-definition>>
