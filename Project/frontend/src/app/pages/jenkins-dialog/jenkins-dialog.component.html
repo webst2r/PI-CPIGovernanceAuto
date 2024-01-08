@@ -11,12 +11,13 @@
     <mat-form-field appearance="fill">
       <mat-label>Select Rule File</mat-label>
       <mat-select formControlName="selectedRuleFile">
-        <mat-option *ngFor="let ruleFile of ruleFiles" [value]="ruleFile">
-          {{ ruleFile }}
+        <mat-option *ngFor="let ruleFile of ruleFiles" [value]="ruleFile.fileName">
+          {{ ruleFile.fileName }}
         </mat-option>
       </mat-select>
-      <mat-icon>git_branch</mat-icon>
+      <mat-icon>file</mat-icon>
     </mat-form-field>
+
 
     <button mat-raised-button class="submitBtn" type="submit" color="primary">
       Submit

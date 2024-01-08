@@ -84,14 +84,14 @@ public class GithubRepositoryService {
         var opt = githubRepositoryRepository.findByCredentials(credentials);
         return opt.orElse(null);
     }
-    private static boolean isBranchExist(String branchName, String apiUrl, String token) throws IOException, InterruptedException {
+    private static boolean branchExists(String branchName, String apiUrl, String token) throws IOException, InterruptedException {
         String url = apiUrl + "/git/refs/heads/" + branchName;
         HttpResponse<String> response = sendGetRequest(url, token);
         return response.statusCode() == 200;
     }
 
     private static void createBranch(String branchName, String apiUrl, String token) throws IOException, InterruptedException {
-        // Obtr o SHA da branch padrão (por exemplo, "main")
+        // Obter o SHA da branch padrão (por exemplo, "main")
         String defaultBranch = getDefaultBranchSha(apiUrl, token);
         String defaultBranchSha = getLatestCommitSha(defaultBranch, apiUrl, token);
         System.out.println("default branch sha " + defaultBranchSha);
@@ -110,14 +110,7 @@ public class GithubRepositoryService {
     }
 
     private static String getDefaultBranchSha(String apiUrl, String token) throws IOException, InterruptedException {
-        String url = apiUrl;
-
-        HttpResponse<String> response = sendGetRequest(url, token);
-        System.out.println(response);
-        System.out.println(response.body());
-        System.out.println(response.headers());
-        // Extrair o SHA da branch padrão da resposta JSON
-        // Extrair o nome da branch padrão da resposta JSON
+        HttpResponse<String> response = sendGetRequest(apiUrl, token);
         Pattern pattern = Pattern.compile("\"default_branch\":\"(\\w+)\"");
         Matcher matcher = pattern.matcher(response.body());
 
@@ -194,7 +187,7 @@ public class GithubRepositoryService {
 
     private static String createCommit(String treeSha, String apiUrl, String token) throws IOException, InterruptedException {
         String url = apiUrl + "/git/commits";
-        String json = "{\"message\":\"Atualizando ficheiro\",\"tree\":\"" + treeSha + "\"}";
+        String json = "{\"message\":\"File commit\",\"tree\":\"" + treeSha + "\"}";
         HttpResponse<String> response = sendPostRequest(url, json, token);
         String responseBody = response.body();
 
@@ -269,7 +262,7 @@ public class GithubRepositoryService {
             if (isTokenValid(githubApiUrl, githubToken) && isRepoValid(githubApiUrl, githubToken)) {
 
                 // 0. Verificar se a branch existe, se não existir, criar uma nova
-                if (!isBranchExist(branch, githubApiUrl, githubToken)) {
+                if (!branchExists(branch, githubApiUrl, githubToken)) {
                     System.out.println("Branch doesn't exist, creating a new one...");
                     createBranch(branch, githubApiUrl, githubToken);
                 }
@@ -306,8 +299,8 @@ public class GithubRepositoryService {
     public List<String> getAllBranches() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        List<String> secondaryBranches = new ArrayList<>();
-
+        List<String> branches = new ArrayList<>();
+        String mainBranch = "";
         if (authentication != null && authentication.isAuthenticated()) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String username = userDetails.getUsername();
@@ -317,17 +310,18 @@ public class GithubRepositoryService {
 
             // Obter as credenciais
             GithubCredentials githubCredentials = credentialsRepository.findByUserId(user.get().getId());
-            String githubToken = githubCredentials.getAccessToken();
-            String githubUsername = githubCredentials.getUsername();
 
             // Obter o repositorio associado às credenciais de github
             Optional<GithubRepository> githubRepository = githubRepositoryRepository.findByCredentials(githubCredentials);
-            secondaryBranches = githubRepository.get().getSecondaryBranches();
+            branches = githubRepository.get().getSecondaryBranches();
+            mainBranch = githubRepository.get().getMainBranch();
+            branches.add(0, mainBranch);
+
             // print every branch
-            for (String branch : secondaryBranches) {
+            for (String branch : branches) {
                 System.out.println(branch);
             }
         }
-        return secondaryBranches;
+        return branches;
     }
 }

@@ -2,19 +2,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import {AppConstant} from "../app.constant";
 
 @Injectable({
   providedIn: 'root',
 })
 export class PackageDetailService {
-  private apiUrl = 'http://localhost:9001/api/packages';
-
   constructor(private httpClient: HttpClient) {}
 
   getPackageDetails(packageId: string): Observable<PackageDetails> {
-    const apiUrl = `${this.apiUrl}/getPackage/${packageId}`;
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.GET_PACKAGE +`/${packageId}`;
 
-    return this.httpClient.get(apiUrl, { responseType: 'json' }).pipe(
+    return this.httpClient.get(endpoint, { responseType: 'json' }).pipe(
       map((response: any) => {
         if (response) {
           return {
@@ -81,9 +80,9 @@ export class PackageDetailService {
 
 
   getPackageFlows(packageId: string): Observable<FlowElement[]> {
-    const apiUrl = `${this.apiUrl}/getPackageFlows/${packageId}`;
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.GET_PACKAGE_FLOWS +`/${packageId}`;
 
-    return this.httpClient.get(apiUrl, { responseType: 'json' }).pipe(
+    return this.httpClient.get(endpoint, { responseType: 'json' }).pipe(
       map((response: any) =>
         response.results.map((result: any, index: number) => ({
           position: index + 1,
@@ -101,15 +100,16 @@ export class PackageDetailService {
   }
 
   downloadFlow(flowId: string, flowVersion: string): Observable<Blob> {
-    const apiUrl = `${this.apiUrl}/downloadFlow/${flowId}/${flowVersion}`;
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.DOWNLOAD_FLOW + `/${flowId}/${flowVersion}`;
 
-    return this.httpClient.get(apiUrl, { responseType: 'blob' });
+    return this.httpClient.get(endpoint, { responseType: 'blob' });
   }
 
-  enableJenkins(jobName: string, path: string): Observable<string> {
-    let pathUsed = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project\\backend\\file.xml"
-    const apiUrl = `${this.apiUrl}/createAndExecutePipeline/${jobName}?path=${encodeURIComponent(pathUsed)}`;
-    return this.httpClient.get(apiUrl, { responseType: 'text' }).pipe(
+  enableJenkins(jobName: string): Observable<string> {
+    let path = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project\\backend\\file.xml"
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.CREATE_EXECUTE_PIPELINE +`/${jobName}?path=${encodeURIComponent(path)}`;
+
+    return this.httpClient.get(endpoint, { responseType: 'text' }).pipe(
       map((response: any) => response),
       catchError((error) => {
         console.error('Error enabling Jenkins for the flow:', error);
@@ -119,9 +119,9 @@ export class PackageDetailService {
   }
 
   enableGithub(flowId: string, flowVersion: string, branch: string): Observable<string> {
-    const apiUrl = `${this.apiUrl}/enableGithub/${flowId}/${flowVersion}/${branch}`;
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.ENABLE_GITHUB + `/${flowId}/${flowVersion}/${branch}`;
 
-    return this.httpClient.get(apiUrl, { responseType: 'text' }).pipe(
+    return this.httpClient.get(endpoint, { responseType: 'text' }).pipe(
       map((response: any) => response),
       catchError((error) => {
         console.error('Error enabling Github for the flow:', error);
@@ -129,23 +129,6 @@ export class PackageDetailService {
       })
     );
   }
-
-  /*
-    enableJenkins(element: FlowElement) {
-    let path = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project\\backend\\file.xml";
-    this.packageDetailService.enableJenkins(element.name, path).subscribe(
-      (response) => {
-        console.log('Jenkins enabled successfully:', response);
-        this.showSuccessToast('Jenkins enabled successfully');
-      },
-      (error) => {
-        console.error('Error enabling Jenkins for the flow:', error);
-      }
-    );
-  }
-   */
-
-
 }
 
 export interface PackageDetails {
