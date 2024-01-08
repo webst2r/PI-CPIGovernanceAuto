@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import {AppConstant} from "../app.constant";
+import {PackageDetails} from "../models/package-details";
+import {FlowElement} from "../models/flows";
 
 @Injectable({
   providedIn: 'root',
@@ -129,30 +131,4 @@ export class PackageDetailService {
       })
     );
   }
-}
-
-export interface PackageDetails {
-  createdBy: string;
-  creationDate: string;
-  description: string;
-  id: string;
-  mode: string;
-  modifiedBy: string;
-  modifiedDate: string;
-  name: string;
-  partnerContent: boolean;
-  resourceId: string;
-  shortText: string;
-  supportedPlatform: string;
-  updateAvailable: boolean;
-  vendor: string;
-  version: string;
-}
-
-export interface FlowElement {
-  position: number;
-  name: string;
-  version: string;
-  modifiedBy: string;
-  modifiedDate: string;
 }
