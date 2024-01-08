@@ -10,4 +10,8 @@ RUN curl -L https://github.com/mwittrock/cpilint/releases/download/v1.0.4/cpilin
 RUN unzip "$CLASSPATH/cpilint.zip" -d "$CLASSPATH"
 RUN chmod +x "$CLASSPATH/cpilint-1.0.4/bin/cpilint"
 
+RUN curl -L https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.8/dependency-check-9.0.8-release.zip -o "$CLASSPATH/dependency-check.zip"
+RUN unzip "$CLASSPATH/dependency-check.zip" -d "$CLASSPATH"
+RUN chmod +x "$CLASSPATH/dependency-check/bin/dependency-check.sh"
+
 USER jenkins
