@@ -8,8 +8,13 @@ export class AppConstant {
       LOGIN: 'auth/authenticate',
       REGISTER: 'auth/register',
     },
-    FLOW_DETAILS: {
-      GET_FLOW: 'api/packages/getFlow',
+    PACKAGES: {
+      GET_PACKAGES: 'packages/getPackages',
+      GET_PACKAGE: 'packages/getPackage',
+      GET_PACKAGE_FLOWS: 'packages/getPackageFlows',
+      DOWNLOAD_FLOW: 'packages/downloadFlow',
+      CREATE_EXECUTE_PIPELINE: 'packages/createAndExecutePipeline',
+      ENABLE_GITHUB: 'packages/enableGithub',
     },
     CREDENTIALS: {
       SAP_CPI: {
@@ -44,6 +49,7 @@ export class AppConstant {
       CREATE: 'rulefiles/save',
       UPDATE: 'rulefiles/update',
       DELETE: 'rulefiles/delete',
+      ALL: 'rulefiles/all',
       CHECK_EXISTENCE: 'rulefiles/exists',
     }
   }

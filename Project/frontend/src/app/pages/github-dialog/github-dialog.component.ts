@@ -35,10 +35,8 @@ export class GithubDialogComponent implements OnInit {
   ngOnInit() {
     this.dialogRef.updateSize('50%', '50%');
 
-    // fetch branches from the backend
     this.fetchBranches();
 
-    // Access the flow element from the dialog data
     if (this.data && this.data.flowElement) {
       this.flowElement = this.data.flowElement;
     }
@@ -56,7 +54,6 @@ export class GithubDialogComponent implements OnInit {
   ) {}
 
   fetchBranches() {
-    // Fetch branches from the backend
     this.githubRepositoryService.getBranches().subscribe(
       (branches) => {
         this.branches = branches;

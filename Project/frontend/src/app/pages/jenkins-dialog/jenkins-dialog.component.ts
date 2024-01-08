@@ -1,4 +1,4 @@
-import {Component, Inject, inject} from '@angular/core';
+import {Component, Inject, inject, OnInit} from '@angular/core';
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {FlowElement, PackageDetailService} from "../../services/package-detail.service";
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -10,6 +10,8 @@ import {MatOptionModule} from "@angular/material/core";
 import {MatSelectModule} from "@angular/material/select";
 import {NgForOf} from "@angular/common";
 import {TranslateModule} from "@ngx-translate/core";
+import {RuleFilesService} from "../../services/rule-files.service";
+import {RuleFile} from "../../models/rule-file";
 
 @Component({
   selector: 'app-jenkins-dialog',
@@ -28,18 +30,29 @@ import {TranslateModule} from "@ngx-translate/core";
   templateUrl: './jenkins-dialog.component.html',
   styleUrl: './jenkins-dialog.component.scss'
 })
-export class JenkinsDialogComponent {
+export class JenkinsDialogComponent implements OnInit{
   private snackBar = inject(MatSnackBar);
-  ruleFiles: string[] = ['RuleFile1', 'RuleFile2', 'RuleFile3'];
+  ruleFiles: RuleFile[] = [];
   flowElement!: FlowElement | null;
 
   ngOnInit() {
     this.dialogRef.updateSize('50%', '50%');
 
-    const initialRuleFile = this.ruleFiles[0]; // You can set the initial branch as needed
-    this.form.patchValue({ selectedRuleFile: initialRuleFile });
+    // Fetch rule files from the backend
+    this.ruleFilesService.getAllRuleFiles().subscribe(
+      (ruleFiles) => {
+        this.ruleFiles = ruleFiles;
+        console.log('Rule files:', this.ruleFiles);
+        if (this.ruleFiles.length > 0) {
+          const initialRuleFile = this.ruleFiles[0].fileName;
+          this.form.patchValue({ selectedRuleFile: initialRuleFile });
+        }
+      },
+      (error) => {
+        console.error('Error fetching rule files:', error);
+      }
+    );
 
-    // Access the flow element from the dialog data
     if (this.data && this.data.flowElement) {
       this.flowElement = this.data.flowElement;
     }
@@ -54,6 +67,7 @@ export class JenkinsDialogComponent {
     public dialogRef: MatDialogRef<JenkinsDialogComponent>,
     private formBuilder: FormBuilder,
     private packageDetailService: PackageDetailService,
+    private ruleFilesService: RuleFilesService,
   ) {}
 
   showSuccessToast(message: string): void {
@@ -72,12 +86,11 @@ export class JenkinsDialogComponent {
 
   enableJenkins() {
     if (this.flowElement) {
-      const selectedBranch = this.form.value.selectedBranch;
-      console.log('Selected Branch:', selectedBranch);
+      const selectedRuleFile = this.form.value.selectedRuleFile;
+      console.log('Selected Rule File:', selectedRuleFile);
 
       this.packageDetailService.enableJenkins(
         this.flowElement.name,
-        this.flowElement.version,
 //        selectedRuleFile
       ).subscribe(
         (response) => {
