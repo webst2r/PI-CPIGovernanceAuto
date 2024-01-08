@@ -34,9 +34,22 @@ public class JenkinsPipelineUpdater {
     public static void main(String[] args) {
         // Exemplo de uso da função
         String filePath = "file.xml";
-        String patternString = "sh \"cpilint -rules (.*?) -files (.*?)\"";
-        String placeString = "sh \"cpilint -rules novo/caminho -files caminho\"";
-
-        updateAndWriteToFile(patternString,filePath, placeString);
+        String patternString_cpi = "sh \"cpilint -rules (.*?) -files (.*?)\"";
+        String placeString_cpi = "sh \"cpilint -rules novo/caminho -files caminho\"";
+	//CPI
+        updateAndWriteToFile(patternString_cpi,filePath, placeString_cpi);
+        //codenarc
+        
+        String patternString_codenarc1 = "sh 'unzip /files/firstflow.zip -d /files/(.*?)'";
+        String placeString_codenarc1= "sh 'unzip /files/firstflow.zip -d /files/novo'";
+        
+        updateAndWriteToFile(patternString_codenarc1,filePath, placeString_codenarc1);
+        
+        String patternString_codenarc2 = "sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/(.*?) -basedir=/files/unzip_flow/(.*?)'";
+        String placeString_codenarc2 = "sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/novo -basedir=/files/unzip_flow/novo'";
+        
+        updateAndWriteToFile(patternString_codenarc2,filePath, placeString_codenarc2);
+        
+        
     }
 }
