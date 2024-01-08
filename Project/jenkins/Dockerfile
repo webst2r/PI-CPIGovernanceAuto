@@ -3,6 +3,7 @@ FROM jenkins/jenkins:lts
 ENV CLASSPATH /cp
 
 USER root
+
 RUN mkdir "$CLASSPATH"
 RUN curl https://repo1.maven.org/maven2/org/codenarc/CodeNarc/3.3.0/CodeNarc-3.3.0-all.jar -o "$CLASSPATH/codenarc.jar"
 
