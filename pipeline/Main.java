@@ -9,7 +9,7 @@ import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) {
-        JenkinsPipeline jenkinsPipeline = new JenkinsPipeline("11ea59bb05f9b04e37f2b0e9c904117216", "admin");
+        JenkinsPipeline jenkinsPipeline = new JenkinsPipeline("11692be384df4a3d7b618c019fb6411d88", "admin");
         jenkinsPipeline.create("Hello", "file.xml");
         jenkinsPipeline.execute("Hello");
     }
