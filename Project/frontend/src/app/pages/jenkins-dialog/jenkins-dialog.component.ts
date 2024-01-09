@@ -1,6 +1,6 @@
 import {Component, Inject, inject, OnInit} from '@angular/core';
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {FlowElement, PackageDetailService} from "../../services/package-detail.service";
+import {PackageDetailService} from "../../services/package-detail.service";
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {MatButtonModule} from "@angular/material/button";
@@ -12,6 +12,7 @@ import {NgForOf} from "@angular/common";
 import {TranslateModule} from "@ngx-translate/core";
 import {RuleFilesService} from "../../services/rule-files.service";
 import {RuleFile} from "../../models/rule-file";
+import {FlowElement} from "../../models/flows";
 
 @Component({
   selector: 'app-jenkins-dialog',

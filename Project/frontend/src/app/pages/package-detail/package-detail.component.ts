@@ -8,11 +8,13 @@ import { FlowDetailsComponent } from '../flow-details/flow-details.component';
 import { saveAs } from 'file-saver';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
-import { PackageDetailService, PackageDetails, FlowElement } from '../../services/package-detail.service';
+import { PackageDetailService } from '../../services/package-detail.service';
 import {TranslateModule} from "@ngx-translate/core";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {GithubDialogComponent} from "../github-dialog/github-dialog.component";
 import {JenkinsDialogComponent} from "../jenkins-dialog/jenkins-dialog.component";
+import {FlowElement} from "../../models/flows";
+import {PackageDetails} from "../../models/package-details";
 
 @Component({
   selector: 'app-package-detail',
