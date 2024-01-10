@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RuleFilesService {
+public class RuleFileService {
 
     private final RuleFileRepository ruleFileRepository;
 
@@ -22,6 +22,12 @@ public class RuleFilesService {
         return ruleFileRepository.findById(fileId)
                 .orElseThrow(() -> new ResourceNotFoundException("RuleFile", "id", fileId));
     }
+
+    public RuleFile getRuleFileByName(String fileName) {
+        return (RuleFile) ruleFileRepository.getByFileName(fileName)
+                .orElseThrow(() -> new ResourceNotFoundException("RuleFile", "fileName", fileName));
+    }
+
 
     public List<RuleFile> getAllRuleFiles() {
         return ruleFileRepository.findAll();

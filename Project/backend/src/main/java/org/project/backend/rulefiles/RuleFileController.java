@@ -12,9 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/rulefiles")
 @RequiredArgsConstructor
-public class RuleFilesController {
+public class RuleFileController {
 
-        public final RuleFilesService ruleFilesService;
+        public final RuleFileService ruleFilesService;
 
         @PostMapping("/save")
         public ResponseEntity<RuleFile> uploadRuleFile(@RequestParam("file") MultipartFile file) throws IOException {
