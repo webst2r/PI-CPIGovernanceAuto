@@ -107,9 +107,8 @@ export class PackageDetailService {
     return this.httpClient.get(endpoint, { responseType: 'blob' });
   }
 
-  enableJenkins(jobName: string): Observable<string> {
-    let path = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project\\backend\\file.xml"
-    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.CREATE_EXECUTE_PIPELINE +`/${jobName}?path=${encodeURIComponent(path)}`;
+  enableJenkins(jobName: string, ruleFileName: string): Observable<string> {
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.CREATE_EXECUTE_PIPELINE +`/${jobName}/${ruleFileName}`;
 
     return this.httpClient.get(endpoint, { responseType: 'text' }).pipe(
       map((response: any) => response),

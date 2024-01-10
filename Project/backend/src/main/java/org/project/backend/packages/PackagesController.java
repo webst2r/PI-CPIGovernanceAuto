@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -34,13 +36,24 @@ public class PackagesController {
         this.jenkinsService = jenkinsService;
     }
 
-    @GetMapping("/createAndExecutePipeline/{jobName}")
+    @GetMapping("/createAndExecutePipeline/{jobName}/{ruleFileName}")
     public ResponseEntity<String> enableJenkins(
             @PathVariable("jobName") String jobName,
-            @RequestParam("path") String path) {
+            @PathVariable("ruleFileName") String ruleFileName)
+    {
         try {
+            System.out.println("Rule File Name: " + ruleFileName);
+
+            String relativePath = "src/main/java/org/project/backend/jenkins/resources/file.xml";
+            Path projectPath = Paths.get(System.getProperty("user.dir"));
+            Path pathf = projectPath.resolve(relativePath);
+            String filePath = pathf.toString();
+
+            // Execute Update
+            jenkinsService.executeUpdateJenkinsFile(filePath, ruleFileName);
+
             // Create Jenkins job
-            jenkinsService.create(jobName, path);
+            jenkinsService.create(jobName, filePath);
 
             // Execute Jenkins job
             jenkinsService.execute(jobName);
@@ -51,6 +64,8 @@ public class PackagesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create and execute pipeline");
         }
     }
+
+
 
     @GetMapping("/getPackages")
     public ResponseEntity<PackagesResponseDTO> getPackages() throws JsonProcessingException {
