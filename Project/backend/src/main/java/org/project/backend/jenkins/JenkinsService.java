@@ -3,6 +3,7 @@ package org.project.backend.jenkins;
 import lombok.RequiredArgsConstructor;
 import org.project.backend.credential.jenkins.JenkinsCredentials;
 import org.project.backend.credential.jenkins.JenkinsCredentialsRepository;
+import org.project.backend.repository.github.GithubRepositoryService;
 import org.project.backend.rulefiles.RuleFile;
 import org.project.backend.rulefiles.RuleFileRepository;
 import org.project.backend.rulefiles.RuleFileService;
@@ -35,6 +36,8 @@ public class JenkinsService {
     private final RuleFileService ruleFileService;
 
     private final JenkinsCredentialsRepository credentialsRepository;
+
+    private final GithubRepositoryService githubRepositoryService;
 
     public void create(String jobName, String path) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -153,15 +156,19 @@ public class JenkinsService {
         }
     }
 
-    public void executeUpdateJenkinsFile(String jenkinsXmlPath, String ruleFileName) {
+    public void executeUpdateJenkinsFile(String jenkinsXmlPath, String ruleFileName, String githubFileName) throws IOException, InterruptedException {
         String relativePath = "src/main/java/org/project/backend/jenkins/temp";
         Path projectPath = Paths.get(System.getProperty("user.dir"));
         Path path = projectPath.resolve(relativePath);
+        String savePath = path.toString();
+        savePath += "/";
         String ruleFilePath = path.toString();
 
+        githubFileName += ".zip";
 
         // Get the rule file content from the database
         Optional<RuleFile> optionalRuleFile = Optional.ofNullable(ruleFileService.getRuleFileByName(ruleFileName));
+
         if (optionalRuleFile.isPresent()) {
             RuleFile ruleFile = optionalRuleFile.get();
 
@@ -176,22 +183,25 @@ public class JenkinsService {
             }
 
             // CPI Lint
-
-            String patternString_cpi = "sh '/cp/cpilint-1.0.4/bin/cpilint -rules /files/(.*?) -files /files/(.*?)'";
-            String placeString_cpi = "sh '/cp/cpilint-1.0.4/bin/cpilint -rules /files/novo -files /files/novo'";
+            String patternString_cpi = "sh '/cp/cpilint-1.0.4/bin/cpilint -org.project.backend.jenkins.temp.rules /files/(.*?) -files /files/(.*?)'";
+            String placeString_cpi = "sh '/cp/cpilint-1.0.4/bin/cpilint -org.project.backend.jenkins.temp.rules /files/" + ruleFileName + " -files /files/" + githubFileName + "'";
             updateJenkinsFile(patternString_cpi, jenkinsXmlPath, placeString_cpi);
 
 
             // Codenarc
-            String patternString_codenarc1 = "sh 'unzip /files/firstflow.zip -d /files/(.*?)'";
-            String placeString_codenarc1 = "sh 'unzip /files/firstflow.zip -d /files/novo'";
+            String patternString_codenarc1 = "sh 'unzip /files/(.*?) -d /files/unzip_flow'";
+            String placeString_codenarc1 = "sh 'unzip /files/" +  githubFileName +  " -d /files/unzip_flow'";
             updateJenkinsFile(patternString_codenarc1, jenkinsXmlPath, placeString_codenarc1);
 
-            String patternString_codenarc2 = "sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/(.*?) -basedir=/files/unzip_flow/(.*?)'";
-            String placeString_codenarc2 = "sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/novo -basedir=/files/unzip_flow/novo'";
+            String patternString_codenarc2 = "sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/(.*?) -basedir=/files/unzip_flow/src/main/resources/script'";
+            String placeString_codenarc2 = "sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/" + "rules.groovy" + " -basedir=/files/unzip_flow/src/main/resources/script'";
             updateJenkinsFile(patternString_codenarc2, jenkinsXmlPath, placeString_codenarc2);
         } else {
             System.out.println("RuleFile not found in the database.");
         }
+
+
+        // Get the IFlow zip from Github
+        githubRepositoryService.downloadFileFromGitHub(githubFileName,savePath);
     }
 }

@@ -49,14 +49,16 @@ public class PackagesController {
             Path pathf = projectPath.resolve(relativePath);
             String filePath = pathf.toString();
 
+            String branch = "main";
+
             // Execute Update
-            jenkinsService.executeUpdateJenkinsFile(filePath, ruleFileName);
+            jenkinsService.executeUpdateJenkinsFile(filePath, ruleFileName, jobName);
 
             // Create Jenkins job
-            jenkinsService.create(jobName, filePath);
+            //jenkinsService.create(jobName, filePath);
 
             // Execute Jenkins job
-            jenkinsService.execute(jobName);
+            //jenkinsService.execute(jobName);
 
             return ResponseEntity.ok("Pipeline created and executed successfully!");
         } catch (Exception e) {

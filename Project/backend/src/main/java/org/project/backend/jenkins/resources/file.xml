@@ -19,7 +19,7 @@ pipeline {
         stage('CPIlint') {
             steps {
                 echo 'CPIlint'
-                sh '/cp/cpilint-1.0.4/bin/cpilint -rules /files/novo -files /files/novo'
+                sh '/cp/cpilint-1.0.4/bin/cpilint -org.project.backend.jenkins.temp.rules /files/test.xml -files /files/my_integration_flow_pi.zip'
             }
         }
         stage('CodeNarc') {
