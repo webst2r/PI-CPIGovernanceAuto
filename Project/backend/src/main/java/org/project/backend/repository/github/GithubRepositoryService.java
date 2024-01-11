@@ -16,8 +16,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -26,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -324,4 +329,64 @@ public class GithubRepositoryService {
         }
         return branches;
     }
+
+    public void downloadFileFromGitHub(String fileName, String savePath) throws IOException, InterruptedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        savePath += fileName;
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+
+            // Obtain the user
+            Optional<User> user = userRepository.findByEmail(username);
+
+            // Obtain the credentials
+            GithubCredentials githubCredentials = credentialsRepository.findByUserId(user.get().getId());
+            String githubToken = githubCredentials.getAccessToken();
+            String githubUsername = githubCredentials.getUsername();
+
+            // Obtain the repository associated with the GitHub credentials
+            Optional<GithubRepository> githubRepository = githubRepositoryRepository.findByCredentials(githubCredentials);
+            String repo = githubRepository.get().getName();
+
+            // https://api.github.com/repos/{username}/{repository_name}/contents/{file_path}
+            String githubApiUrl = "https://api.github.com/repos/" + githubUsername + "/" + repo;
+
+            if (isTokenValid(githubApiUrl, githubToken) && isRepoValid(githubApiUrl, githubToken)) {
+                // Construct the URL for getting the file content from the repository
+                System.out.println("VALID TOKEN AND REPONAME");
+                String fileContentUrl = githubApiUrl + "/contents/" + fileName;
+
+                // Create an HttpRequest
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(fileContentUrl))
+                        .header("Authorization", "Bearer " + githubToken)
+                        .GET()
+                        .build();
+
+                // Create an HttpClient
+                HttpClient httpClient = HttpClient.newHttpClient();
+
+                // Send the request and handle the response
+                try {
+                    HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+                    if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+                        // Save the file locally
+                        Path targetPath = Path.of(savePath);
+                        Files.copy(response.body(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                        System.out.println("File downloaded successfully to: " + savePath);
+                    } else {
+                        System.out.println("Failed to download file. HTTP Status Code: " + response.statusCode());
+                    }
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            throw new RuntimeException("User not authenticated");
+        }
+    }
+
 }
