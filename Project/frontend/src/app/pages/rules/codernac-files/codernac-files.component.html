@@ -1,0 +1,20 @@
+<form [formGroup]="codenarcFileForm" (ngSubmit)="onSubmit()" (drop)="onDropFile($event)" (dragover)="onDragOver($event)">
+  <div class="file-input-container">
+    <label for="file"><i class="fas fa-code" style="margin-right: 8px;"></i>
+      <span>Upload Codenarc File</span></label>
+    <div class="file-input" (click)="fileInput.click()">
+      <input type="file" id="file" name="file" #fileInput style="display: none" (change)="onFileChange($event)" />
+      <span class="file-icon" (drop)="onDropFile($event)" (dragover)="onDragOver($event)">
+        <i class="fas fa-upload"></i>
+      </span>
+    </div>
+    <div class="selected-file" *ngIf="codenarcFileForm.get('file')?.value">
+      Selected File: {{ codenarcFileForm.get('file')?.value?.name || 'No file selected' }}
+    </div>
+    <div class="error-message" *ngIf="codenarcFileForm.get('file')?.invalid && codenarcFileForm.get('file')?.touched">
+      Please upload a Codenarc file
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="codenarcFileForm.invalid">Upload</button>
+</form>

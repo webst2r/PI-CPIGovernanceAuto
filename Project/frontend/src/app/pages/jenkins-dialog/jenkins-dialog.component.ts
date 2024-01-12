@@ -11,7 +11,7 @@ import {MatSelectModule} from "@angular/material/select";
 import {NgForOf} from "@angular/common";
 import {TranslateModule} from "@ngx-translate/core";
 import {RuleFilesService} from "../../services/rule-files.service";
-import {RuleFile} from "../../models/rule-file";
+import {CodenarcFile, RuleFile} from "../../models/rule-file";
 import {FlowElement} from "../../models/flows";
 
 @Component({
@@ -34,10 +34,11 @@ import {FlowElement} from "../../models/flows";
 export class JenkinsDialogComponent implements OnInit{
   private snackBar = inject(MatSnackBar);
   ruleFiles: RuleFile[] = [];
+  codenarcFiles: CodenarcFile[] = [];
   flowElement!: FlowElement | null;
 
   ngOnInit() {
-    this.dialogRef.updateSize('50%', '50%');
+    this.dialogRef.updateSize('65%', '65%');
 
     // Fetch rule files from the backend
     this.ruleFilesService.getAllRuleFiles().subscribe(
@@ -54,13 +55,29 @@ export class JenkinsDialogComponent implements OnInit{
       }
     );
 
+    // Fetch codenarc files from the backend
+    this.ruleFilesService.getAllCodenarcFiles().subscribe(
+      (codenarcFiles) => {
+        this.codenarcFiles = codenarcFiles;
+        console.log('Codenarc files:', this.codenarcFiles);
+        if (this.codenarcFiles.length > 0) {
+          const initialCodenarcFile = this.codenarcFiles[0].fileName;
+          this.form.patchValue({ selectedCodenarcFile: initialCodenarcFile });
+        }
+      },
+      (error) => {
+        console.error('Error fetching codenarc files:', error);
+      }
+    );
+
     if (this.data && this.data.flowElement) {
       this.flowElement = this.data.flowElement;
     }
   }
 
   form: FormGroup = this.formBuilder.group({
-    selectedRuleFile: [null, Validators.required]
+    selectedRuleFile: [null, Validators.required],
+    selectedCodenarcFile: [null, Validators.required]
   });
 
   constructor(
@@ -88,9 +105,11 @@ export class JenkinsDialogComponent implements OnInit{
   enableJenkins() {
     if (this.flowElement) {
       const selectedRuleFile = this.form.value.selectedRuleFile;
+      const selectedCodenarcFile = this.form.value.selectedCodenarcFile;
       console.log('Selected Rule File:', selectedRuleFile);
+      console.log('Selected Codenarc File:', selectedCodenarcFile);
 
-      this.packageDetailService.enableJenkins(this.flowElement.name, selectedRuleFile).subscribe(
+      this.packageDetailService.enableJenkins(this.flowElement.name, selectedRuleFile, selectedCodenarcFile).subscribe(
         (response) => {
           console.log('Jenkins enabled successfully');
           this.showSuccessToast('Jenkins enabled successfully');

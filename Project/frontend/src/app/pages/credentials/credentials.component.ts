@@ -4,7 +4,6 @@ import {GithubCredentialsComponent} from "./github-credentials/github-credential
 import {SapCpiComponent} from "./sap-cpi/sap-cpi.component";
 import {TranslateModule} from "@ngx-translate/core";
 import {JenkinsCredentialsComponent} from "./jenkins-credentials/jenkins-credentials.component";
-import {AllCredentialsComponent} from "./all-credentials/all-credentials.component";
 import {MatIconModule} from "@angular/material/icon";
 
 @Component({
@@ -16,7 +15,6 @@ import {MatIconModule} from "@angular/material/icon";
     SapCpiComponent,
     TranslateModule,
     JenkinsCredentialsComponent,
-    AllCredentialsComponent,
     MatIconModule
   ],
   templateUrl: './credentials.component.html',

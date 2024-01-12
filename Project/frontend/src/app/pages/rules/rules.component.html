@@ -1,13 +1,26 @@
 <h1>{{"rules.rules" | translate}}</h1>
 
 <mat-tab-group class="rules-container" dynamicHeight>
+
+  <!-- Rule files-->
   <mat-tab label="Rule File">
     <ng-template mat-tab-label>
       <i class="fas fa-file-alt" style="margin-right: 8px;"></i>
-      <span>Create new Rule</span>
+      <span>Upload New CPI Rule</span>
     </ng-template>
     <app-rulefiles></app-rulefiles>
   </mat-tab>
+
+  <!-- Codernarc files-->
+  <mat-tab label="Codenarc File">
+    <ng-template mat-tab-label>
+      <i class="fas fa-code" style="margin-right: 8px;"></i>
+      <span>Upload Codenarc File</span>
+    </ng-template>
+    <app-codernac-files></app-codernac-files>
+  </mat-tab>
+
+  <!-- All Rules -->
   <mat-tab label="All Rules">
     <ng-template mat-tab-label>
       <i class="fas fa-file-alt" style="margin-right: 8px;"></i>

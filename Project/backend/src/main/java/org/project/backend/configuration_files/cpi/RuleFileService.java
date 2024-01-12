@@ -1,4 +1,4 @@
-package org.project.backend.rulefiles;
+package org.project.backend.configuration_files.cpi;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;

@@ -3,6 +3,7 @@ import {MatTabsModule} from "@angular/material/tabs";
 import {AllRuleFilesComponent} from "./all-rule-files/all-rule-files.component";
 import {RuleFilesComponent} from "./rule-files/rule-files.component";
 import {TranslateModule} from "@ngx-translate/core";
+import {CodernacFilesComponent} from "./codernac-files/codernac-files.component";
 
 @Component({
   selector: 'app-rules',
@@ -11,7 +12,8 @@ import {TranslateModule} from "@ngx-translate/core";
     MatTabsModule,
     AllRuleFilesComponent,
     RuleFilesComponent,
-    TranslateModule
+    TranslateModule,
+    CodernacFilesComponent
   ],
   templateUrl: './rules.component.html',
   styleUrl: './rules.component.scss'

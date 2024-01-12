@@ -36,10 +36,11 @@ public class PackagesController {
         this.jenkinsService = jenkinsService;
     }
 
-    @GetMapping("/createAndExecutePipeline/{jobName}/{ruleFileName}")
+    @GetMapping("/createAndExecutePipeline/{jobName}/{ruleFileName}/{codenarcFileName}")
     public ResponseEntity<String> enableJenkins(
             @PathVariable("jobName") String jobName,
-            @PathVariable("ruleFileName") String ruleFileName)
+            @PathVariable("ruleFileName") String ruleFileName,
+            @PathVariable("codenarcFileName") String codenarcFileName)
     {
         try {
             System.out.println("Rule File Name: " + ruleFileName);
@@ -49,10 +50,10 @@ public class PackagesController {
             Path pathf = projectPath.resolve(relativePath);
             String filePath = pathf.toString();
 
-            String branch = "main";
+            System.out.println("Recebi um pedido para o Jenkins com o ficheiro do codenarc: " + codenarcFileName);
 
             // Execute Update
-            jenkinsService.executeUpdateJenkinsFile(filePath, ruleFileName, jobName);
+            jenkinsService.executeUpdateJenkinsFile(filePath, ruleFileName, codenarcFileName, jobName);
 
             // Create Jenkins job
             //jenkinsService.create(jobName, filePath);

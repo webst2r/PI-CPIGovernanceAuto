@@ -9,7 +9,7 @@
 <div class="form-container">
   <form [formGroup]="form" (ngSubmit)="enableJenkins()">
     <mat-form-field appearance="fill">
-      <mat-label>Select Rule File</mat-label>
+      <mat-label>Select CPI Rule File</mat-label>
       <mat-select formControlName="selectedRuleFile">
         <mat-option *ngFor="let ruleFile of ruleFiles" [value]="ruleFile.fileName">
           {{ ruleFile.fileName }}
@@ -18,6 +18,15 @@
       <mat-icon>file</mat-icon>
     </mat-form-field>
 
+    <mat-form-field appearance="fill">
+      <mat-label>Select Codenarc File</mat-label>
+      <mat-select formControlName="selectedCodenarcFile">
+        <mat-option *ngFor="let codenarcFile of codenarcFiles" [value]="codenarcFile.fileName">
+          {{ codenarcFile.fileName }}
+        </mat-option>
+      </mat-select>
+      <mat-icon>file</mat-icon>
+    </mat-form-field>
 
     <button mat-raised-button class="submitBtn" type="submit" color="primary">
       Submit

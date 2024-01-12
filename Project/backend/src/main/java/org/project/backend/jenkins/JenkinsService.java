@@ -1,12 +1,13 @@
 package org.project.backend.jenkins;
 
 import lombok.RequiredArgsConstructor;
+import org.project.backend.configuration_files.codenarc.CodenarcFile;
+import org.project.backend.configuration_files.codenarc.CodenarcFileService;
 import org.project.backend.credential.jenkins.JenkinsCredentials;
 import org.project.backend.credential.jenkins.JenkinsCredentialsRepository;
 import org.project.backend.repository.github.GithubRepositoryService;
-import org.project.backend.rulefiles.RuleFile;
-import org.project.backend.rulefiles.RuleFileRepository;
-import org.project.backend.rulefiles.RuleFileService;
+import org.project.backend.configuration_files.cpi.RuleFile;
+import org.project.backend.configuration_files.cpi.RuleFileService;
 import org.project.backend.user.User;
 import org.project.backend.user.UserRepository;
 import org.springframework.security.core.Authentication;
@@ -34,6 +35,8 @@ public class JenkinsService {
     private final UserRepository userRepository;
 
     private final RuleFileService ruleFileService;
+
+    private final CodenarcFileService codenarcFileService;
 
     private final JenkinsCredentialsRepository credentialsRepository;
 
@@ -156,21 +159,26 @@ public class JenkinsService {
         }
     }
 
-    public void executeUpdateJenkinsFile(String jenkinsXmlPath, String ruleFileName, String githubFileName) throws IOException, InterruptedException {
+    public void executeUpdateJenkinsFile(String jenkinsXmlPath, String ruleFileName, String codenarcFileName, String githubFileName) throws IOException, InterruptedException {
         String relativePath = "src/main/java/org/project/backend/jenkins/temp";
         Path projectPath = Paths.get(System.getProperty("user.dir"));
         Path path = projectPath.resolve(relativePath);
         String savePath = path.toString();
         savePath += "/";
         String ruleFilePath = path.toString();
+        String codenarcFilePath = path.toString();
 
         githubFileName += ".zip";
 
         // Get the rule file content from the database
         Optional<RuleFile> optionalRuleFile = Optional.ofNullable(ruleFileService.getRuleFileByName(ruleFileName));
 
-        if (optionalRuleFile.isPresent()) {
+        // Get the codenarc file content from the database
+        Optional<CodenarcFile> optionalCodenarcFile = Optional.ofNullable(codenarcFileService.getCodenarcFileByName(codenarcFileName));
+
+        if (optionalRuleFile.isPresent() && optionalCodenarcFile.isPresent()) {
             RuleFile ruleFile = optionalRuleFile.get();
+            CodenarcFile codenarcFile = optionalCodenarcFile.get();
 
             // Create a temporary file with the rule file content
             try {
@@ -182,20 +190,29 @@ public class JenkinsService {
                 System.out.println("Error creating temporary file with content from the database.");
             }
 
-            // CPI Lint
-            String patternString_cpi = "sh '/cp/cpilint-1.0.4/bin/cpilint -org.project.backend.jenkins.temp.rules /files/(.*?) -files /files/(.*?)'";
-            String placeString_cpi = "sh '/cp/cpilint-1.0.4/bin/cpilint -org.project.backend.jenkins.temp.rules /files/" + ruleFileName + " -files /files/" + githubFileName + "'";
-            updateJenkinsFile(patternString_cpi, jenkinsXmlPath, placeString_cpi);
+            // Create a temporary file with the codenarc file content
+            try {
+                codenarcFilePath = codenarcFilePath + "/" + codenarcFile.getFileName();
+                Files.write(Path.of(codenarcFilePath), codenarcFile.getFileContent());
+                System.out.println("Created Codenarc Temporary file " + codenarcFile.getFileName() + " created with content from the database in " + codenarcFilePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Error creating temporary file with content from the database.");
+            }
 
+            String patternString_flow = "def FlowZip = '/files/(.*?)'";
+            String patternString_CPI_Rules = "def CPILintRules = '/files/(.*?)'";
+            String patternString_Codenarc_Rules = "def CodenarcRules = '/files/(.*?)'";
 
-            // Codenarc
-            String patternString_codenarc1 = "sh 'unzip /files/(.*?) -d /files/unzip_flow'";
-            String placeString_codenarc1 = "sh 'unzip /files/" +  githubFileName +  " -d /files/unzip_flow'";
-            updateJenkinsFile(patternString_codenarc1, jenkinsXmlPath, placeString_codenarc1);
+            String placeString_flow = "def FlowZip = '/files/" + githubFileName + "'";
+            String placeString_CPI_Rules = "def CPILintRules = '/files/" + ruleFileName + "'";
+            String placeString_Codenarc_Rules = "def CodenarcRules = '/files/" + codenarcFileName + "'";
 
-            String patternString_codenarc2 = "sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/(.*?) -basedir=/files/unzip_flow/src/main/resources/script'";
-            String placeString_codenarc2 = "sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/" + "rules.groovy" + " -basedir=/files/unzip_flow/src/main/resources/script'";
-            updateJenkinsFile(patternString_codenarc2, jenkinsXmlPath, placeString_codenarc2);
+            updateJenkinsFile(patternString_flow,jenkinsXmlPath, placeString_flow);
+
+            updateJenkinsFile(patternString_CPI_Rules,jenkinsXmlPath, placeString_CPI_Rules);
+
+            updateJenkinsFile(patternString_Codenarc_Rules,jenkinsXmlPath, placeString_Codenarc_Rules);
         } else {
             System.out.println("RuleFile not found in the database.");
         }

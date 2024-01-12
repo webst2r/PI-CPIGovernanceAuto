@@ -1,4 +1,4 @@
-package org.project.backend.rulefiles;
+package org.project.backend.configuration_files.codenarc;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "rule_files")
-public class RuleFile {
+@Table(name = "codenarc_files")
+public class CodenarcFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

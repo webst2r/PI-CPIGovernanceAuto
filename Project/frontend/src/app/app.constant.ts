@@ -47,11 +47,20 @@ export class AppConstant {
       }
     },
     RULEFILES: {
-      CREATE: 'rulefiles/save',
-      UPDATE: 'rulefiles/update',
-      DELETE: 'rulefiles/delete',
-      ALL: 'rulefiles/all',
-      CHECK_EXISTENCE: 'rulefiles/exists',
+      CPI: {
+        CREATE: 'rulefiles/save',
+        UPDATE: 'rulefiles/update',
+        DELETE: 'rulefiles/delete',
+        ALL: 'rulefiles/all',
+        CHECK_EXISTENCE: 'rulefiles/exists',
+      },
+      CODENARC: {
+        CREATE: 'codenarc/save',
+        UPDATE: 'codenarc/update',
+        DELETE: 'codenarc/delete',
+        ALL: 'codenarc/all',
+        CHECK_EXISTENCE: 'codenarc/exists',
+      }
     }
   }
 

@@ -1,4 +1,4 @@
-package org.project.backend.rulefiles;
+package org.project.backend.configuration_files.cpi;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
@@ -23,7 +23,6 @@ public class RuleFileController {
 
                 RuleFile savedFile = ruleFilesService.saveRuleFile(fileName, fileContent);
 
-                // You may return additional information or customize the response as needed
                 return ResponseEntity.ok(savedFile);
         }
 

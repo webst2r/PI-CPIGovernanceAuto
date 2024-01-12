@@ -1,6 +1,8 @@
 <form [formGroup]="ruleFileForm" (ngSubmit)="onSubmit()" (drop)="onDropFile($event)" (dragover)="onDragOver($event)">
   <div class="file-input-container">
-    <label for="file">Upload Rule File:</label>
+    <label for="file"><i class="fas fa-file-alt" style="margin-right: 8px;"></i>
+      <span>Upload Rule File</span></label>
+
     <div class="file-input" (click)="fileInput.click()">
       <input type="file" id="file" name="file" #fileInput style="display: none" (change)="onFileChange($event)" />
       <span class="file-icon" (drop)="onDropFile($event)" (dragover)="onDragOver($event)">

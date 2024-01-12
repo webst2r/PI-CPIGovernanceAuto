@@ -13,29 +13,45 @@
 <properties/>
 <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3826.v3b_5707fe44da_">
 <script>
+def FlowZip = '/files/my_integration_flow_pi.zip'
+def CPILintRules = '/files/test.xml'
+def CodenarcRules = '/files/rules.groovy'
+
 pipeline {
     agent any
+    options{
+        skipStagesAfterUnstable()
+    }
     stages {
+        stage('Unzip') {
+            steps {
+                echo 'Unzip'
+                sh 'mkdir /files/unzip_flow'
+                sh "unzip ${FlowZip} -d /files/unzip_flow"
+            }
+        }
         stage('CPIlint') {
             steps {
                 echo 'CPIlint'
-                sh '/cp/cpilint-1.0.4/bin/cpilint -org.project.backend.jenkins.temp.rules /files/test.xml -files /files/my_integration_flow_pi.zip'
+                sh "/cp/cpilint-1.0.4/bin/cpilint -rules ${CPILintRules} -files ${FlowZip}"
             }
         }
         stage('CodeNarc') {
             steps {
                 echo 'CodeNarc'
-                sh 'mkdir /files/unzip_flow'
-                sh 'unzip /files/firstflow.zip -d /files/novo'
-                sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/novo -basedir=/files/unzip_flow/novo'
-                sh 'rm -rf /files/unzip_flow'
+                sh "java -cp /cp/codenarc.jar org.codenarc.CodeNarc -report=console:stdout -rulesetfiles=file:${CodenarcRules} -basedir=/files/unzip_flow"
             }
         }
         stage('Dependency check') {
             steps {
                 echo 'Dependency check'
-                //sh '/cp/dependency-check/bin/dependency-check.sh -scan path -project name'
+                sh '/cp/dependency-check/bin/dependency-check.sh --nvdApiKey=f906660d-70f5-4201-ab55-5e04202f34f9 --format JSON --prettyPrint -scan /files/unzip_flow '
             }
+        }
+    }
+    post {
+        always {
+            sh 'rm -rf /files/unzip_flow'
         }
     }
 }
@@ -45,3 +61,4 @@ pipeline {
 <triggers/>
 <disabled>false</disabled>
 </flow-definition>
+

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import {TranslateModule} from "@ngx-translate/core";
-import {AllCredentialsComponent} from "../credentials/all-credentials/all-credentials.component";
 import {GithubCredentialsComponent} from "../credentials/github-credentials/github-credentials.component";
 import {JenkinsCredentialsComponent} from "../credentials/jenkins-credentials/jenkins-credentials.component";
 import {MatIconModule} from "@angular/material/icon";
@@ -14,7 +13,6 @@ import {AllRepositoriesComponent} from "./all-repositories/all-repositories.comp
   standalone: true,
   imports: [
     TranslateModule,
-    AllCredentialsComponent,
     GithubCredentialsComponent,
     JenkinsCredentialsComponent,
     MatIconModule,
