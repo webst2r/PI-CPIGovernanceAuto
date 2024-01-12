@@ -7,9 +7,10 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatIconModule } from "@angular/material/icon";
 import {NgForOf} from "@angular/common";
 import {MatButtonModule} from "@angular/material/button";
-import {FlowElement, PackageDetailService} from "../../services/package-detail.service";
+import {PackageDetailService} from "../../services/package-detail.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {GithubRepositoryService} from "../../services/github-repository.service";
+import {FlowElement} from "../../models/flows";
 
 @Component({
   selector: 'app-github-dialog',
@@ -35,10 +36,8 @@ export class GithubDialogComponent implements OnInit {
   ngOnInit() {
     this.dialogRef.updateSize('50%', '50%');
 
-    // fetch branches from the backend
     this.fetchBranches();
 
-    // Access the flow element from the dialog data
     if (this.data && this.data.flowElement) {
       this.flowElement = this.data.flowElement;
     }
@@ -56,7 +55,6 @@ export class GithubDialogComponent implements OnInit {
   ) {}
 
   fetchBranches() {
-    // Fetch branches from the backend
     this.githubRepositoryService.getBranches().subscribe(
       (branches) => {
         this.branches = branches;

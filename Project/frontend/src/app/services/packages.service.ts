@@ -2,19 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import {AppConstant} from "../app.constant";
+import {PackagesElement} from "../models/packages";
 
 @Injectable({
   providedIn: 'root',
 })
 export class PackagesService {
-  private apiUrl = 'http://localhost:9001/api/packages';
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) {
+  }
 
   getPackages(): Observable<PackagesElement[]> {
-    const apiUrl = `${this.apiUrl}/getPackages`;
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.GET_PACKAGES;
 
-    return this.httpClient.get(apiUrl, { responseType: 'json' }).pipe(
+    return this.httpClient.get(endpoint, {responseType: 'json'}).pipe(
       map((response: any) =>
         response.results.map((result: any, index: number) => ({
           position: index + 1,
@@ -30,12 +32,4 @@ export class PackagesService {
       })
     );
   }
-}
-
-export interface PackagesElement {
-  position: number;
-  name: string;
-  version: string;
-  modifiedBy: string;
-  modifiedDate: string;
 }

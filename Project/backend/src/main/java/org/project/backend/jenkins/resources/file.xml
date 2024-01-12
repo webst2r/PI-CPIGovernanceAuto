@@ -16,19 +16,25 @@
 pipeline {
     agent any
     stages {
-        stage('Build') {
+        stage('CPIlint') {
             steps {
-                echo 'Building...'
+                echo 'CPIlint'
+                sh '/cp/cpilint-1.0.4/bin/cpilint -org.project.backend.jenkins.temp.rules /files/test.xml -files /files/my_integration_flow_pi.zip'
             }
         }
-        stage('Test') {
+        stage('CodeNarc') {
             steps {
-                echo 'Testing...'
+                echo 'CodeNarc'
+                sh 'mkdir /files/unzip_flow'
+                sh 'unzip /files/firstflow.zip -d /files/novo'
+                sh 'java -cp /cp/codenarc.jar org.codenarc.CodeNarc -rulesetfiles=file:/files/novo -basedir=/files/unzip_flow/novo'
+                sh 'rm -rf /files/unzip_flow'
             }
         }
-        stage('Deploy') {
+        stage('Dependency check') {
             steps {
-                echo 'Deploying...'
+                echo 'Dependency check'
+                //sh '/cp/dependency-check/bin/dependency-check.sh -scan path -project name'
             }
         }
     }

@@ -1,7 +1,6 @@
 package org.project.backend.repository.github;
 
 import org.project.backend.credential.github.GithubCredentials;
-import org.project.backend.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

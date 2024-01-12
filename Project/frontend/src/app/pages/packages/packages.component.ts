@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { PackagesService, PackagesElement } from '../../services/packages.service';
+import { PackagesService } from '../../services/packages.service';
 import { Router } from '@angular/router';
 import {MatTableModule} from "@angular/material/table";
 import {TranslateModule} from "@ngx-translate/core";
+import {PackagesElement} from "../../models/packages";
+
 
 @Component({
   selector: 'app-packages',

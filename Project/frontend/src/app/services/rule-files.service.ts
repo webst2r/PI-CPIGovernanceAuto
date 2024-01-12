@@ -4,6 +4,7 @@ import {Observable, of, tap} from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import {AppConstant} from "../app.constant";
 import {GithubRepository} from "../models/repositories";
+import {RuleFile} from "../models/rule-file";
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +33,17 @@ export class RuleFilesService {
       catchError((error) => {
         console.error('Error checking file existence:', error);
         return of(false); // Return false in case of an error
+      })
+    );
+  }
+
+  getAllRuleFiles(): Observable<RuleFile[]> {
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.RULEFILES.ALL;
+
+    return this.httpClient.get<RuleFile[]>(endpoint).pipe(
+      catchError((error) => {
+        console.error('Error fetching rule files:', error);
+        return of([]);
       })
     );
   }
