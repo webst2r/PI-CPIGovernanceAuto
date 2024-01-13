@@ -3,7 +3,9 @@ import {navbarData} from "./nav-data";
 import {RouterLink, RouterLinkActive} from "@angular/router";
 import {NgClass, NgForOf, NgIf} from "@angular/common";
 import {AuthenticationService} from "../services/authentication.service";
-import {TranslateModule} from "@ngx-translate/core";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
+import {MatListModule} from "@angular/material/list";
+import {StorageKey, StorageService} from "../services/storage.service";
 
 interface SideNavToggle {
   screenWidth: number;
@@ -19,7 +21,8 @@ interface SideNavToggle {
     NgForOf,
     NgClass,
     RouterLinkActive,
-    TranslateModule
+    TranslateModule,
+    MatListModule
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.scss'
@@ -27,6 +30,8 @@ interface SideNavToggle {
 export class SidenavComponent implements OnInit {
   @Output() onToggleSideNav: EventEmitter<SideNavToggle> = new EventEmitter();
   private auth = inject(AuthenticationService)
+  private translateService = inject(TranslateService)
+  private storageService = inject(StorageService)
   collapsed = false;
   screenWidth = 0;
 
@@ -56,5 +61,10 @@ export class SidenavComponent implements OnInit {
 
   ngOnInit(): void {
     this.screenWidth = window.innerWidth;
+  }
+
+  changeLanguage(lang: 'en' | 'pt') {
+    this.translateService.use(lang);
+    this.storageService.saveData(StorageKey.LANGUAGE, lang)
   }
 }

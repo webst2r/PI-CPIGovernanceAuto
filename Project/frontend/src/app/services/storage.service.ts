@@ -3,15 +3,14 @@ import { Injectable } from '@angular/core';
 
 export enum StorageKey{
   TOKEN='token',
-  USER = 'user'
+  USER = 'user',
+  LANGUAGE='lang'
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
-
-  constructor() { }
 
   public saveData(key: StorageKey, value: string) {
     localStorage.setItem(key, value);

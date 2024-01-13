@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { PackagesService } from '../../services/packages.service';
-import { Router } from '@angular/router';
+import {Component, OnInit, signal} from '@angular/core';
+import {PackagesService} from '../../services/packages.service';
+import {Router} from '@angular/router';
 import {MatTableModule} from "@angular/material/table";
 import {TranslateModule} from "@ngx-translate/core";
 import {PackagesElement} from "../../models/packages";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 
 @Component({
@@ -13,12 +14,15 @@ import {PackagesElement} from "../../models/packages";
   styleUrls: ['./packages.component.scss'],
   imports: [
     MatTableModule,
-    TranslateModule
+    TranslateModule,
+    MatProgressSpinnerModule
   ]
 })
 export class PackagesComponent implements OnInit {
   displayedColumns: string[] = ['position', 'name', 'version', 'modifiedBy', 'modifiedDate', 'actions'];
   dataSource: PackagesElement[] = [];
+
+  isLoadingSig = signal(true);
 
   constructor(private packagesService: PackagesService, private router: Router) {}
 
@@ -29,6 +33,7 @@ export class PackagesComponent implements OnInit {
   getPackages() {
     this.packagesService.getPackages().subscribe((packages) => {
       this.dataSource = packages;
+      this.isLoadingSig.set(false)
       console.log('Packages fetched successfully:', packages);
     });
   }

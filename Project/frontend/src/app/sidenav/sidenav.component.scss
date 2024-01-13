@@ -9,6 +9,9 @@
   box-shadow: 0.063rem 0 1.25rem 0 #8690a3;
   border-top-right-radius: 5px; /* Apply border-radius to the top right corner */
   border-bottom-right-radius: 5px; /* Apply border-radius to the bottom right corner */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
   .logo-container {
     display: flex;
@@ -106,5 +109,20 @@
   background-color: #fff;
   .sidenav-link-icon, .sidenav-link-text {
     color: #000;
+  }
+}
+
+.sidenav-lang-container {
+  margin: 0 auto 1rem;
+  transform: scale(1.7);
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:not(:last-child) {
+      margin-right: .3rem;
+    }
   }
 }
