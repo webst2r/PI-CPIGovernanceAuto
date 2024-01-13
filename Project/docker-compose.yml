@@ -1,7 +1,6 @@
 services:
 
   jenkins:
-    #image: jenkins/jenkins:lts
     build:
       context: ./jenkins
       dockerfile: ./Dockerfile
@@ -12,8 +11,8 @@ services:
       - 8080:8080
     container_name: jenkins
     volumes:
-      - /tmp/jenkins:/var/jenkins_home
-      - /home/daniel/Desktop:/files 
+      - /var/jenkins/internal:/var/jenkins_home
+      - /var/jenkins/external:/files
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/local/bin/docker
     networks:
