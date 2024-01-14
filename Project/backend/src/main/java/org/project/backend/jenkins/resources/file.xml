@@ -30,13 +30,27 @@ pipeline {
                 sh "unzip ${FlowZip} -d /files/unzip_flow"
             }
         }
+        
         stage('CPIlint') {
             steps {
-                echo 'CPIlint'
-                sh '/cp/cpilint-1.0.4/bin/cpilint -help'
-                sh "/cp/cpilint-1.0.4/bin/cpilint -rules ${CPILintRules} -files ${FlowZip} -debug"
+                script {
+                    echo 'CPIlint'
+                    def cpilintError = false
+                    def cpilintLogFile = "${env.WORKSPACE}/cpilint.log"
+                    catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                        script {
+                            def cpilintOutput = sh(
+                                script: "/cp/cpilint-1.0.4/bin/cpilint -rules ${CPILintRules} -files ${FlowZip} -debug > ${cpilintLogFile} 2>&1",
+                                returnStatus: true
+                            )
+                            cpilintError = cpilintOutput != 0
+                        }
+                    }
+                    currentBuild.result = cpilintError ? 'FAILURE' : 'SUCCESS'
+                }
             }
         }
+        
         stage('CodeNarc') {
             steps {
                 echo 'CodeNarc'
