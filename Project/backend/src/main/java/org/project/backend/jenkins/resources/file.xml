@@ -13,7 +13,7 @@
 <properties/>
 <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3826.v3b_5707fe44da_">
 <script>
-def FlowZip = '/files/my_integration_flow_pi.zip'
+def FlowZip = '/files/novo.zip'
 def CPILintRules = '/files/test.xml'
 def CodenarcRules = '/files/rules.groovy'
 
@@ -33,13 +33,14 @@ pipeline {
         stage('CPIlint') {
             steps {
                 echo 'CPIlint'
-                sh "/cp/cpilint-1.0.4/bin/cpilint -rules ${CPILintRules} -files ${FlowZip}"
+                sh '/cp/cpilint-1.0.4/bin/cpilint -help'
+                sh "/cp/cpilint-1.0.4/bin/cpilint -rules ${CPILintRules} -files ${FlowZip} -debug"
             }
         }
         stage('CodeNarc') {
             steps {
                 echo 'CodeNarc'
-                sh "java -cp /cp/codenarc.jar org.codenarc.CodeNarc -report=console:stdout -rulesetfiles=file:${CodenarcRules} -basedir=/files/unzip_flow"
+                sh "java -cp /cp/codenarc.jar org.codenarc.CodeNarc -report=json:output.json -rulesetfiles=file:${CodenarcRules} -basedir=/files/unzip_flow"
             }
         }
         stage('Dependency check') {
