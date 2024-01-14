@@ -55,11 +55,11 @@ public class PackagesController {
             // Execute Update
             jenkinsService.executeUpdateJenkinsFile(filePath, ruleFileName, codenarcFileName, jobName);
 
-            // Create Jenkins job
-            //jenkinsService.create(jobName, filePath);
+            //Create Jenkins job
+            jenkinsService.create(jobName, filePath);
 
             // Execute Jenkins job
-            //jenkinsService.execute(jobName);
+            jenkinsService.execute(jobName);
 
             return ResponseEntity.ok("Pipeline created and executed successfully!");
         } catch (Exception e) {
