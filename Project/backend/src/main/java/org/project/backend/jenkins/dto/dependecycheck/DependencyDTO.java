@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,5 +20,6 @@ public class DependencyDTO {
     private String fileName;
 
     @JsonProperty("vulnerabilities")
-    private List<VulnerabilitiesDTO> vulnerabilities;
+    private List<VulnerabilitiesDTO> vulnerabilities = new ArrayList<>();
+
 }

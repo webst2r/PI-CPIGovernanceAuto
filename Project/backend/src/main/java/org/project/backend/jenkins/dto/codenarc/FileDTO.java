@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,5 +18,5 @@ public class FileDTO {
     private String name;
 
     @JsonProperty("violations")
-    private List<ViolationDTO> violations;
+    private List<ViolationDTO> violations = new ArrayList<>();;
 }

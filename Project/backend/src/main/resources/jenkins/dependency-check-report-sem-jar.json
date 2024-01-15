@@ -1,0 +1,25 @@
+{
+  "reportSchema" : "1.1",
+  "scanInfo" : {
+    "engineVersion" : "9.0.8",
+    "dataSource" : [ {
+      "name" : "NVD API Last Checked",
+      "timestamp" : "2024-01-15T10:41:07Z"
+    }, {
+      "name" : "NVD API Last Modified",
+      "timestamp" : "2024-01-15T10:15:26Z"
+    } ]
+  },
+  "projectInfo" : {
+    "name" : "",
+    "reportDate" : "2024-01-15T10:41:20.450477145Z",
+    "credits" : {
+      "NVD" : "This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov",
+      "CISA" : "This report may contain data retrieved from the CISA Known Exploited Vulnerability Catalog: https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "NPM" : "This report may contain data retrieved from the Github Advisory Database (via NPM Audit API): https://github.com/advisories/",
+      "RETIREJS" : "This report may contain data retrieved from the RetireJS community: https://retirejs.github.io/retire.js/",
+      "OSSINDEX" : "This report may contain data retrieved from the Sonatype OSS Index: https://ossindex.sonatype.org"
+    }
+  },
+  "dependencies" : [ ]
+}

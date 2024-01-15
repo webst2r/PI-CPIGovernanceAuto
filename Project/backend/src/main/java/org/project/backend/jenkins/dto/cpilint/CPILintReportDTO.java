@@ -1,7 +1,6 @@
-package org.project.backend.jenkins.dto.codenarc;
+package org.project.backend.jenkins.dto.cpilint;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,10 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CodenarcReportDTO {
-    @JsonProperty("summary")
-    private SummaryDTO summary;
-
-    @JsonProperty("packages")
-    private List<PackageDTO> packages = new ArrayList<>();;
+public class CPILintReportDTO {
+    private int numberOfIssues;
+    private List<IssueDTO> issues  = new ArrayList<>();;
 }

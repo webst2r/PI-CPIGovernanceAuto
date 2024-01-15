@@ -230,13 +230,12 @@ public class JenkinsService {
     }
 
     public ReportDTO getJenkinsReport(){
-        //TODO: Add CPIlint report when converted to DTO
         //TODO: pass the name of the file as a parameter
         //TODO: call this method the right method in jenkins when pipeline as finished
-        cpIlintDeserializer.deserialize();
        return ReportDTO.builder()
                 .codenarcReport(codenarcReportReaderDeserializer.deserialize())
                 .dependencyCheckReport(dependencyCheckReportReaderDeserializer.deserialize())
+                .cpiLintReport(cpIlintDeserializer.deserialize())
                 .build();
     }
 }

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -32,5 +33,5 @@ public class PackageDTO {
     private int priority3;
 
     @JsonProperty("files")
-    private List<FileDTO> files;
+    private List<FileDTO> files = new ArrayList<>();;
 }
