@@ -25,7 +25,7 @@ public class CodenarcReportReaderDeserializer {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            // Load the JSON file from the resources directory
+            //TODO: pass the name of the file as a parameter and change the resource directory to the correct one
             Resource resource = resourceLoader.getResource("classpath:" +"jenkins/codenarc.json");
 
             // Read JSON file and parse it into a CodeNarcReportDTO object

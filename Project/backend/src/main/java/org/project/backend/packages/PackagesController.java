@@ -3,6 +3,7 @@ package org.project.backend.packages;
 import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.project.backend.jenkins.JenkinsService;
+import org.project.backend.jenkins.dto.ReportDTO;
 import org.project.backend.repository.github.GithubRepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -66,6 +67,11 @@ public class PackagesController {
             log.error("Error creating and executing pipeline", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create and execute pipeline");
         }
+    }
+
+    @GetMapping("/jenkinsReport")
+    public ResponseEntity<ReportDTO> getJenkinsReport() {
+        return ResponseEntity.ok(jenkinsService.getJenkinsReport());
     }
 
 

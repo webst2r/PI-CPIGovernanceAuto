@@ -5,6 +5,7 @@ import org.project.backend.configuration_files.codenarc.CodenarcFile;
 import org.project.backend.configuration_files.codenarc.CodenarcFileService;
 import org.project.backend.credential.jenkins.JenkinsCredentials;
 import org.project.backend.credential.jenkins.JenkinsCredentialsRepository;
+import org.project.backend.jenkins.dto.ReportDTO;
 import org.project.backend.repository.github.GithubRepositoryService;
 import org.project.backend.configuration_files.cpi.RuleFile;
 import org.project.backend.configuration_files.cpi.RuleFileService;
@@ -41,6 +42,8 @@ public class JenkinsService {
     private final JenkinsCredentialsRepository credentialsRepository;
 
     private final GithubRepositoryService githubRepositoryService;
+    private final CodenarcReportReaderDeserializer codenarcReportReaderDeserializer;
+    private final DependencyCheckReportReaderDeserializer dependencyCheckReportReaderDeserializer;
 
     public void create(String jobName, String path) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -220,5 +223,15 @@ public class JenkinsService {
 
         // Get the IFlow zip from Github
         githubRepositoryService.downloadFileFromGitHub(githubFileName,savePath);
+    }
+
+    public ReportDTO getJenkinsReport(){
+        //TODO: Add CPIlint report when converted to DTO
+        //TODO: pass the name of the file as a parameter
+        //TODO: call this method the right method in jenkins when pipeline as finished
+       return ReportDTO.builder()
+                .codenarcReport(codenarcReportReaderDeserializer.deserialize())
+                .dependencyCheckReport(dependencyCheckReportReaderDeserializer.deserialize())
+                .build();
     }
 }
