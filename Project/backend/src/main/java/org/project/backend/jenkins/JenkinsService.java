@@ -5,6 +5,9 @@ import org.project.backend.configuration_files.codenarc.CodenarcFile;
 import org.project.backend.configuration_files.codenarc.CodenarcFileService;
 import org.project.backend.credential.jenkins.JenkinsCredentials;
 import org.project.backend.credential.jenkins.JenkinsCredentialsRepository;
+import org.project.backend.jenkins.deserializer.CPIlintDeserializer;
+import org.project.backend.jenkins.deserializer.CodenarcReportReaderDeserializer;
+import org.project.backend.jenkins.deserializer.DependencyCheckReportReaderDeserializer;
 import org.project.backend.jenkins.dto.ReportDTO;
 import org.project.backend.repository.github.GithubRepositoryService;
 import org.project.backend.configuration_files.cpi.RuleFile;
@@ -44,6 +47,7 @@ public class JenkinsService {
     private final GithubRepositoryService githubRepositoryService;
     private final CodenarcReportReaderDeserializer codenarcReportReaderDeserializer;
     private final DependencyCheckReportReaderDeserializer dependencyCheckReportReaderDeserializer;
+    private final CPIlintDeserializer cpIlintDeserializer;
 
     public void create(String jobName, String path) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -229,6 +233,7 @@ public class JenkinsService {
         //TODO: Add CPIlint report when converted to DTO
         //TODO: pass the name of the file as a parameter
         //TODO: call this method the right method in jenkins when pipeline as finished
+        cpIlintDeserializer.deserialize();
        return ReportDTO.builder()
                 .codenarcReport(codenarcReportReaderDeserializer.deserialize())
                 .dependencyCheckReport(dependencyCheckReportReaderDeserializer.deserialize())

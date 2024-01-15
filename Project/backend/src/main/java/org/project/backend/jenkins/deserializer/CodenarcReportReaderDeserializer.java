@@ -1,4 +1,4 @@
-package org.project.backend.jenkins;
+package org.project.backend.jenkins.deserializer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +37,7 @@ public class CodenarcReportReaderDeserializer {
            codenarcReportDTO.setPackages(packagesWithViolations);
 
             // Print the CodeNarcReportDTO object
-            printCodenarcReportDTO(codenarcReportDTO);
+            //printCodenarcReportDTO(codenarcReportDTO);
             return codenarcReportDTO;
         } catch (IOException e) {
             e.printStackTrace();

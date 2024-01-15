@@ -1,4 +1,4 @@
-package org.project.backend.jenkins;
+package org.project.backend.jenkins.deserializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class DependencyCheckReportReaderDeserializer {
 
 
             // Print the CodeNarcReportDTO object
-            printDependencyCheckReportDTO(dependencyCheckReportDTO);
+            //printDependencyCheckReportDTO(dependencyCheckReportDTO);
             return dependencyCheckReportDTO;
         } catch (IOException e) {
             e.printStackTrace();
