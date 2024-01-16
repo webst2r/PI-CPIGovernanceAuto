@@ -1,5 +1,7 @@
 package org.project.backend.jenkins;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import lombok.RequiredArgsConstructor;
 import org.project.backend.configuration_files.codenarc.CodenarcFile;
 import org.project.backend.configuration_files.codenarc.CodenarcFileService;
@@ -25,10 +27,7 @@ import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,6 +47,12 @@ public class JenkinsService {
     private final CodenarcReportReaderDeserializer codenarcReportReaderDeserializer;
     private final DependencyCheckReportReaderDeserializer dependencyCheckReportReaderDeserializer;
     private final CPIlintDeserializer cpIlintDeserializer;
+
+    @Value("${path.external}")
+    private String externalPath;
+
+    @Value("${path.internal}")
+    private String internalPath;
 
     public void create(String jobName, String path) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -96,6 +101,7 @@ public class JenkinsService {
     }
 
 
+    //TODO - Adicionar REPORT AQUI
     public void execute(String jobName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -135,18 +141,10 @@ public class JenkinsService {
         }
     }
 
-    /**
-     * Função que atualiza o conteúdo do ficheiro .xml do jenkins, modificando o nome do ficheiro de regras do cpilint,
-     * nome do iflow e nome do ficheiro de regras do CodeNarc.
-     *
-     * @param patternString
-     * @param filePath
-     * @param placeString
-     */
-    public static void updateJenkinsFile(String patternString, String filePath, String placeString) {
+    public static void updateJenkinsFile(String patternString, Resource resource, String placeString) {
         try {
             // Lê o conteúdo do arquivo
-            Path path = Paths.get(filePath);
+            Path path = Paths.get(resource.getURI());
             String originalPipeline = new String(Files.readAllBytes(path));
 
             // Define um padrão regex para encontrar a seção específica
@@ -159,23 +157,39 @@ public class JenkinsService {
             // Escreve o conteúdo atualizado de volta no arquivo
             Files.write(path, updatedPipeline.getBytes(), StandardOpenOption.WRITE);
 
-            System.out.println("Pipeline atualizado e gravado com sucesso no arquivo: " + filePath);
+            System.out.println("Pipeline atualizado e gravado com sucesso no arquivo.");
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Erro ao processar o arquivo do pipeline.");
         }
     }
 
-    public void executeUpdateJenkinsFile(String jenkinsXmlPath, String ruleFileName, String codenarcFileName, String githubFileName) throws IOException, InterruptedException {
-        String relativePath = "src/main/java/org/project/backend/jenkins/temp";
-        Path projectPath = Paths.get(System.getProperty("user.dir"));
-        Path path = projectPath.resolve(relativePath);
-        String savePath = path.toString();
+    public void executeUpdateJenkinsFile(Resource resource, String ruleFileName, String codenarcFileName, String githubFileName) throws IOException, InterruptedException {
+        Path projectPath = Paths.get(externalPath);
+        //Path path = projectPath.resolve(externalPath);
+        String savePath = projectPath.toString();
         savePath += "/";
-        String ruleFilePath = path.toString();
-        String codenarcFilePath = path.toString();
+        String ruleFilePath = projectPath.toString();
+        String codenarcFilePath = projectPath.toString();
 
         githubFileName += ".zip";
+
+
+        // Full path to the destination file in WSL
+        String wslDestinationPath = projectPath + "/" + "file.xml";
+
+        // Move the file using Java's Files.move method
+        try {
+            Path source = Path.of(resource.getURI());
+            Path destination = Path.of(wslDestinationPath);
+
+            Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.println("File moved successfully to WSL folder.");
+        } catch (IOException e) {
+            System.err.println("Failed to move the file to WSL folder: " + e.getMessage());
+        }
+
 
         // Get the rule file content from the database
         Optional<RuleFile> optionalRuleFile = Optional.ofNullable(ruleFileService.getRuleFileByName(ruleFileName));
@@ -215,11 +229,11 @@ public class JenkinsService {
             String placeString_CPI_Rules = "def CPILintRules = '/files/" + ruleFileName + "'";
             String placeString_Codenarc_Rules = "def CodenarcRules = '/files/" + codenarcFileName + "'";
 
-            updateJenkinsFile(patternString_flow,jenkinsXmlPath, placeString_flow);
+            updateJenkinsFile(patternString_flow,resource, placeString_flow);
 
-            updateJenkinsFile(patternString_CPI_Rules,jenkinsXmlPath, placeString_CPI_Rules);
+            updateJenkinsFile(patternString_CPI_Rules,resource, placeString_CPI_Rules);
 
-            updateJenkinsFile(patternString_Codenarc_Rules,jenkinsXmlPath, placeString_Codenarc_Rules);
+            updateJenkinsFile(patternString_Codenarc_Rules,resource, placeString_Codenarc_Rules);
         } else {
             System.out.println("RuleFile not found in the database.");
         }

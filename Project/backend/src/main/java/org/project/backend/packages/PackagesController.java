@@ -1,11 +1,13 @@
 package org.project.backend.packages;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.project.backend.jenkins.JenkinsService;
 import org.project.backend.jenkins.dto.ReportDTO;
 import org.project.backend.repository.github.GithubRepositoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @RestController
+@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/packages")
 public class PackagesController {
@@ -30,12 +31,7 @@ public class PackagesController {
 
     private final JenkinsService jenkinsService;
 
-    @Autowired
-    public PackagesController(PackagesService packagesService, GithubRepositoryService gitHubService, JenkinsService jenkinsService) {
-        this.packagesService = packagesService;
-        this.gitHubService = gitHubService;
-        this.jenkinsService = jenkinsService;
-    }
+    private final ResourceLoader resourceLoader;
 
     @GetMapping("/createAndExecutePipeline/{jobName}/{ruleFileName}/{codenarcFileName}")
     public ResponseEntity<String> enableJenkins(
@@ -46,21 +42,17 @@ public class PackagesController {
         try {
             System.out.println("Rule File Name: " + ruleFileName);
 
-            String relativePath = "src/main/java/org/project/backend/jenkins/resources/file.xml";
-            Path projectPath = Paths.get(System.getProperty("user.dir"));
-            Path pathf = projectPath.resolve(relativePath);
-            String filePath = pathf.toString();
-
+            Resource resource = resourceLoader.getResource("classpath:" + "jenkins/file.xml");
             System.out.println("Recebi um pedido para o Jenkins com o ficheiro do codenarc: " + codenarcFileName);
 
             // Execute Update
-            jenkinsService.executeUpdateJenkinsFile(filePath, ruleFileName, codenarcFileName, jobName);
+            jenkinsService.executeUpdateJenkinsFile(resource, ruleFileName, codenarcFileName, jobName);
 
             //Create Jenkins job
-            jenkinsService.create(jobName, filePath);
+            // jenkinsService.create(jobName, filePath);
 
             // Execute Jenkins job
-            jenkinsService.execute(jobName);
+            // jenkinsService.execute(jobName);
 
             return ResponseEntity.ok("Pipeline created and executed successfully!");
         } catch (Exception e) {

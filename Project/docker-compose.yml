@@ -1,5 +1,4 @@
 services:
-
   jenkins:
     build:
       context: ./jenkins
@@ -11,8 +10,8 @@ services:
       - 8080:8080
     container_name: jenkins
     volumes:
-      - /var/jenkins/internal:/var/jenkins_home
-      - /var/jenkins/external:/files
+      - jenkins_internal:/var/jenkins_home
+      - jenkins_external:/files
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/local/bin/docker
     networks:
@@ -54,6 +53,8 @@ services:
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_JPA_SHOW_SQL=true
       - SERVER_PORT=9001
+      - PATH_EXTERNAL = /files
+      - PATH_INTERNAL = /var/jenkins_home
     networks:
       - project-network
     restart: on-failure
@@ -73,7 +74,8 @@ services:
 
 volumes:
   mysql_db:
-  jenkins_data:
+  jenkins_internal:
+  jenkins_external:
 
 networks:
   project-network:

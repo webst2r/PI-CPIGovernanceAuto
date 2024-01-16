@@ -13,7 +13,7 @@
 <properties/>
 <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3826.v3b_5707fe44da_">
 <script>
-def FlowZip = '/files/novo.zip'
+def FlowZip = '/files/dadaa.zip'
 def CPILintRules = '/files/test.xml'
 def CodenarcRules = '/files/rules.groovy'
 
