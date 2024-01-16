@@ -115,6 +115,36 @@
     "credentials": "Credentials",
     "repositories": "Repositories",
     "rules": "Rules",
-    "logout": "Logout"
+    "logout": "Logout",
+    "report": "Jenkins report"
+  },
+  "report": {
+    "title": "Jenkins report",
+    "flow_issues": "Flow issues",
+    "groovy_issues": "Groovy issues",
+    "jar_vulnerabilities": "JAR vulnerabilities",
+    "codenarc": {
+      "total_files": "Total files with violations",
+      "total_violations": "Total violations",
+      "file_name": "File name",
+      "line": "Line",
+      "priority": "Priority",
+      "violation": "Violation",
+      "no_files_or_violations_found": "No files or violations found...",
+      "no_files_found": "No files found...",
+      "no_violations_found": "No violations found..."
+    },
+    "cpi_lint": {
+      "flow_name": "Flow name",
+      "issue": "Issue",
+      "no_issues_found": "No issues found..."
+    },
+    "dependency_check": {
+      "jar_name": "JAR name",
+      "vulnerability": "Vulnerability",
+      "severity": "Severity",
+      "no_jars_found": "No JARs found...",
+      "no_vulnerabilities_found": "No vulnerabilities found..."
+    }
   }
 }

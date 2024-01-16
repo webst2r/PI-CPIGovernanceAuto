@@ -10,6 +10,7 @@ import {publicGuard} from "./services/auth/public.guard";
 import {LogoutComponent} from "./pages/logout/logout.component";
 import {RepositoriesComponent} from "./pages/repositories/repositories.component";
 import {RulesComponent} from "./pages/rules/rules.component";
+import {JenkinsReportComponent} from "./pages/jenkins-report/jenkins-report.component";
 
 export const routes: Routes = [
   {
@@ -59,6 +60,10 @@ export const routes: Routes = [
   },
   { path: 'package-detail/:id',
     component: PackageDetailComponent,
+    canActivate: [authGuard]
+  },
+  { path: 'packages/jenkins/report',
+    component: JenkinsReportComponent,
     canActivate: [authGuard]
   }
 ];

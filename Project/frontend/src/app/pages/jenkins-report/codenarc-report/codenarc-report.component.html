@@ -1,0 +1,39 @@
+<main>
+  @if (report!.summary.totalFiles !== 0 && report!.summary.filesWithViolations !== 0) {
+    <div class="mt-1">
+      <p>{{ 'report.codenarc.total_files' | translate }}: {{ nbFilesWithViolations }}</p>
+      <p>{{ 'report.codenarc.total_violations' | translate }}: {{ nbViolations }}</p>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <ng-container matColumnDef="fileName">
+        <th mat-header-cell *matHeaderCellDef>{{ 'report.codenarc.file_name' | translate }}</th>
+        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="line">
+        <th mat-header-cell *matHeaderCellDef>{{ 'report.codenarc.line' | translate }}</th>
+        <td mat-cell *matCellDef="let element">{{ element.lineNumber }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="priority">
+        <th mat-header-cell *matHeaderCellDef>{{ 'report.codenarc.priority' | translate }}</th>
+        <td mat-cell *matCellDef="let element">{{ element.priority }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="violation">
+        <th mat-header-cell *matHeaderCellDef>{{ 'report.codenarc.violation' | translate }}</th>
+        <td mat-cell *matCellDef="let element">{{ element.ruleName }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  } @else if (report!.summary.totalFiles === 0 && report!.summary.filesWithViolations === 0) {
+    <h3 class="mt-2">{{ 'report.codenarc.no_files_or_violations_found' | translate }}</h3>
+  } @else if (report!.summary.filesWithViolations === 0) {
+    <h3 class="mt-2">{{ 'report.codenarc.no_violations_found' | translate }}</h3>
+  } @else {
+    <h3 class="mt-2">{{ 'report.codenarc.no_files_found' | translate }}</h3>
+  }
+</main>

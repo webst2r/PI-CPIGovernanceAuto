@@ -61,6 +61,9 @@ export class AppConstant {
         ALL: 'codenarc/all',
         CHECK_EXISTENCE: 'codenarc/exists',
       }
+    },
+    REPORT: {
+      GET: 'packages/jenkinsReport'
     }
   }
 

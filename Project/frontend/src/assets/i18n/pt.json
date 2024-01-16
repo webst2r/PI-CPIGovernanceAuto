@@ -115,6 +115,36 @@
     "credentials": "Credenciais",
     "repositories": "Repositórios",
     "rules": "Regras",
-    "logout": "Sair"
+    "logout": "Sair",
+    "report": "Relatório do Jenkins"
+  },
+  "report": {
+    "title": "Relatório do Jenkins",
+    "flow_issues": "Problemas de flow",
+    "groovy_issues": "Problemas de groovy",
+    "jar_vulnerabilities": "Vulnerabilidades do JAR",
+    "codenarc": {
+      "total_files": "Total de ficheiros com infrações",
+      "total_violations": "Total de infrações",
+      "file_name": "Nome do ficheiro",
+      "line": "Linha",
+      "priority": "Prioridade",
+      "violation": "Infração",
+      "no_files_or_violations_found": "Não foram encontrados ficheiros ou infrações...",
+      "no_files_found": "Não foram encontrados ficheiros...",
+      "no_violations_found": "Não foram encontradas infrações..."
+    },
+    "cpi_lint": {
+      "flow_name": "Nome do flow",
+      "issue": "Problema",
+      "no_issues_found": "Não foram encontrados problemas..."
+    },
+    "dependency_check": {
+      "jar_name": "Nome do JAR",
+      "vulnerability": "Vulnerabilidade",
+      "severity": "Severidade",
+      "no_jars_found": "Não foram encontrados JARs...",
+      "no_vulnerabilities_found": "Não foram encontradas vulnerabilidades..."
+    }
   }
 }

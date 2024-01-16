@@ -1,0 +1,19 @@
+@if (report!.numberOfIssues !== 0) {
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> {{ 'report.cpi_lint.flow_name' | translate }}</th>
+      <td mat-cell *matCellDef="let element"> {{ element.flowId }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="issue">
+      <th mat-header-cell *matHeaderCellDef> {{ 'report.cpi_lint.issue' | translate }}</th>
+      <td mat-cell *matCellDef="let element"> {{ element.issue }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+} @else {
+  <h3 class="mt-2">{{ 'report.cpi_lint.no_issues_found' | translate }}</h3>
+}
