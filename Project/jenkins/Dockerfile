@@ -15,4 +15,7 @@ RUN curl -L https://github.com/jeremylong/DependencyCheck/releases/download/v9.0
 RUN unzip "$CLASSPATH/dependency-check.zip" -d "$CLASSPATH"
 RUN chmod +x "$CLASSPATH/dependency-check/bin/dependency-check.sh"
 
+RUN mkdir /tmp/phony
+RUN "$CLASSPATH/dependency-check/bin/dependency-check.sh" -scan /tmp/phony --nvdApiKey=f906660d-70f5-4201-ab55-5e04202f34f9
+
 USER jenkins
