@@ -155,5 +155,12 @@
       "no_jars_found": "Não foram encontrados JARs...",
       "no_vulnerabilities_found": "Não foram encontradas vulnerabilidades..."
     }
+  },
+  "app_instructions": {
+    "title": "Como usar a aplicação",
+    "step_1": "Aceda à página de <strong>Credenciais</strong> e registe as credenciais do GitHub, SAP CPI e Jenkins.",
+    "step_2": "Navegue até à página de <strong>Repositórios</strong> e registe um repositório usando as credenciais.",
+    "step_3": "Faça o upload de ficheiros de regras na página de <strong>Regras</strong>.",
+    "step_4": "Vá para a página de <strong>Pacotes</strong>, selecione um pacote e realize as ações desejadas."
   }
 }

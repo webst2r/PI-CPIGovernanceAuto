@@ -9,3 +9,13 @@
     </a>
   </div>
 </div>
+
+<div class="app-instructions">
+  <h2>{{ 'app_instructions.title' | translate }}</h2>
+  <ol>
+    <li [innerHTML]="'app_instructions.step_1' | translate"></li>
+    <li [innerHTML]="'app_instructions.step_2' | translate"></li>
+    <li [innerHTML]="'app_instructions.step_3' | translate"></li>
+    <li [innerHTML]="'app_instructions.step_4' | translate"></li>
+  </ol>
+</div>
