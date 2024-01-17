@@ -33,26 +33,28 @@ public class PackagesController {
 
     private final ResourceLoader resourceLoader;
 
-    @GetMapping("/createAndExecutePipeline/{jobName}/{ruleFileName}/{codenarcFileName}")
+    @GetMapping("/createAndExecutePipeline/{jobName}/{ruleFileName}/{codenarcFileName}/{flowVersion}")
     public ResponseEntity<String> enableJenkins(
             @PathVariable("jobName") String jobName,
             @PathVariable("ruleFileName") String ruleFileName,
-            @PathVariable("codenarcFileName") String codenarcFileName)
+            @PathVariable("codenarcFileName") String codenarcFileName,
+            @PathVariable("flowVersion") String flowVersion)
     {
         try {
             System.out.println("Rule File Name: " + ruleFileName);
 
-            Resource resource = resourceLoader.getResource("classpath:" + "jenkins/file.xml");
+            Resource resource = resourceLoader.getResource("classpath:jenkins/file.xml");
+
             System.out.println("Recebi um pedido para o Jenkins com o ficheiro do codenarc: " + codenarcFileName);
 
             // Execute Update
-            jenkinsService.executeUpdateJenkinsFile(resource, ruleFileName, codenarcFileName, jobName);
+            jenkinsService.executeUpdateJenkinsFile(resource, ruleFileName, codenarcFileName, jobName, flowVersion);
 
             //Create Jenkins job
-            // jenkinsService.create(jobName, filePath);
+            jenkinsService.create(jobName);
 
             // Execute Jenkins job
-            // jenkinsService.execute(jobName);
+            jenkinsService.execute(jobName);
 
             return ResponseEntity.ok("Pipeline created and executed successfully!");
         } catch (Exception e) {

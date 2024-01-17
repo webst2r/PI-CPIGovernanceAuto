@@ -40,7 +40,7 @@ pipeline {
                     catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                         script {
                             def cpilintOutput = sh(
-                                script: "/cp/cpilint-1.0.4/bin/cpilint -rules ${CPILintRules} -files ${FlowZip} -debug > ${cpilintLogFile} 2>&1",
+                                script: "/cp/cpilint-1.0.4/bin/cpilint -rules ${CPILintRules} -files ${FlowZip} -debug > ${cpilintLogFile} 2>&amp;1",
                                 returnStatus: true
                             )
                             cpilintError = cpilintOutput != 0

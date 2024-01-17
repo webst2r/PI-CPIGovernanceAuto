@@ -109,7 +109,7 @@ export class JenkinsDialogComponent implements OnInit{
       console.log('Selected Rule File:', selectedRuleFile);
       console.log('Selected Codenarc File:', selectedCodenarcFile);
 
-      this.packageDetailService.enableJenkins(this.flowElement.name, selectedRuleFile, selectedCodenarcFile).subscribe(
+      this.packageDetailService.enableJenkins(this.flowElement.name, selectedRuleFile, selectedCodenarcFile, this.flowElement.version).subscribe(
         (response) => {
           console.log('Jenkins enabled successfully');
           this.showSuccessToast('Jenkins enabled successfully');

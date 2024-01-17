@@ -107,8 +107,8 @@ export class PackageDetailService {
     return this.httpClient.get(endpoint, { responseType: 'blob' });
   }
 
-  enableJenkins(jobName: string, ruleFileName: string, codenarcFileName: string): Observable<string> {
-    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.CREATE_EXECUTE_PIPELINE +`/${jobName}/${ruleFileName}/${codenarcFileName}`;
+  enableJenkins(jobName: string, ruleFileName: string, codenarcFileName: string, flowVersion: string): Observable<string> {
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.CREATE_EXECUTE_PIPELINE +`/${jobName}/${ruleFileName}/${codenarcFileName}/${flowVersion}`;
 
     return this.httpClient.get(endpoint, { responseType: 'text' }).pipe(
       map((response: any) => response),

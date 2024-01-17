@@ -1,5 +1,7 @@
 package org.project.backend.jenkins;
 
+import org.project.backend.packages.FlowResponseDTO;
+import org.project.backend.packages.PackagesService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import lombok.RequiredArgsConstructor;
@@ -16,18 +18,23 @@ import org.project.backend.configuration_files.cpi.RuleFile;
 import org.project.backend.configuration_files.cpi.RuleFileService;
 import org.project.backend.user.User;
 import org.project.backend.user.UserRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.*;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +47,8 @@ public class JenkinsService {
     private final RuleFileService ruleFileService;
 
     private final CodenarcFileService codenarcFileService;
+
+    private final PackagesService packagesService;
 
     private final JenkinsCredentialsRepository credentialsRepository;
 
@@ -54,7 +63,7 @@ public class JenkinsService {
     @Value("${path.internal}")
     private String internalPath;
 
-    public void create(String jobName, String path) {
+    public void create(String jobName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()) {
@@ -71,6 +80,9 @@ public class JenkinsService {
             System.out.println("Jenkins Token: " + jenkinsToken);
 
             String jenkinsUrl = "http://localhost:8080/";
+
+            Path projectPath = Paths.get(externalPath);
+            String path = projectPath + "\\file.xml";
 
             try {
                 String createJobUrl = jenkinsUrl + "createItem?name=" + URLEncoder.encode(jobName, "UTF-8");
@@ -164,32 +176,31 @@ public class JenkinsService {
         }
     }
 
-    public void executeUpdateJenkinsFile(Resource resource, String ruleFileName, String codenarcFileName, String githubFileName) throws IOException, InterruptedException {
+    public void executeUpdateJenkinsFile(Resource resource, String ruleFileName, String codenarcFileName, String githubFileName, String flowVersion) throws IOException, InterruptedException {
         Path projectPath = Paths.get(externalPath);
-        //Path path = projectPath.resolve(externalPath);
-        String savePath = projectPath.toString();
-        savePath += "/";
         String ruleFilePath = projectPath.toString();
         String codenarcFilePath = projectPath.toString();
+        String githubFilePath = projectPath.toString();
 
         githubFileName += ".zip";
 
-
         // Full path to the destination file in WSL
-        String wslDestinationPath = projectPath + "/" + "file.xml";
+        String wslDestinationPath = projectPath + "\\file.xml";
 
-        // Move the file using Java's Files.move method
-        try {
-            Path source = Path.of(resource.getURI());
+        try (InputStream inputStream = resource.getInputStream()) {
             Path destination = Path.of(wslDestinationPath);
 
-            Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            // Ensure that the destination directories exist, create them if necessary
+            Files.createDirectories(destination.getParent());
+
+            // Use Files.copy to copy the content of the InputStream to the destination
+            Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
 
             System.out.println("File moved successfully to WSL folder.");
         } catch (IOException e) {
+            e.printStackTrace();
             System.err.println("Failed to move the file to WSL folder: " + e.getMessage());
         }
-
 
         // Get the rule file content from the database
         Optional<RuleFile> optionalRuleFile = Optional.ofNullable(ruleFileService.getRuleFileByName(ruleFileName));
@@ -239,8 +250,27 @@ public class JenkinsService {
         }
 
 
+        // Get the IFlow zip from CPI API
+        ResponseEntity<byte[]> response = packagesService.downloadFlow(githubFileName, flowVersion);
+
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            // Create a temporary file with the github file content
+            try {
+                githubFilePath = githubFilePath + "/" + githubFileName;      //    _data/my_integration_flow.zip
+                Path filePath = Path.of(githubFilePath);
+                Files.write(filePath, response.getBody());
+                System.out.println("Temporary file created with content from the database: " + filePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Error creating or writing to the temporary file.");
+            }
+        } else {
+            System.out.println("Failed to retrieve IFlow zip from CPI API.");
+        }
+
+
         // Get the IFlow zip from Github
-        githubRepositoryService.downloadFileFromGitHub(githubFileName,savePath);
+        //githubRepositoryService.downloadFileFromGitHub(githubFileName,savePath);
     }
 
     public ReportDTO getJenkinsReport(){
