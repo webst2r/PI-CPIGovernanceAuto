@@ -1,1 +1,11 @@
 <h1>{{ 'side_nav.home' | translate }}</h1>
+<div class="dashboard-cards">
+  <div *ngFor="let data of navData()">
+    <a [routerLink]="['/' + data.routeLink]">
+      <div class="dashboard-card">
+        <i class="{{data.icon}}"></i>
+        <p>{{ data.label | translate }}</p>
+      </div>
+    </a>
+  </div>
+</div>

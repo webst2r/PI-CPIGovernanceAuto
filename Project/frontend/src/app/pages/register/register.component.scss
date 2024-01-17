@@ -38,22 +38,29 @@ mat-form-field {
 .error {
   color: red;
   margin-top: 5px;
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: red;
+  margin-top: 2px;
+  margin-bottom: 1rem;
 }
 
 .button-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  button {
+    background: #263238;
+    color: white;
+    display: flex;
+    justify-content: center;
+    font-size: medium;
+    padding: 30px;
+  }
 }
 
-button {
-  background: blue;
-  color: white;
-  display: flex;
-  justify-content: center;
-  font-size: medium;
-  padding: 30px;
-}
 
 button span {
   margin-right: 120px;

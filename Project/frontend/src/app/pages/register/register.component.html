@@ -3,7 +3,7 @@
     <mat-card-title class="register-title larger-text">{{"registerPage.register" | translate}}</mat-card-title>
     <hr class="line">
 
-    <mat-form-field>
+    <mat-form-field appearance="outline">
       <input type="text" matInput [placeholder]="'loginPage.email' | translate" formControlName="email">
     </mat-form-field>
 
@@ -11,7 +11,7 @@
       {{ "loginPage.invalidEmail" | translate }}
     </span>
 
-    <mat-form-field>
+    <mat-form-field appearance="outline">
       <input type="password" matInput [placeholder]="'loginPage.password' | translate" formControlName="password">
     </mat-form-field>
 
@@ -19,7 +19,7 @@
       {{  "loginPage.invalidPassword" | translate  }}
     </span>
 
-    <mat-form-field>
+    <mat-form-field appearance="outline">
       <input type="text" matInput [placeholder]="'registerPage.firstName' | translate" formControlName="firstName">
     </mat-form-field>
 
@@ -27,7 +27,7 @@
       {{  "registerPage.firstNameRequired" | translate  }}
     </span>
 
-    <mat-form-field>
+    <mat-form-field appearance="outline">
       <input type="text" matInput [placeholder]="'registerPage.lastName' | translate" formControlName="lastName">
     </mat-form-field>
 
