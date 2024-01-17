@@ -1,12 +1,14 @@
 package org.project.backend.jenkins;
 
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 import org.project.backend.configuration_files.codenarc.CodenarcFile;
 import org.project.backend.configuration_files.codenarc.CodenarcFileService;
 import org.project.backend.configuration_files.cpi.RuleFile;
 import org.project.backend.configuration_files.cpi.RuleFileService;
 import org.project.backend.credential.jenkins.JenkinsCredentials;
 import org.project.backend.credential.jenkins.JenkinsCredentialsRepository;
+import org.project.backend.exception.BadRequestException;
 import org.project.backend.jenkins.deserializer.CPIlintDeserializer;
 import org.project.backend.jenkins.deserializer.CodenarcReportReaderDeserializer;
 import org.project.backend.jenkins.deserializer.DependencyCheckReportReaderDeserializer;
@@ -17,6 +19,7 @@ import org.project.backend.user.User;
 import org.project.backend.user.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -31,10 +34,14 @@ import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.project.backend.exception.enumeration.ExceptionType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +60,7 @@ public class JenkinsService {
     private final CodenarcReportReaderDeserializer codenarcReportReaderDeserializer;
     private final DependencyCheckReportReaderDeserializer dependencyCheckReportReaderDeserializer;
     private final CPIlintDeserializer cpIlintDeserializer;
+    private final ResourceLoader resourceLoader;
 
     @Value("${path.external}")
     private String externalPath;
@@ -60,55 +68,45 @@ public class JenkinsService {
     @Value("${path.internal}")
     private String internalPath;
 
+    @Value("${jenkins.url}")
+    private String jenkinsUrl;
+
     public void create(String jobName) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        var jenkinsCredentials = getJenkinsCredentials();
+        String jenkinsUsername = jenkinsCredentials.getUsername();
+        String jenkinsToken = jenkinsCredentials.getAccessToken();
 
-        if (authentication != null && authentication.isAuthenticated()) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String username = userDetails.getUsername();
+        Path projectPath = Paths.get(externalPath);
+        String path = projectPath + "/" + "file.xml";
 
-            Optional<User> user = userRepository.findByEmail(username);
-            JenkinsCredentials jenkinsCredentials = credentialsRepository.findByUserId(user.get().getId());
+        try {
+            String createJobUrl = jenkinsUrl + "createItem?name=" + URLEncoder.encode(jobName, StandardCharsets.UTF_8);
 
-            String jenkinsUsername = jenkinsCredentials.getUsername();
-            String jenkinsToken = jenkinsCredentials.getAccessToken();
+            Path xmlPath = Path.of(path);
+            String xmlContent = Files.readString(xmlPath);
 
-            System.out.println("Jenkins Username: " + jenkinsUsername);
-            System.out.println("Jenkins Token: " + jenkinsToken);
+            HttpClient client = HttpClient.newHttpClient();
 
-            String jenkinsUrl = "http://localhost:8080/";
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(createJobUrl))
+                    .header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((jenkinsUsername + ":" + jenkinsToken).getBytes()))
+                    .header("Content-Type", "application/xml")
+                    .POST(HttpRequest.BodyPublishers.ofString(xmlContent))
+                    .build();
 
-            Path projectPath = Paths.get(externalPath);
-            String path = projectPath + "file.xml";
-
-            try {
-                String createJobUrl = jenkinsUrl + "createItem?name=" + URLEncoder.encode(jobName, "UTF-8");
-
-                Path xmlPath = Path.of(path);
-                String xmlContent = Files.readString(xmlPath);
-
-                HttpClient client = HttpClient.newHttpClient();
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(createJobUrl))
-                        .header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((jenkinsUsername + ":" + jenkinsToken).getBytes()))
-                        .header("Content-Type", "application/xml")
-                        .POST(HttpRequest.BodyPublishers.ofString(xmlContent))
-                        .build();
-
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                int statusCode = response.statusCode();
-                if (statusCode == 200) {
-                    System.out.println("Job created successfully!");
-                } else {
-                    System.out.println("Failed to create job. Status code: " + statusCode);
-                }
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            if (statusCode == 200) {
+                System.out.println("Job created successfully!");
+            } else {
+                System.out.println(response.body());
+                System.out.println("Failed to create job. Status code: " + statusCode);
+                throw new BadRequestException("Failed to create job", FAILED_TO_CREATE_JOB);
             }
+        } catch (IOException | InterruptedException e) {
+            throw new BadRequestException("Failed to create job", FAILED_TO_CREATE_JOB);
         }
     }
-
 
     //TODO - Adicionar REPORT AQUI
     public void execute(String jobName) {
@@ -125,10 +123,9 @@ public class JenkinsService {
 
             System.out.println("Jenkins Username: " + jenkinsUsername);
             System.out.println("Jenkins Token: " + jenkinsToken);
-            String jenkinsUrl = "http://localhost:8080/";
             try {
                 String jobUrl = jenkinsUrl + "job/" + jobName + "/build";
-
+                System.out.println(java.util.Base64.getEncoder().encodeToString((jenkinsUsername + ":" + jenkinsToken).getBytes()));
                 HttpClient client = HttpClient.newHttpClient();
 
                 HttpRequest request = HttpRequest.newBuilder()
@@ -143,61 +140,18 @@ public class JenkinsService {
                     System.out.println("Job triggered successfully!");
                 } else {
                     System.out.println("Failed to trigger job. Status code: " + statusCode);
+                    throw new BadRequestException("Failed to trigger job", FAILED_TO_EXECUTE_JOB);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new BadRequestException("Failed to trigger job", FAILED_TO_EXECUTE_JOB);
             }
         }
     }
 
-    public static void updateJenkinsFile(String patternString, Resource resource, String placeString) {
-        try {
-            // Lê o conteúdo do arquivo
-            Path path = Paths.get(resource.getURI());
-            String originalPipeline = new String(Files.readAllBytes(path));
-
-            // Define um padrão regex para encontrar a seção específica
-            Pattern pattern = Pattern.compile(patternString);
-            Matcher matcher = pattern.matcher(originalPipeline);
-
-            // Substitui os caminhos originais pelos novos caminhos
-            String updatedPipeline = matcher.replaceFirst(placeString);
-
-            // Escreve o conteúdo atualizado de volta no arquivo
-            Files.write(path, updatedPipeline.getBytes(), StandardOpenOption.WRITE);
-
-            System.out.println("Pipeline atualizado e gravado com sucesso no arquivo.");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Erro ao processar o arquivo do pipeline.");
-        }
-    }
-
-    public void executeUpdateJenkinsFile(Resource resource, String ruleFileName, String codenarcFileName, String githubFileName, String flowVersion) throws IOException, InterruptedException {
+    public void executeUpdateJenkinsFile(String ruleFileName, String codenarcFileName, String flowFileName, String flowVersion) throws IOException, InterruptedException {
         Path projectPath = Paths.get(externalPath);
-        String ruleFilePath = projectPath.toString();
-        String codenarcFilePath = projectPath.toString();
         String githubFilePath = projectPath.toString();
-
-        githubFileName += ".zip";
-
-        // Full path to the destination file in WSL
-        String wslDestinationPath = projectPath+ "/" + "file.xml";
-
-        try (InputStream inputStream = resource.getInputStream()) {
-            Path destination = Path.of(wslDestinationPath);
-
-            // Ensure that the destination directories exist, create them if necessary
-            Files.createDirectories(destination.getParent());
-
-            // Use Files.copy to copy the content of the InputStream to the destination
-            Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
-
-            System.out.println("File moved successfully to WSL folder.");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Failed to move the file to WSL folder: " + e.getMessage());
-        }
+        var pipelineFilePath = movePipelineFileToJenkins();
 
         // Get the rule file content from the database
         Optional<RuleFile> optionalRuleFile = Optional.ofNullable(ruleFileService.getRuleFileByName(ruleFileName));
@@ -209,75 +163,187 @@ public class JenkinsService {
             RuleFile ruleFile = optionalRuleFile.get();
             CodenarcFile codenarcFile = optionalCodenarcFile.get();
 
-            // Create a temporary file with the rule file content
-            try {
-                ruleFilePath = ruleFilePath + "/" + ruleFile.getFileName();
-                Files.write(Path.of(ruleFilePath), ruleFile.getFileContent());
-                System.out.println("Temporary file created with content from the database: " + ruleFilePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Error creating temporary file with content from the database.");
-            }
-
-            // Create a temporary file with the codenarc file content
-            try {
-                codenarcFilePath = codenarcFilePath + "/" + codenarcFile.getFileName();
-                Files.write(Path.of(codenarcFilePath), codenarcFile.getFileContent());
-                System.out.println("Created Codenarc Temporary file " + codenarcFile.getFileName() + " created with content from the database in " + codenarcFilePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Error creating temporary file with content from the database.");
-            }
+            sendFileToJenkins(ruleFile.getFileContent(), ruleFile.getFileName());
+            sendFileToJenkins(codenarcFile.getFileContent(), codenarcFile.getFileName());
 
             String patternString_flow = "def FlowZip = '/files/(.*?)'";
             String patternString_CPI_Rules = "def CPILintRules = '/files/(.*?)'";
             String patternString_Codenarc_Rules = "def CodenarcRules = '/files/(.*?)'";
 
-            String placeString_flow = "def FlowZip = '/files/" + githubFileName + "'";
+            String placeString_flow = "def FlowZip = '/files/" + flowFileName + "'";
             String placeString_CPI_Rules = "def CPILintRules = '/files/" + ruleFileName + "'";
             String placeString_Codenarc_Rules = "def CodenarcRules = '/files/" + codenarcFileName + "'";
+            System.out.println(pipelineFilePath);
+            updateJenkinsFile(patternString_flow, pipelineFilePath, placeString_flow);
 
-            updateJenkinsFile(patternString_flow,resource, placeString_flow);
+            updateJenkinsFile(patternString_CPI_Rules, pipelineFilePath, placeString_CPI_Rules);
 
-            updateJenkinsFile(patternString_CPI_Rules,resource, placeString_CPI_Rules);
-
-            updateJenkinsFile(patternString_Codenarc_Rules,resource, placeString_Codenarc_Rules);
+            updateJenkinsFile(patternString_Codenarc_Rules, pipelineFilePath, placeString_Codenarc_Rules);
         } else {
             System.out.println("RuleFile not found in the database.");
+            throw new BadRequestException("RuleFile not found in the database.", RULE_FILE_NOT_FOUND);
         }
 
-
-        // Get the IFlow zip from CPI API
-        ResponseEntity<byte[]> response = packagesService.downloadFlow(githubFileName, flowVersion);
-
-        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            // Create a temporary file with the github file content
-            try {
-                githubFilePath = githubFilePath + "/" + githubFileName;      //    _data/my_integration_flow.zip
-                Path filePath = Path.of(githubFilePath);
-                Files.write(filePath, response.getBody());
-                System.out.println("Temporary file created with content from the database: " + filePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Error creating or writing to the temporary file.");
-            }
-        } else {
-            System.out.println("Failed to retrieve IFlow zip from CPI API.");
-        }
-
-
-        // Get the IFlow zip from Github
-        //githubRepositoryService.downloadFileFromGitHub(githubFileName,savePath);
+        downloadAndSendFlow(flowFileName, flowVersion);
     }
 
-    public ReportDTO getJenkinsReport(){
+    //TODO - RETURN STATE and RESULT
+    //TODO - handle exceptions
+    public Boolean checkBuildState(String jobName) {
+        var jenkinsCredentials = getJenkinsCredentials();
+        String jenkinsUsername = jenkinsCredentials.getUsername();
+        String jenkinsToken = jenkinsCredentials.getAccessToken();
+
+        try {
+            String JobStateUrl = jenkinsUrl + "job/" + jobName + "/lastBuild/api/json";
+
+            HttpClient client = HttpClient.newHttpClient();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(JobStateUrl))
+                    .header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((jenkinsUsername + ":" + jenkinsToken).getBytes()))
+                    .header("Content-Type", "application/json")
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+
+            if (statusCode == 200) {
+                JSONObject jsonResponse = new JSONObject(response.body());
+
+                boolean building = jsonResponse.getBoolean("building");
+                String result = jsonResponse.optString("result", null);
+                System.out.println("Building: " + building + " Result:" + result);
+            } else {
+                System.out.println("Failed to check job status. Status code: " + statusCode);
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        return true;
+    }
+
+    public ReportDTO getJenkinsReport() {
+        checkBuildState("my_integration_flow_pi");
         String jobName = "my_integration_flow_pi";
-        //TODO: pass the name of the file as a parameter
         //TODO: call this method the right method in jenkins when pipeline as finished
-       return ReportDTO.builder()
+        return ReportDTO.builder()
                 .codenarcReport(codenarcReportReaderDeserializer.deserialize(jobName))
                 .dependencyCheckReport(dependencyCheckReportReaderDeserializer.deserialize(jobName))
                 .cpiLintReport(cpIlintDeserializer.deserialize(jobName))
                 .build();
+    }
+
+    public void deletePipeline(String jobName) {
+        var jenkinsCredentials = getJenkinsCredentials();
+        try {
+            String JobStateUrl = jenkinsUrl + "job/" + jobName + "/doDelete";
+
+            HttpClient client = HttpClient.newHttpClient();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(JobStateUrl))
+                    .header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((jenkinsCredentials.getUsername() + ":" + jenkinsCredentials.getAccessToken()).getBytes()))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+
+            if (statusCode == 200) {
+                System.out.println("Job deleted successfully!");
+            }else if(statusCode == 404){
+                System.out.println("Job not found!");
+            }
+            else {
+                System.out.println("Failed to delete job. Status code: " + statusCode);
+                throw new BadRequestException("Failed to delete job", FAILED_TO_DELETE_JOB);
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new BadRequestException("Failed to delete job", FAILED_TO_DELETE_JOB);
+        }
+    }
+
+    public static void updateJenkinsFile(String patternString, Path path, String placeString) {
+        try {
+            // Lê o conteúdo do arquivo
+            String originalPipeline = new String(Files.readAllBytes(path));
+
+            // Define um padrão regex para encontrar a seção específica
+            Pattern pattern = Pattern.compile(patternString);
+            Matcher matcher = pattern.matcher(originalPipeline);
+
+            // Substitui os caminhos originais pelos novos caminhos
+            String updatedPipeline = matcher.replaceFirst(placeString);
+
+            // Escreve o conteúdo atualizado de volta no arquivo
+            Files.write(path, updatedPipeline.getBytes(), StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+
+            System.out.println("Pipeline atualizado e gravado com sucesso.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Erro ao processar o ficheiro do pipeline.");
+            throw new BadRequestException("Erro ao processar o ficheiro do pipeline.", FAILED_TO_UPLOAD_FILE);
+        }
+    }
+
+    private JenkinsCredentials getJenkinsCredentials() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+
+            Optional<User> user = userRepository.findByEmail(username);
+            return credentialsRepository.findByUserId(user.get().getId());
+        }
+        throw new BadRequestException("User not authenticated", USER_NOT_FOUND);
+    }
+
+    private void sendFileToJenkins(byte[] fileContent, String fileName) {
+        try {
+            String filePath = externalPath + "/" + fileName;
+            Files.write(Path.of(filePath), fileContent);
+            System.out.println("File created with content: " + filePath);
+        } catch (IOException e) {
+            System.out.println("Error creating temporary file.");
+            throw new BadRequestException("Files with rules not found", RULE_FILE_NOT_FOUND); // Rethrow the exception to indicate the failure
+        }
+    }
+
+    private Path movePipelineFileToJenkins() throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:jenkins/file.xml");
+        String fullDestinationPath = externalPath + "/" + "file.xml";
+        Path destinationPath = Paths.get(fullDestinationPath);
+
+        try (InputStream inputStream = resource.getInputStream()) {
+            // Ensure that the destination directories exist, create them if necessary
+            Files.createDirectories(destinationPath.getParent());
+
+            // Use Files.copy to copy the content of the InputStream to the destination
+            Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.println("Resource file moved successfully to external Jenkins folder.");
+        } catch (IOException e) {
+            System.err.println("Failed to move the resource file to external Jenkins folder: " + e.getMessage());
+            throw new BadRequestException("Failed to move the resource file to external Jenkins folder", FAILED_TO_MOVE_FILE);
+        }
+        return destinationPath;
+    }
+
+    private void downloadAndSendFlow(String flowFileName, String flowVersion) {
+        // Get the IFlow zip from CPI API
+        ResponseEntity<byte[]> response = packagesService.downloadFlow(flowFileName, flowVersion);
+
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            // Create a temporary file with the github file content
+            sendFileToJenkins(response.getBody(), flowFileName + ".zip");
+        } else {
+            System.out.println("Failed to retrieve IFlow zip from CPI API.");
+            throw new BadRequestException("Failed to retrieve IFlow zip from CPI API.", FAILED_TO_UPLOAD_FILE);
+        }
     }
 }

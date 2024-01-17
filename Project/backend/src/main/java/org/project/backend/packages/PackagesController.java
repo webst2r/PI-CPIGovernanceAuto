@@ -1,17 +1,18 @@
 package org.project.backend.packages;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.project.backend.jenkins.JenkinsService;
 import org.project.backend.jenkins.dto.ReportDTO;
 import org.project.backend.repository.github.GithubRepositoryService;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,8 +32,6 @@ public class PackagesController {
 
     private final JenkinsService jenkinsService;
 
-    private final ResourceLoader resourceLoader;
-
     @GetMapping("/createAndExecutePipeline/{jobName}/{ruleFileName}/{codenarcFileName}/{flowVersion}")
     public ResponseEntity<String> enableJenkins(
             @PathVariable("jobName") String jobName,
@@ -41,14 +40,14 @@ public class PackagesController {
             @PathVariable("flowVersion") String flowVersion)
     {
         try {
+            System.out.println("Job Name: " + jobName);
             System.out.println("Rule File Name: " + ruleFileName);
 
-            Resource resource = resourceLoader.getResource("classpath:jenkins/file.xml");
 
             System.out.println("Recebi um pedido para o Jenkins com o ficheiro do codenarc: " + codenarcFileName);
 
             // Execute Update
-            jenkinsService.executeUpdateJenkinsFile(resource, ruleFileName, codenarcFileName, jobName, flowVersion);
+            jenkinsService.executeUpdateJenkinsFile(ruleFileName, codenarcFileName, jobName, flowVersion);
 
             //Create Jenkins job
             jenkinsService.create(jobName);
