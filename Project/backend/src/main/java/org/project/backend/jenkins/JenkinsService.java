@@ -108,6 +108,8 @@ public class JenkinsService {
         }
     }
 
+    //TODO: add the zip and logs to github
+    //TODO: delete files from jenkins
     public ReportDTO execute(String jobName) {
 
         var jenkinsCredentials = getJenkinsCredentials();
@@ -134,6 +136,7 @@ public class JenkinsService {
                 var state = checkBuildState(jobName);
                 if (state.equals("SUCCESS")) {
                     System.out.println("Job executed successfully!");
+                    //TODO: Send zip and logs to github
                     return getJenkinsReport(jobName);
                 } else {
                     System.out.println("Job executed with errors!");
@@ -188,8 +191,6 @@ public class JenkinsService {
         downloadAndSendFlow(flowFileName, flowVersion);
     }
 
-    //TODO - RETURN STATE
-    //TODO - handle exceptions
     public String checkBuildState(String jobName) {
         var jenkinsCredentials = getJenkinsCredentials();
         String jenkinsUsername = jenkinsCredentials.getUsername();
