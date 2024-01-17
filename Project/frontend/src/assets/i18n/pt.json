@@ -74,7 +74,7 @@
     "short_text": "Texto curto",
     "supported_platform": "Plataforma Suportada",
     "update_available":"Atualização disponível",
-    "vendor": "Vendor",
+    "vendor": "Fornecedor",
     "version": "Versão",
     "flows": "Fluxos",
     "number": "No.",
@@ -88,11 +88,12 @@
     "repositories": "Repositórios",
     "all_repositories": "Todos os Repositórios",
     "name": "Nome",
-    "ex_name":"github_repository",
+    "example": "Ex: ",
+    "ex_name":"repositorio_github",
     "main_branch": "Branch Principal",
     "ex_main_branch":"main",
     "secondary_branches": "Branches Secundárias",
-    "ex_secondary_branches": "joe_branch",
+    "ex_secondary_branches": "branch_do_jose",
     "credentials": "Credenciais",
     "create": "Criar",
     "update": "Atualizar",
@@ -106,7 +107,15 @@
   },
   "rules": {
     "rules": "Regras",
-    "all_rules": "Todas as Regras"
+    "all_rules": "Todas as Regras",
+    "upload_rule_file": "Upload de Ficheiro de Regras",
+    "upload_cpi_rule": "Upload de Regra do CPILint",
+    "upload_codenarc_file": "Upload de Ficheiro do Codenarc",
+    "select_cpi_rule": "Selecione uma Regra do CPILint",
+    "select_codenarc_rule": "Selecione um Ficheiro do Codernarc"
+  },
+  "buttons": {
+    "submit": "Submeter"
   },
   "side_nav": {
     "login": "Login",

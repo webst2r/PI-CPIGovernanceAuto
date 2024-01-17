@@ -1,7 +1,7 @@
 <form [formGroup]="codenarcFileForm" (ngSubmit)="onSubmit()" (drop)="onDropFile($event)" (dragover)="onDragOver($event)">
   <div class="file-input-container">
     <label for="file"><i class="fas fa-code" style="margin-right: 8px;"></i>
-      <span>Upload Codenarc File</span></label>
+      <span>{{ 'rules.upload_codenarc_file' | translate }}</span></label>
     <div class="file-input" (click)="fileInput.click()">
       <input type="file" id="file" name="file" #fileInput style="display: none" (change)="onFileChange($event)" />
       <span class="file-icon" (drop)="onDropFile($event)" (dragover)="onDragOver($event)">

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import {AppConstant} from "../app.constant";
@@ -104,7 +104,12 @@ export class PackageDetailService {
   downloadFlow(flowId: string, flowVersion: string): Observable<Blob> {
     const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.DOWNLOAD_FLOW + `/${flowId}/${flowVersion}`;
 
-    return this.httpClient.get(endpoint, { responseType: 'blob' });
+    // Set headers to accept 'application/zip' content type
+    const headers = new HttpHeaders({
+      'Accept': 'application/zip',
+    });
+
+    return this.httpClient.get(endpoint, { headers, responseType: 'blob' });
   }
 
   enableJenkins(jobName: string, ruleFileName: string, codenarcFileName: string, flowVersion: string): Observable<string> {

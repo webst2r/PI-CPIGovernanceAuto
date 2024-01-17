@@ -6,7 +6,6 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatTabsModule} from "@angular/material/tabs";
 import {SapCpiComponent} from "../credentials/sap-cpi/sap-cpi.component";
 import {GithubRepositoryComponent} from "./github-repository/github-repository.component";
-import {AllRepositoriesComponent} from "./all-repositories/all-repositories.component";
 
 @Component({
   selector: 'app-repositories',
@@ -18,8 +17,7 @@ import {AllRepositoriesComponent} from "./all-repositories/all-repositories.comp
     MatIconModule,
     MatTabsModule,
     SapCpiComponent,
-    GithubRepositoryComponent,
-    AllRepositoriesComponent
+    GithubRepositoryComponent
   ],
   templateUrl: './repositories.component.html',
   styleUrl: './repositories.component.scss'

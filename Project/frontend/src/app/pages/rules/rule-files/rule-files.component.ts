@@ -6,16 +6,18 @@ import {NgIf} from "@angular/common";
 import {MatInputModule} from "@angular/material/input";
 import {MatButtonModule} from "@angular/material/button";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-rulefiles',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    NgIf,
-    MatInputModule,
-    MatButtonModule
-  ],
+    imports: [
+        ReactiveFormsModule,
+        NgIf,
+        MatInputModule,
+        MatButtonModule,
+        TranslateModule
+    ],
   templateUrl: './rule-files.component.html',
   styleUrl: './rule-files.component.scss'
 })

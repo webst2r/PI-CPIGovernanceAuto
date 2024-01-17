@@ -5,6 +5,7 @@ import {MatTableModule} from "@angular/material/table";
 import {TranslateModule} from "@ngx-translate/core";
 import {PackagesElement} from "../../models/packages";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {NgIf} from "@angular/common";
 
 
 @Component({
@@ -15,7 +16,8 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
   imports: [
     MatTableModule,
     TranslateModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    NgIf
   ]
 })
 export class PackagesComponent implements OnInit {

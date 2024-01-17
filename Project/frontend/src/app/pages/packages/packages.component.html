@@ -47,7 +47,4 @@
   <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>
 
-@if (isLoadingSig()) {
-  <mat-spinner class="spinner"></mat-spinner>
-}
-
+<mat-spinner *ngIf="isLoadingSig()" class="spinner"></mat-spinner>

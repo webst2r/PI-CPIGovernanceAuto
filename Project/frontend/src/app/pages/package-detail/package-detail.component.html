@@ -6,81 +6,85 @@
   </button>
 </div>
 
-<div class="additional-info-container">
-  <div class="info-item">
-    <i class="fas fa-font"></i>
-    <p class="info-text">{{"package.name" | translate}}: <span class="highlight">{{ packageDetails.name  }}</span></p>
+<div class="wrapper-with-spinner">
+  <div class="additional-info-container">
+    <div class="info-item">
+      <i class="fas fa-font"></i>
+      <p class="info-text">{{"package.name" | translate}}: <span class="highlight">{{ packageDetails.name  }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-user"></i>
+      <p class="info-text">{{"package.created_by" | translate}}: <span class="highlight">{{ packageDetails.createdBy }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-calendar"></i>
+      <p class="info-text">{{"package.creation_date" | translate}}: <span class="highlight">{{ packageDetails.creationDate }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-file-alt"></i>
+      <p class="info-text">{{"package.description" | translate}}: <span class="highlight">{{packageDetails. description }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-id-card"></i>
+      <p class="info-text">{{"package.id" | translate}}: <span class="highlight">{{ packageDetails.id }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-cogs"></i>
+      <p class="info-text">{{"package.mode" | translate}}: <span class="highlight">{{ packageDetails.mode }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-pencil-alt"></i>
+      <p class="info-text">{{"package.modified_by" | translate}}: <span class="highlight">{{packageDetails.modifiedBy }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-calendar-check"></i>
+      <p class="info-text">{{"package.modified_date" | translate}}: <span class="highlight">{{ packageDetails.modifiedDate }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-cube"></i>
+      <p class="info-text">{{"package.partner_content" | translate}}: <span class="highlight">{{ packageDetails.partnerContent ? 'Yes' : 'No' }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-cube"></i>
+      <p class="info-text">{{"package.resource_id" | translate}}: <span class="highlight">{{ packageDetails.resourceId }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-font"></i>
+      <p class="info-text">{{"package.short_text" | translate}}: <span class="highlight">{{ packageDetails.shortText }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-desktop"></i>
+      <p class="info-text">{{"package.supported_platform" | translate}}: <span class="highlight">{{ packageDetails.supportedPlatform }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-arrow-up"></i>
+      <p class="info-text">{{"package.update_available" | translate}}: <span class="highlight">{{ packageDetails.updateAvailable ? 'Yes' : 'No' }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-industry"></i>
+      <p class="info-text">{{"package.vendor" | translate}}: <span class="highlight">{{ packageDetails.vendor }}</span></p>
+    </div>
+
+    <div class="info-item">
+      <i class="fas fa-code"></i>
+      <p class="info-text">{{"package.version" | translate}}: <span class="highlight">{{ packageDetails.version }}</span></p>
+    </div>
   </div>
 
-  <div class="info-item">
-    <i class="fas fa-user"></i>
-    <p class="info-text">{{"package.created_by" | translate}}: <span class="highlight">{{ packageDetails.createdBy }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-calendar"></i>
-    <p class="info-text">{{"package.creation_date" | translate}}: <span class="highlight">{{ packageDetails.creationDate }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-file-alt"></i>
-    <p class="info-text">{{"package.description" | translate}}: <span class="highlight">{{packageDetails. description }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-id-card"></i>
-    <p class="info-text">{{"package.id" | translate}}: <span class="highlight">{{ packageDetails.id }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-cogs"></i>
-    <p class="info-text">Mode: <span class="highlight">{{ packageDetails.mode }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-pencil-alt"></i>
-    <p class="info-text">Modified By: <span class="highlight">{{packageDetails.modifiedBy }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-calendar-check"></i>
-    <p class="info-text">{{"package.modified_date" | translate}}: <span class="highlight">{{ packageDetails.modifiedDate }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-cube"></i>
-    <p class="info-text">{{"package.partner_content" | translate}}: <span class="highlight">{{ packageDetails.partnerContent ? 'Yes' : 'No' }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-cube"></i>
-    <p class="info-text">{{"package.resource_id" | translate}}: <span class="highlight">{{ packageDetails.resourceId }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-font"></i>
-    <p class="info-text">{{"package.short_text" | translate}}: <span class="highlight">{{ packageDetails.shortText }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-desktop"></i>
-    <p class="info-text">{{"package.supported_platform" | translate}}: <span class="highlight">{{ packageDetails.supportedPlatform }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-arrow-up"></i>
-    <p class="info-text">{{"package.update_available" | translate}}: <span class="highlight">{{ packageDetails.updateAvailable ? 'Yes' : 'No' }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-industry"></i>
-    <p class="info-text">{{"package.vendor" | translate}}: <span class="highlight">{{ packageDetails.vendor }}</span></p>
-  </div>
-
-  <div class="info-item">
-    <i class="fas fa-code"></i>
-    <p class="info-text">{{"package.version" | translate}}: <span class="highlight">{{ packageDetails.version }}</span></p>
-  </div>
+  <mat-spinner *ngIf="isLoadingSig()" class="spinner"></mat-spinner>
 </div>
 
 
@@ -135,23 +139,12 @@
         <button class="open-flow-btn" mat-icon-button (click)="openGithub(element)" matTooltip="{{'package.enable_github' | translate}}">
           <i class="fab fa-github" aria-hidden="true"></i>
         </button>
-        <!--
-        <button class="open-flow-btn" mat-icon-button (click)="enableGithub(element)" matTooltip="{{'package.enable_github' | translate}}">
-          <i class="fab fa-github" aria-hidden="true"></i>
-        </button>
-        -->
         <!-- BUTTON: Enable Jenkins -->
         <button class="open-flow-btn" mat-icon-button (click)="openJenkins(element)" matTooltip="{{'package.enable_jenkins' | translate}}">
           <i class="fab fa-jenkins" aria-hidden="true"></i>
         </button>
-        <!--
-        <button class="open-flow-btn" mat-icon-button (click)="enableJenkins(element)" matTooltip="{{'package.enable_jenkins' | translate}}">
-          <i class="fab fa-jenkins" aria-hidden="true"></i>
-        </button>
-        -->
       </td>
     </ng-container>
-
 
     <!-- Header and Rows -->
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

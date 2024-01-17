@@ -4,15 +4,19 @@ import {NgIf} from "@angular/common";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {CodenarcFilesService} from "../../../services/codenarc-files.service";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-codernac-files',
   standalone: true,
-  imports: [
-    FormsModule,
-    NgIf,
-    ReactiveFormsModule
-  ],
+    imports: [
+        FormsModule,
+        NgIf,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        TranslateModule
+    ],
   templateUrl: './codernac-files.component.html',
   styleUrl: './codernac-files.component.scss'
 })

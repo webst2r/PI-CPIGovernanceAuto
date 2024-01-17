@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, ViewChild} from '@angular/core';
+import {Component, inject, OnInit, signal, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,6 +15,8 @@ import {GithubDialogComponent} from "../github-dialog/github-dialog.component";
 import {JenkinsDialogComponent} from "../jenkins-dialog/jenkins-dialog.component";
 import {FlowElement} from "../../models/flows";
 import {PackageDetails} from "../../models/package-details";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-package-detail',
@@ -24,9 +26,11 @@ import {PackageDetails} from "../../models/package-details";
     MatTableModule,
     MatIconModule,
     MatPaginatorModule,
+    MatProgressSpinnerModule,
     MatTooltipModule,
     MatButtonModule,
-    TranslateModule
+    TranslateModule,
+    NgIf
   ],
   styleUrls: ['./package-detail.component.scss'],
 })
@@ -35,6 +39,8 @@ export class PackageDetailComponent implements OnInit {
   packageId: string = '';
   dataSource: MatTableDataSource<FlowElement>;
   displayedColumns: string[] = ['position', 'name', 'version', 'modifiedBy', 'modifiedDate', 'actions'];
+
+  isLoadingSig = signal(true);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -74,6 +80,7 @@ export class PackageDetailComponent implements OnInit {
   }
 
   fetchPackageDetails() {
+    this.isLoadingSig.set(true); // Set to true before starting the fetch
     this.packageDetailService.getPackageDetails(this.packageId).subscribe(
       (packageDetails) => {
         this.packageDetails = packageDetails;
@@ -81,9 +88,13 @@ export class PackageDetailComponent implements OnInit {
       },
       (error) => {
         console.error('Error fetching package details:', error);
+      },
+      () => {
+        this.isLoadingSig.set(false);
       }
     );
   }
+
 
   fetchPackageFlows() {
     this.packageDetailService.getPackageFlows(this.packageId).subscribe(
@@ -114,8 +125,16 @@ export class PackageDetailComponent implements OnInit {
   downloadFlow(element: FlowElement) {
     this.packageDetailService.downloadFlow(element.name, element.version).subscribe(
       (response) => {
-        saveAs(response, `${element.name}_${element.version}.xml`);
-        this.showSuccessToast(`${element.name}_${element.version}.xml downloaded successfully`);
+        // Check the content type to determine if it's a zip file
+        const contentType = response.type;
+        if (contentType === 'application/zip') {
+          // Save the zip file
+          saveAs(response, `${element.name}_${element.version}.zip`);
+          this.showSuccessToast(`${element.name}_${element.version}.zip downloaded successfully`);
+        } else {
+          // Handle other content types if needed
+          console.error('Unexpected content type:', contentType);
+        }
       },
       (error) => {
         console.error('Error downloading flow:', error);

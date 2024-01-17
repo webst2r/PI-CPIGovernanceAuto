@@ -1,5 +1,23 @@
+:host {
+  .spinner {
+    margin-top: 2rem;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .mat-mdc-progress-spinner {
+    --mdc-circular-progress-active-indicator-color: #263238;
+  }
+}
+
 h4 {
   margin-bottom: 1rem;
+}
+
+.wrapper-with-spinner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .header-container {

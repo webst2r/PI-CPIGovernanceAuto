@@ -85,9 +85,9 @@
   },
   "repositories": {
     "repositories": "Repositories",
-    "example": "E.g: ",
     "all_repositories": "All Repositories",
     "name": "Name",
+    "example": "E.g: ",
     "ex_name":"github_repository",
     "main_branch": "Main Branch",
     "ex_main_branch":"main",
@@ -106,7 +106,14 @@
   },
   "rules": {
     "rules": "Rules",
-    "all_rules": "All Rules"
+    "upload_rule_file": "Upload Rule File",
+    "upload_cpi_rule": "Upload CPILint Rule",
+    "upload_codenarc_file": "Upload Codenarc File",
+    "select_cpi_rule": "Select a CPILint Rule",
+    "select_codenarc_rule": "Select a Codernarc File"
+  },
+  "buttons": {
+    "submit": "Submit"
   },
   "side_nav": {
     "login": "Login",
