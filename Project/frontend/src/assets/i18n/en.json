@@ -115,6 +115,9 @@
   "buttons": {
     "submit": "Submit"
   },
+  "github": {
+    "select_branch": "Select a branch"
+  },
   "side_nav": {
     "login": "Login",
     "home": "Home",

@@ -60,8 +60,6 @@ public class PackagesController {
         return ResponseEntity.ok(jenkinsService.getJenkinsReport("my_integration_flow_pi"));
     }
 
-
-
     @GetMapping("/getPackages")
     public ResponseEntity<PackagesResponseDTO> getPackages() throws JsonProcessingException {
         PackagesResponseDTO response = packagesService.getPackages();

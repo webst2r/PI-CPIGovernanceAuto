@@ -9,7 +9,7 @@
 <div class="form-container">
   <form [formGroup]="form" (ngSubmit)="enableGithub()">
     <mat-form-field appearance="fill">
-      <mat-label>Select Branch</mat-label>
+      <mat-label>{{ 'github.select_branch' | translate }}</mat-label>
       <mat-select formControlName="selectedBranch">
         <mat-option *ngFor="let branch of branches" [value]="branch">
           {{ branch }}
@@ -19,7 +19,7 @@
     </mat-form-field>
 
     <button mat-raised-button class="submitBtn" type="submit" color="primary">
-      Submit
+      {{ 'buttons.submit' | translate }}
     </button>
 
   </form>

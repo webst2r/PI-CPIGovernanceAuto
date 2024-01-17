@@ -117,6 +117,9 @@
   "buttons": {
     "submit": "Submeter"
   },
+  "github": {
+    "select_branch": "Selecione uma branch"
+  },
   "side_nav": {
     "login": "Login",
     "home": "Início",
