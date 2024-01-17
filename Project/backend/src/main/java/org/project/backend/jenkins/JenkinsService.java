@@ -1,23 +1,22 @@
 package org.project.backend.jenkins;
 
-import org.project.backend.packages.FlowResponseDTO;
-import org.project.backend.packages.PackagesService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import lombok.RequiredArgsConstructor;
 import org.project.backend.configuration_files.codenarc.CodenarcFile;
 import org.project.backend.configuration_files.codenarc.CodenarcFileService;
+import org.project.backend.configuration_files.cpi.RuleFile;
+import org.project.backend.configuration_files.cpi.RuleFileService;
 import org.project.backend.credential.jenkins.JenkinsCredentials;
 import org.project.backend.credential.jenkins.JenkinsCredentialsRepository;
 import org.project.backend.jenkins.deserializer.CPIlintDeserializer;
 import org.project.backend.jenkins.deserializer.CodenarcReportReaderDeserializer;
 import org.project.backend.jenkins.deserializer.DependencyCheckReportReaderDeserializer;
 import org.project.backend.jenkins.dto.ReportDTO;
+import org.project.backend.packages.PackagesService;
 import org.project.backend.repository.github.GithubRepositoryService;
-import org.project.backend.configuration_files.cpi.RuleFile;
-import org.project.backend.configuration_files.cpi.RuleFileService;
 import org.project.backend.user.User;
 import org.project.backend.user.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -25,7 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -34,7 +32,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.*;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,7 +79,7 @@ public class JenkinsService {
             String jenkinsUrl = "http://localhost:8080/";
 
             Path projectPath = Paths.get(externalPath);
-            String path = projectPath + "\\file.xml";
+            String path = projectPath + "file.xml";
 
             try {
                 String createJobUrl = jenkinsUrl + "createItem?name=" + URLEncoder.encode(jobName, "UTF-8");
@@ -185,7 +182,7 @@ public class JenkinsService {
         githubFileName += ".zip";
 
         // Full path to the destination file in WSL
-        String wslDestinationPath = projectPath + "\\file.xml";
+        String wslDestinationPath = projectPath+ "/" + "file.xml";
 
         try (InputStream inputStream = resource.getInputStream()) {
             Path destination = Path.of(wslDestinationPath);
@@ -274,12 +271,13 @@ public class JenkinsService {
     }
 
     public ReportDTO getJenkinsReport(){
+        String jobName = "my_integration_flow_pi";
         //TODO: pass the name of the file as a parameter
         //TODO: call this method the right method in jenkins when pipeline as finished
        return ReportDTO.builder()
-                .codenarcReport(codenarcReportReaderDeserializer.deserialize())
-                .dependencyCheckReport(dependencyCheckReportReaderDeserializer.deserialize())
-                .cpiLintReport(cpIlintDeserializer.deserialize())
+                .codenarcReport(codenarcReportReaderDeserializer.deserialize(jobName))
+                .dependencyCheckReport(dependencyCheckReportReaderDeserializer.deserialize(jobName))
+                .cpiLintReport(cpIlintDeserializer.deserialize(jobName))
                 .build();
     }
 }

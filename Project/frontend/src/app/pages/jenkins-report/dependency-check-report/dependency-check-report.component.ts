@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {MatTableModule} from "@angular/material/table";
 import {TranslateModule} from "@ngx-translate/core";
 import {DependencyCheckReportDTO} from '../../../models/report';
+import {CommonModule} from "@angular/common";
 
 interface DependencyCheckReportTableData {
   fileName: string;
@@ -14,7 +15,8 @@ interface DependencyCheckReportTableData {
   standalone: true,
   imports: [
     MatTableModule,
-    TranslateModule
+    TranslateModule,
+    CommonModule
   ],
   templateUrl: './dependency-check-report.component.html',
   styleUrl: './dependency-check-report.component.scss'
@@ -41,5 +43,17 @@ export class DependencyCheckReportComponent implements OnInit {
         });
       });
     });
+  }
+  getSeverityColor(severity: string): string {
+    switch (severity) {
+      case 'LOW':
+        return 'green';
+      case 'MEDIUM':
+        return 'orange';
+      case 'HIGH':
+        return 'red';
+      default:
+        return 'black'; // or any default color
+    }
   }
 }

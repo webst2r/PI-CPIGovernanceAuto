@@ -3,6 +3,7 @@ package org.project.backend.jenkins.deserializer;
 import lombok.RequiredArgsConstructor;
 import org.project.backend.jenkins.dto.cpilint.CPILintReportDTO;
 import org.project.backend.jenkins.dto.cpilint.IssueDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,12 +22,14 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class CPIlintDeserializer {
     private final ResourceLoader resourceLoader;
-
-    public CPILintReportDTO deserialize() {
+    @Value("${path.internal}")
+    private String internalPath;
+    public CPILintReportDTO deserialize(String jobName) {
         CPILintReportDTO cpilintReportDTO = new CPILintReportDTO();
         List<IssueDTO> issueList = new ArrayList<>();
-        //TODO: pass the name of the file as a parameter and change the resource directory to the correct one
-        Resource resource = resourceLoader.getResource("classpath:" + "jenkins/cpilint_com_2_erros.log");
+        String internalPath = this.internalPath + "workspace/"+ jobName+"/cpilint.log";
+        Path projectPath = Paths.get(internalPath);
+        Resource resource = resourceLoader.getResource("file:" + projectPath.toString());
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
             String logData;
