@@ -2,6 +2,8 @@ package org.project.backend.jenkins.deserializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.project.backend.exception.BadRequestException;
+import org.project.backend.exception.enumeration.ExceptionType;
 import org.project.backend.jenkins.dto.codenarc.CodenarcReportDTO;
 import org.project.backend.jenkins.dto.codenarc.PackageDTO;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,9 +40,8 @@ public class CodenarcReportReaderDeserializer {
 
             return codenarcReportDTO;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BadRequestException("Failed to read CodeNarc report file", ExceptionType.FAILED_TO_READ_FILE);
         }
-        return null;
     }
 
     private List<PackageDTO> getPackageDTOsWithViolations(List<PackageDTO> allPackages) {

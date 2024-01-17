@@ -33,18 +33,15 @@ public class PackagesController {
     private final JenkinsService jenkinsService;
 
     @GetMapping("/createAndExecutePipeline/{jobName}/{ruleFileName}/{codenarcFileName}/{flowVersion}")
-    public ResponseEntity<String> enableJenkins(
+    public ResponseEntity<ReportDTO> enableJenkins(
             @PathVariable("jobName") String jobName,
             @PathVariable("ruleFileName") String ruleFileName,
             @PathVariable("codenarcFileName") String codenarcFileName,
             @PathVariable("flowVersion") String flowVersion)
     {
-        try {
-            System.out.println("Job Name: " + jobName);
-            System.out.println("Rule File Name: " + ruleFileName);
 
-
-            System.out.println("Recebi um pedido para o Jenkins com o ficheiro do codenarc: " + codenarcFileName);
+            // Delete Jenkins job
+            jenkinsService.deletePipeline(jobName);
 
             // Execute Update
             jenkinsService.executeUpdateJenkinsFile(ruleFileName, codenarcFileName, jobName, flowVersion);
@@ -55,16 +52,12 @@ public class PackagesController {
             // Execute Jenkins job
             jenkinsService.execute(jobName);
 
-            return ResponseEntity.ok("Pipeline created and executed successfully!");
-        } catch (Exception e) {
-            log.error("Error creating and executing pipeline", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create and execute pipeline");
-        }
+            return ResponseEntity.ok(null);
     }
 
     @GetMapping("/jenkinsReport")
     public ResponseEntity<ReportDTO> getJenkinsReport() {
-        return ResponseEntity.ok(jenkinsService.getJenkinsReport());
+        return ResponseEntity.ok(jenkinsService.getJenkinsReport("my_integration_flow_pi"));
     }
 
 

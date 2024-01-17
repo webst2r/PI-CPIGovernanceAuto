@@ -2,6 +2,8 @@ package org.project.backend.jenkins.deserializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.project.backend.exception.BadRequestException;
+import org.project.backend.exception.enumeration.ExceptionType;
 import org.project.backend.jenkins.dto.dependecycheck.DependencyCheckReportDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -28,8 +30,7 @@ public class DependencyCheckReportReaderDeserializer {
             Resource resource = resourceLoader.getResource("file:" + projectPath.toString());
             return objectMapper.readValue(resource.getInputStream(), DependencyCheckReportDTO.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BadRequestException("Failed to read Dependency-Check report file", ExceptionType.FAILED_TO_READ_FILE);
         }
-        return null;
     }
 }

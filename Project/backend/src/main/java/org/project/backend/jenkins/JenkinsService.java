@@ -36,8 +36,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.Arrays;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -108,47 +108,48 @@ public class JenkinsService {
         }
     }
 
-    //TODO - Adicionar REPORT AQUI
-    public void execute(String jobName) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String username = userDetails.getUsername();
+    public ReportDTO execute(String jobName) {
 
-            Optional<User> user = userRepository.findByEmail(username);
-            JenkinsCredentials jenkinsCredentials = credentialsRepository.findByUserId(user.get().getId());
+        var jenkinsCredentials = getJenkinsCredentials();
+        String jenkinsUsername = jenkinsCredentials.getUsername();
+        String jenkinsToken = jenkinsCredentials.getAccessToken();
 
-            String jenkinsUsername = jenkinsCredentials.getUsername();
-            String jenkinsToken = jenkinsCredentials.getAccessToken();
+        System.out.println("Jenkins Username: " + jenkinsUsername);
+        System.out.println("Jenkins Token: " + jenkinsToken);
+        try {
+            String jobUrl = jenkinsUrl + "job/" + jobName + "/build";
+            System.out.println(java.util.Base64.getEncoder().encodeToString((jenkinsUsername + ":" + jenkinsToken).getBytes()));
+            HttpClient client = HttpClient.newHttpClient();
 
-            System.out.println("Jenkins Username: " + jenkinsUsername);
-            System.out.println("Jenkins Token: " + jenkinsToken);
-            try {
-                String jobUrl = jenkinsUrl + "job/" + jobName + "/build";
-                System.out.println(java.util.Base64.getEncoder().encodeToString((jenkinsUsername + ":" + jenkinsToken).getBytes()));
-                HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(jobUrl))
+                    .header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((jenkinsUsername + ":" + jenkinsToken).getBytes()))
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
 
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(jobUrl))
-                        .header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((jenkinsUsername + ":" + jenkinsToken).getBytes()))
-                        .POST(HttpRequest.BodyPublishers.noBody())
-                        .build();
-
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                int statusCode = response.statusCode();
-                if (statusCode == 201) {
-                    System.out.println("Job triggered successfully!");
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            if (statusCode == 201) {
+                System.out.println("Job triggered successfully!");
+                var state = checkBuildState(jobName);
+                if (state.equals("SUCCESS")) {
+                    System.out.println("Job executed successfully!");
+                    return getJenkinsReport(jobName);
                 } else {
-                    System.out.println("Failed to trigger job. Status code: " + statusCode);
-                    throw new BadRequestException("Failed to trigger job", FAILED_TO_EXECUTE_JOB);
+                    System.out.println("Job executed with errors!");
+                    throw new BadRequestException("Job executed with errors", FAILED_TO_EXECUTE_JOB);
                 }
-            } catch (Exception e) {
+            } else {
+                System.out.println("Failed to trigger job. Status code: " + statusCode);
                 throw new BadRequestException("Failed to trigger job", FAILED_TO_EXECUTE_JOB);
             }
+        } catch (Exception e) {
+            throw new BadRequestException("Failed to trigger job", FAILED_TO_EXECUTE_JOB);
         }
+
     }
 
-    public void executeUpdateJenkinsFile(String ruleFileName, String codenarcFileName, String flowFileName, String flowVersion) throws IOException, InterruptedException {
+    public void executeUpdateJenkinsFile(String ruleFileName, String codenarcFileName, String flowFileName, String flowVersion) {
         Path projectPath = Paths.get(externalPath);
         String githubFilePath = projectPath.toString();
         var pipelineFilePath = movePipelineFileToJenkins();
@@ -187,48 +188,50 @@ public class JenkinsService {
         downloadAndSendFlow(flowFileName, flowVersion);
     }
 
-    //TODO - RETURN STATE and RESULT
+    //TODO - RETURN STATE
     //TODO - handle exceptions
-    public Boolean checkBuildState(String jobName) {
+    public String checkBuildState(String jobName) {
         var jenkinsCredentials = getJenkinsCredentials();
         String jenkinsUsername = jenkinsCredentials.getUsername();
         String jenkinsToken = jenkinsCredentials.getAccessToken();
+        boolean building = false;
+        String result = null;
+        do {
+            try {
+                TimeUnit.SECONDS.sleep(30);
+                String JobStateUrl = jenkinsUrl + "job/" + jobName + "/lastBuild/api/json";
 
-        try {
-            String JobStateUrl = jenkinsUrl + "job/" + jobName + "/lastBuild/api/json";
+                HttpClient client = HttpClient.newHttpClient();
 
-            HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(JobStateUrl))
+                        .header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((jenkinsUsername + ":" + jenkinsToken).getBytes()))
+                        .header("Content-Type", "application/json")
+                        .GET()
+                        .build();
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(JobStateUrl))
-                    .header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((jenkinsUsername + ":" + jenkinsToken).getBytes()))
-                    .header("Content-Type", "application/json")
-                    .GET()
-                    .build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                int statusCode = response.statusCode();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            int statusCode = response.statusCode();
+                if (statusCode == 200) {
+                    JSONObject jsonResponse = new JSONObject(response.body());
 
-            if (statusCode == 200) {
-                JSONObject jsonResponse = new JSONObject(response.body());
+                    building = jsonResponse.getBoolean("building");
+                    result = jsonResponse.optString("result", null);
+                    System.out.println("Building: " + building + " Result:" + result);
 
-                boolean building = jsonResponse.getBoolean("building");
-                String result = jsonResponse.optString("result", null);
-                System.out.println("Building: " + building + " Result:" + result);
-            } else {
-                System.out.println("Failed to check job status. Status code: " + statusCode);
+                } else {
+                    System.out.println("Failed to check job status. Status code: " + statusCode);
+                    throw new BadRequestException("Failed to check job status", FAILED_TO_CHECK_JOB_STATUS);
+                }
+            } catch (IOException | InterruptedException e) {
+                throw new BadRequestException("Failed to check job status", FAILED_TO_CHECK_JOB_STATUS);
             }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        return true;
+        } while (building);
+        return result;
     }
 
-    public ReportDTO getJenkinsReport() {
-        checkBuildState("my_integration_flow_pi");
-        String jobName = "my_integration_flow_pi";
+    public ReportDTO getJenkinsReport(String jobName) {
         //TODO: call this method the right method in jenkins when pipeline as finished
         return ReportDTO.builder()
                 .codenarcReport(codenarcReportReaderDeserializer.deserialize(jobName))
@@ -240,26 +243,47 @@ public class JenkinsService {
     public void deletePipeline(String jobName) {
         var jenkinsCredentials = getJenkinsCredentials();
         try {
-            String JobStateUrl = jenkinsUrl + "job/" + jobName + "/doDelete";
+            String jobDeleteUrl = jenkinsUrl + "job/" + jobName + "/doDelete";
 
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(JobStateUrl))
+                    .uri(URI.create(jobDeleteUrl))
                     .header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((jenkinsCredentials.getUsername() + ":" + jenkinsCredentials.getAccessToken()).getBytes()))
-                    .header("Content-Type", "application/json")
+                    .header("Content-Type", "charset=UTF-8")
                     .POST(HttpRequest.BodyPublishers.noBody())
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
             int statusCode = response.statusCode();
+
+            // Handle redirect (HTTP status code 302)
+            if (statusCode == 302) {
+                // Get the new location from the 'Location' header
+                String redirectUrl = response.headers().firstValue("Location").orElse(null);
+
+                if (redirectUrl != null) {
+                    System.out.println("Redirecting to: " + redirectUrl);
+
+                    // Send another request to the new location
+                    HttpRequest redirectRequest = HttpRequest.newBuilder()
+                            .uri(URI.create(redirectUrl))
+                            .header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString((jenkinsCredentials.getUsername() + ":" + jenkinsCredentials.getAccessToken()).getBytes()))
+                            .header("Content-Type", "charset=UTF-8")
+                            .POST(HttpRequest.BodyPublishers.noBody())
+                            .build();
+
+                    response = client.send(redirectRequest, HttpResponse.BodyHandlers.ofString());
+                    statusCode = response.statusCode();
+                }
+            }
 
             if (statusCode == 200) {
                 System.out.println("Job deleted successfully!");
-            }else if(statusCode == 404){
+            } else if (statusCode == 404) {
                 System.out.println("Job not found!");
-            }
-            else {
+            } else {
                 System.out.println("Failed to delete job. Status code: " + statusCode);
                 throw new BadRequestException("Failed to delete job", FAILED_TO_DELETE_JOB);
             }
@@ -314,7 +338,7 @@ public class JenkinsService {
         }
     }
 
-    private Path movePipelineFileToJenkins() throws IOException {
+    private Path movePipelineFileToJenkins() {
         Resource resource = resourceLoader.getResource("classpath:jenkins/file.xml");
         String fullDestinationPath = externalPath + "/" + "file.xml";
         Path destinationPath = Paths.get(fullDestinationPath);

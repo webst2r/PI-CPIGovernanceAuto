@@ -1,6 +1,8 @@
 package org.project.backend.jenkins.deserializer;
 
 import lombok.RequiredArgsConstructor;
+import org.project.backend.exception.BadRequestException;
+import org.project.backend.exception.enumeration.ExceptionType;
 import org.project.backend.jenkins.dto.cpilint.CPILintReportDTO;
 import org.project.backend.jenkins.dto.cpilint.IssueDTO;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +31,7 @@ public class CPIlintDeserializer {
         List<IssueDTO> issueList = new ArrayList<>();
         String internalPath = this.internalPath + "workspace/"+ jobName+"/cpilint.log";
         Path projectPath = Paths.get(internalPath);
-        Resource resource = resourceLoader.getResource("file:" + projectPath.toString());
+        Resource resource = resourceLoader.getResource("file:" + projectPath);
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
             String logData;
@@ -53,7 +55,7 @@ public class CPIlintDeserializer {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();  // Handle the exception according to your application's requirements
+            throw new BadRequestException("Failed to read cpilint report file", ExceptionType.FAILED_TO_READ_FILE);
         }
 
         cpilintReportDTO.setIssues(issueList);
