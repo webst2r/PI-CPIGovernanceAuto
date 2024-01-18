@@ -140,7 +140,7 @@ public class JenkinsService {
                     return getJenkinsReport(jobName);
                 } else {
                     System.out.println("Job executed with errors!");
-                    throw new BadRequestException("Job executed with errors", FAILED_TO_EXECUTE_JOB);
+                    throw new BadRequestException("Job executed with errors", JOB_FINISHED_WITH_FAILURE);
                 }
             } else {
                 System.out.println("Failed to trigger job. Status code: " + statusCode);
@@ -199,7 +199,7 @@ public class JenkinsService {
         String result = null;
         do {
             try {
-                TimeUnit.SECONDS.sleep(30);
+                TimeUnit.SECONDS.sleep(5);
                 String JobStateUrl = jenkinsUrl + "job/" + jobName + "/lastBuild/api/json";
 
                 HttpClient client = HttpClient.newHttpClient();
@@ -310,7 +310,6 @@ public class JenkinsService {
 
             System.out.println("Pipeline atualizado e gravado com sucesso.");
         } catch (IOException e) {
-            e.printStackTrace();
             System.out.println("Erro ao processar o ficheiro do pipeline.");
             throw new BadRequestException("Erro ao processar o ficheiro do pipeline.", FAILED_TO_UPLOAD_FILE);
         }

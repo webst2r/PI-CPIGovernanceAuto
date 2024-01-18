@@ -82,7 +82,9 @@
     "open_flow": "Abrir fluxo",
     "download_flow": "Download fluxo",
     "enable_jenkins": "Ativar Pipeline do Jenkins",
-    "enable_github": "Ativar Versionamento no Github"
+    "enable_github": "Ativar Versionamento no Github",
+    "jenkins_error": "Jenkins could not run"
+
   },
   "repositories": {
     "repositories": "Repositórios",

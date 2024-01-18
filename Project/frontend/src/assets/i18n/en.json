@@ -81,7 +81,8 @@
     "open_flow": "Open Flow",
     "download_flow": "Download Flow",
     "enable_jenkins": "Enable Jenkins Pipeline",
-    "enable_github": "Enable Github Versioning"
+    "enable_github": "Enable Github Versioning",
+    "jenkins_error": "Jenkins não conseguiu correr"
   },
   "repositories": {
     "repositories": "Repositories",

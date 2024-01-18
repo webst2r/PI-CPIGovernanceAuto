@@ -1,3 +1,5 @@
+<div class="overlay" *ngIf="isLoadingSig()"></div>
+
 <div class="header-container">
   <i class="fab fa-jenkins"></i>
   <h2><span>{{ 'package.enable_jenkins' | translate }}</span></h2>
@@ -33,5 +35,6 @@
     </button>
 
   </form>
+  <mat-spinner *ngIf="isLoadingSig()" class="spinner"></mat-spinner>
 </div>
 

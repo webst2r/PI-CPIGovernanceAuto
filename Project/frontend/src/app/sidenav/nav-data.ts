@@ -18,12 +18,6 @@ export const navbarData = [
     authRequired: true
   },
   {
-    routeLink: 'packages/jenkins/report',
-    icon: 'fas fa-book',
-    label: 'side_nav.report',
-    authRequired: true
-  },
-  {
     routeLink: 'credentials',
     icon: 'fa fa-key',
     label: 'side_nav.credentials',

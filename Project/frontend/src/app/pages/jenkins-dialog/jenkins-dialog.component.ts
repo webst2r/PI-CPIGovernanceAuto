@@ -1,4 +1,4 @@
-import {Component, Inject, inject, OnInit} from '@angular/core';
+import {Component, Inject, inject, OnInit, signal} from '@angular/core';
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {PackageDetailService} from "../../services/package-detail.service";
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -8,11 +8,15 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatIconModule} from "@angular/material/icon";
 import {MatOptionModule} from "@angular/material/core";
 import {MatSelectModule} from "@angular/material/select";
-import {NgForOf} from "@angular/common";
-import {TranslateModule} from "@ngx-translate/core";
+import {NgForOf, NgIf} from "@angular/common";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
 import {RuleFilesService} from "../../services/rule-files.service";
 import {CodenarcFile, RuleFile} from "../../models/rule-file";
 import {FlowElement} from "../../models/flows";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {ReportService} from "../../services/report.service";
+import {Router} from "@angular/router";
+import {tap} from "rxjs";
 
 @Component({
   selector: 'app-jenkins-dialog',
@@ -26,16 +30,22 @@ import {FlowElement} from "../../models/flows";
     MatSelectModule,
     NgForOf,
     ReactiveFormsModule,
-    TranslateModule
+    TranslateModule,
+    MatProgressSpinnerModule,
+    NgIf
   ],
   templateUrl: './jenkins-dialog.component.html',
   styleUrl: './jenkins-dialog.component.scss'
 })
 export class JenkinsDialogComponent implements OnInit{
   private snackBar = inject(MatSnackBar);
+  private reportService= inject(ReportService);
   ruleFiles: RuleFile[] = [];
   codenarcFiles: CodenarcFile[] = [];
   flowElement!: FlowElement | null;
+  isLoadingSig = signal(false);
+  router = inject(Router);
+  private translate = inject(TranslateService);
 
   ngOnInit() {
     this.dialogRef.updateSize('65%', '65%');
@@ -104,22 +114,35 @@ export class JenkinsDialogComponent implements OnInit{
 
   enableJenkins() {
     if (this.flowElement) {
+      this.isLoadingSig.set(true);
       const selectedRuleFile = this.form.value.selectedRuleFile;
       const selectedCodenarcFile = this.form.value.selectedCodenarcFile;
       console.log('Selected Rule File:', selectedRuleFile);
       console.log('Selected Codenarc File:', selectedCodenarcFile);
 
-      this.packageDetailService.enableJenkins(this.flowElement.name, selectedRuleFile, selectedCodenarcFile, this.flowElement.version).subscribe(
+      let flowName = this.removeSpaces(this.flowElement.name)
+      this.packageDetailService.enableJenkins(flowName, selectedRuleFile, selectedCodenarcFile, this.flowElement.version).pipe(
+        tap(res => this.reportService.set(res))
+      )
+        .subscribe(
         (response) => {
-          console.log('Jenkins enabled successfully');
-          this.showSuccessToast('Jenkins enabled successfully');
+          this.isLoadingSig.set(false);
+          this.router.navigateByUrl('packages/jenkins/report');
+          this.closeDialog();
+          //this.showSuccessToast('Jenkins enabled successfully');
         },
         (error) => {
           console.error('Error enabling Jenkins for the flow:', error);
+          this.showSuccessToast(this.translate.instant('package.jenkins_error'));
+          this.closeDialog();
         }
       );
     }
 
-    this.closeDialog();
   }
+  removeSpaces(text: string): string {
+    // Use a regular expression to match and replace spaces globally
+    return text.replace(/\s/g, '');
+  }
+
 }

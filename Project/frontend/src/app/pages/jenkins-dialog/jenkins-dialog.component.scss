@@ -74,3 +74,25 @@ mat-select {
 .submitBtn:hover {
   background-color: #0056b3; /* Hover background color for the button */
 }
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Adjust the alpha (last value) for transparency */
+  z-index: 1000; /* Ensure the overlay is above other elements */
+}
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2000; /* Ensure the spinner is above the overlay */
+}
+:host {
+  .mat-mdc-progress-spinner {
+    --mdc-circular-progress-active-indicator-color: #263238;
+  }
+}

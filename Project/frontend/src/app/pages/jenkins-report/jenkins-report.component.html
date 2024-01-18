@@ -1,22 +1,22 @@
 <h1>{{ "report.title" | translate }}</h1>
 
-<mat-tab-group class="tabs-container" dynamicHeight *ngIf="reportSig()">
+<mat-tab-group class="tabs-container" dynamicHeight *ngIf="report">
   <mat-tab>
     <ng-template mat-tab-label>
       <span>{{ "report.flow_issues" | translate }}</span>
     </ng-template>
-    <app-cpi-lint-report [report]="reportSig()?.cpiLintReport"></app-cpi-lint-report>
+    <app-cpi-lint-report [report]="report?.cpiLintReport"></app-cpi-lint-report>
   </mat-tab>
   <mat-tab>
     <ng-template mat-tab-label>
       <span>{{ "report.groovy_issues" | translate }}</span>
     </ng-template>
-    <app-codenarc-report [report]="reportSig()?.codenarcReport"></app-codenarc-report>
+    <app-codenarc-report [report]="report?.codenarcReport"></app-codenarc-report>
   </mat-tab>
   <mat-tab>
     <ng-template mat-tab-label>
       <span>{{ "report.jar_vulnerabilities" | translate }}</span>
     </ng-template>
-    <app-dependency-check-report [report]="reportSig()?.dependencyCheckReport"></app-dependency-check-report>
+    <app-dependency-check-report [report]="report?.dependencyCheckReport"></app-dependency-check-report>
   </mat-tab>
 </mat-tab-group>

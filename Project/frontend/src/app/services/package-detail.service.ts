@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import {Observable, of, throwError} from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import {AppConstant} from "../app.constant";
 import {PackageDetails} from "../models/package-details";
 import {FlowElement} from "../models/flows";
+import {ReportDTO} from "../models/report";
 
 @Injectable({
   providedIn: 'root',
@@ -112,14 +113,14 @@ export class PackageDetailService {
     return this.httpClient.get(endpoint, { headers, responseType: 'blob' });
   }
 
-  enableJenkins(jobName: string, ruleFileName: string, codenarcFileName: string, flowVersion: string): Observable<string> {
-    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.CREATE_EXECUTE_PIPELINE +`/${jobName}/${ruleFileName}/${codenarcFileName}/${flowVersion}`;
+  enableJenkins(jobName: string, ruleFileName: string, codenarcFileName: string, flowVersion: string): Observable<ReportDTO> {
+    const endpoint = `${AppConstant.API_URL}${AppConstant.API_PATHS.PACKAGES.CREATE_EXECUTE_PIPELINE}/${jobName}/${ruleFileName}/${codenarcFileName}/${flowVersion}`;
 
-    return this.httpClient.get(endpoint, { responseType: 'text' }).pipe(
-      map((response: any) => response),
+    return this.httpClient.get<ReportDTO>(endpoint).pipe(
+      map((response: ReportDTO) => response),
       catchError((error) => {
         console.error('Error enabling Jenkins for the flow:', error);
-        return of('Failed to enable Jenkins for the flow');
+        return throwError('Failed to enable Jenkins for the flow');
       })
     );
   }

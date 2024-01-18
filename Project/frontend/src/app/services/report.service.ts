@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {catchError, Observable, of} from "rxjs";
+import {BehaviorSubject, catchError, Observable, of, Subject} from "rxjs";
 import {AppConstant} from "../app.constant";
 import {ReportDTO} from "../models/report";
 
@@ -8,16 +8,14 @@ import {ReportDTO} from "../models/report";
   providedIn: 'root'
 })
 export class ReportService {
-  private http = inject(HttpClient)
+  private dataSubject: BehaviorSubject<ReportDTO> = new BehaviorSubject<any>(null);
+  public data$: Observable<ReportDTO> = this.dataSubject.asObservable();
 
-  get(): Observable<ReportDTO> {
-    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.REPORT.GET;
-    return this.http.get<ReportDTO>(endpoint)
-      .pipe(
-        catchError(err => {
-          console.error('Error getting jenkins report:', err);
-          return of()
-        })
-      );
+  set(data: any): void {
+    this.dataSubject.next(data);
+  }
+
+  get(): Observable<any> {
+    return this.data$;
   }
 }

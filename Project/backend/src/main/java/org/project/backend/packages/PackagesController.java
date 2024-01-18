@@ -50,9 +50,9 @@ public class PackagesController {
             jenkinsService.create(jobName);
 
             // Execute Jenkins job
-            jenkinsService.execute(jobName);
+            var report = jenkinsService.execute(jobName);
 
-            return ResponseEntity.ok(null);
+            return ResponseEntity.ok(report);
     }
 
     @GetMapping("/jenkinsReport")
