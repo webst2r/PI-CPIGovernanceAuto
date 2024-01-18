@@ -21,7 +21,7 @@ export class FlowDetailsComponent implements OnInit {
     this.dialogRef.updateSize('50%', '50%');
 
     // Check if data is available
-    if (this.data && this.data.name) {
+    if (this.data && this.data.id) {
       this.fetchFlowDetails();
     }
   }
@@ -31,17 +31,17 @@ export class FlowDetailsComponent implements OnInit {
   }
 
   private fetchFlowDetails() {
-    const flowId = this.data.name;
+    const flowId = this.data.id;
     const flowVersion = this.data.version;
+
+    console.log('Flow details data:', this.data);
 
     console.log('Fetching flow details for:', flowId, flowVersion);
 
-    // Make HTTP request to fetch flow details using the FlowDetailsService
     this.flowDetailsService.getFlowDetails(flowId, flowVersion).subscribe(
       (response) => {
         console.log('Flow details response:', response);
 
-        // Access the "_flow" property if it exists
         this.flowDetails = response._flow || response;
 
         console.log('Flow details: ', this.flowDetails);

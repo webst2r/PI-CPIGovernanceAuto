@@ -110,8 +110,10 @@ export class PackageDetailComponent implements OnInit {
   }
 
   openFlow(element: FlowElement) {
+    console.log("ID: " + element.id + " Name:" + element.name + " Version: " + element.version);
     const dialogRef = this.dialog.open(FlowDetailsComponent, {
       data: {
+        id: element.id,
         name: element.name,
         version: element.version,
       },
@@ -123,7 +125,7 @@ export class PackageDetailComponent implements OnInit {
   }
 
   downloadFlow(element: FlowElement) {
-    this.packageDetailService.downloadFlow(element.name, element.version).subscribe(
+    this.packageDetailService.downloadFlow(element.id, element.version).subscribe(
       (response) => {
         // Check the content type to determine if it's a zip file
         const contentType = response.type;

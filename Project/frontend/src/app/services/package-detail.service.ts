@@ -88,6 +88,7 @@ export class PackageDetailService {
     return this.httpClient.get(endpoint, { responseType: 'json' }).pipe(
       map((response: any) =>
         response.results.map((result: any, index: number) => ({
+          id: result.Id,
           position: index + 1,
           name: result.Name,
           version: result.Version,
