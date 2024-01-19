@@ -136,7 +136,7 @@ public class JenkinsService {
             int statusCode = response.statusCode();
             if (statusCode == 201) {
                 System.out.println("Job triggered successfully!");
-                /*
+
                 var state = checkBuildState(jobName);
                 if (state.equals("SUCCESS")) {
                     System.out.println("Job executed successfully!");
@@ -146,7 +146,7 @@ public class JenkinsService {
                     System.out.println("Job executed with errors!");
                     throw new BadRequestException("Job executed with errors", JOB_FINISHED_WITH_FAILURE);
                 }
-                */
+
             } else {
                 System.out.println("Failed to trigger job. Status code: " + statusCode);
                 throw new BadRequestException("Failed to trigger job", FAILED_TO_EXECUTE_JOB);
@@ -154,7 +154,6 @@ public class JenkinsService {
         } catch (Exception e) {
             throw new BadRequestException("Failed to trigger job", FAILED_TO_EXECUTE_JOB);
         }
-        return new ReportDTO();
     }
 
     public void executeUpdateJenkinsFile(String ruleFileName, String codenarcFileName, String flowFileName, String flowVersion) {
@@ -202,7 +201,7 @@ public class JenkinsService {
         String result = null;
         do {
             try {
-                TimeUnit.SECONDS.sleep(5);
+                TimeUnit.SECONDS.sleep(10);
                 String JobStateUrl = jenkinsUrl + "job/" + jobName + "/lastBuild/api/json";
 
                 HttpClient client = HttpClient.newHttpClient();
