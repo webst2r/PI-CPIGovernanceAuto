@@ -17,6 +17,7 @@ import {FlowElement} from "../../models/flows";
 import {PackageDetails} from "../../models/package-details";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {NgIf} from "@angular/common";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-package-detail',
@@ -39,6 +40,8 @@ export class PackageDetailComponent implements OnInit {
   packageId: string = '';
   dataSource: MatTableDataSource<FlowElement>;
   displayedColumns: string[] = ['position', 'name', 'version', 'modifiedBy', 'modifiedDate', 'actions'];
+
+  downloadedZipFile!: Blob;
 
   isLoadingSig = signal(true);
 
@@ -144,6 +147,51 @@ export class PackageDetailComponent implements OnInit {
     );
   }
 
+  downloadFlowNoTransfer(element: FlowElement): Observable<any> {
+    return new Observable((observer) => {
+      this.packageDetailService.downloadFlow(element.id, element.version).subscribe(
+        (response) => {
+          const contentType = response.type;
+          if (contentType === 'application/zip') {
+            this.downloadedZipFile = response;
+            observer.next(); // Notify the observer that the download is complete
+            observer.complete();
+          } else {
+            observer.error(`Unexpected content type: ${contentType}`);
+          }
+        },
+        (error) => {
+          observer.error(`Error downloading flow: ${error}`);
+        }
+      );
+    });
+  }
+
+  uploadFlowZip(element: FlowElement) {
+    this.downloadFlowNoTransfer(element).subscribe(
+      () => {
+        // Now the download is complete, proceed with the upload
+        if (this.downloadedZipFile) {
+          this.packageDetailService.uploadFlowZip(element.name, this.downloadedZipFile).subscribe(
+            () => {
+              this.showSuccessToast(`${element.name}_${element.version}.zip uploaded successfully`);
+            },
+            (error) => {
+              console.error('Error uploading flow:', error);
+            }
+          );
+        } else {
+          console.error('No file downloaded yet.');
+        }
+      },
+      (error) => {
+        console.error(error); // Handle any errors during download
+      }
+    );
+  }
+
+
+
   openGithub(element: FlowElement) {
     const dialogRef = this.dialog.open(GithubDialogComponent, {
       data: {
@@ -167,6 +215,7 @@ export class PackageDetailComponent implements OnInit {
       console.log('The Jenkins dialog was closed');
     });
   }
+
 
   goBack() {
     this.router.navigate(['/packages']);

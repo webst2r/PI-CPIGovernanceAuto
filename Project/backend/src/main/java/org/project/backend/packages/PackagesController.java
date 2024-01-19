@@ -9,13 +9,12 @@ import org.project.backend.repository.github.GithubRepositoryService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -43,7 +42,7 @@ public class PackagesController {
             // Delete Jenkins job
             jenkinsService.deletePipeline(jobName);
 
-            // Execute Update
+            // Update jenkins xml file
             jenkinsService.executeUpdateJenkinsFile(ruleFileName, codenarcFileName, jobName, flowVersion);
 
             //Create Jenkins job
@@ -51,7 +50,7 @@ public class PackagesController {
 
             // Execute Jenkins job
             var report = jenkinsService.execute(jobName);
-
+            //var report = new ReportDTO();
             return ResponseEntity.ok(report);
     }
 
@@ -90,6 +89,11 @@ public class PackagesController {
     public ResponseEntity<byte[]> downloadFlow(@PathVariable("id") String flowId, @PathVariable("version") String flowVersion) {
         ResponseEntity<byte[]> response = packagesService.downloadFlow(flowId, flowVersion);
         return ResponseEntity.ok(response.getBody());
+    }
+    @PostMapping("/uploadFlowZip")
+    public ResponseEntity<String> uploadFlowZip(@RequestParam("zipFile") MultipartFile zipFile) {
+        packagesService.uploadFlowZip(zipFile);
+        return ResponseEntity.ok("File uploaded successfully");
     }
 
     @GetMapping("/enableGithub/{id}/{version}/{branch}")

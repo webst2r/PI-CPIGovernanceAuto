@@ -16,6 +16,7 @@ export class AppConstant {
       FLOW_DETAILS: 'packages/getFlow',
       CREATE_EXECUTE_PIPELINE: 'packages/createAndExecutePipeline',
       ENABLE_GITHUB: 'packages/enableGithub',
+      UPLOAD_FLOW_ZIP: 'packages/uploadFlowZip',
     },
     CREDENTIALS: {
       SAP_CPI: {

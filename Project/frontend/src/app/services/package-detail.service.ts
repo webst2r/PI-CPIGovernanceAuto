@@ -137,4 +137,15 @@ export class PackageDetailService {
       })
     );
   }
+
+  uploadFlowZip(flowName: string, zipFile: Blob): Observable<void> {
+    const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.PACKAGES.UPLOAD_FLOW_ZIP;
+    flowName += '.zip';
+    // Create a FormData object
+    const formData = new FormData();
+    formData.append('zipFile', zipFile, flowName);
+
+    return this.httpClient.post<void>(endpoint, formData);
+  }
+
 }

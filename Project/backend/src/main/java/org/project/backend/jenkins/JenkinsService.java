@@ -27,6 +27,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.nio.file.StandardCopyOption;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -111,7 +113,6 @@ public class JenkinsService {
     //TODO: add the zip and logs to github
     //TODO: delete files from jenkins
     public ReportDTO execute(String jobName) {
-
         var jenkinsCredentials = getJenkinsCredentials();
         String jenkinsUsername = jenkinsCredentials.getUsername();
         String jenkinsToken = jenkinsCredentials.getAccessToken();
@@ -133,6 +134,7 @@ public class JenkinsService {
             int statusCode = response.statusCode();
             if (statusCode == 201) {
                 System.out.println("Job triggered successfully!");
+                /*
                 var state = checkBuildState(jobName);
                 if (state.equals("SUCCESS")) {
                     System.out.println("Job executed successfully!");
@@ -142,6 +144,7 @@ public class JenkinsService {
                     System.out.println("Job executed with errors!");
                     throw new BadRequestException("Job executed with errors", JOB_FINISHED_WITH_FAILURE);
                 }
+                */
             } else {
                 System.out.println("Failed to trigger job. Status code: " + statusCode);
                 throw new BadRequestException("Failed to trigger job", FAILED_TO_EXECUTE_JOB);
@@ -149,7 +152,7 @@ public class JenkinsService {
         } catch (Exception e) {
             throw new BadRequestException("Failed to trigger job", FAILED_TO_EXECUTE_JOB);
         }
-
+        return new ReportDTO();
     }
 
     public void executeUpdateJenkinsFile(String ruleFileName, String codenarcFileName, String flowFileName, String flowVersion) {
@@ -174,7 +177,7 @@ public class JenkinsService {
             String patternString_CPI_Rules = "def CPILintRules = '/files/(.*?)'";
             String patternString_Codenarc_Rules = "def CodenarcRules = '/files/(.*?)'";
 
-            String placeString_flow = "def FlowZip = '/files/" + flowFileName + "'";
+            String placeString_flow = "def FlowZip = '/files/" + flowFileName + ".zip'";
             String placeString_CPI_Rules = "def CPILintRules = '/files/" + ruleFileName + "'";
             String placeString_Codenarc_Rules = "def CodenarcRules = '/files/" + codenarcFileName + "'";
             System.out.println(pipelineFilePath);
@@ -326,18 +329,6 @@ public class JenkinsService {
         }
         throw new BadRequestException("User not authenticated", USER_NOT_FOUND);
     }
-
-    private void sendFileToJenkins(byte[] fileContent, String fileName) {
-        try {
-            String filePath = externalPath + "/" + fileName;
-            Files.write(Path.of(filePath), fileContent);
-            System.out.println("File created with content: " + filePath);
-        } catch (IOException e) {
-            System.out.println("Error creating temporary file.");
-            throw new BadRequestException("Files with rules not found", RULE_FILE_NOT_FOUND); // Rethrow the exception to indicate the failure
-        }
-    }
-
     private Path movePipelineFileToJenkins() {
         Resource resource = resourceLoader.getResource("classpath:jenkins/file.xml");
         String fullDestinationPath = externalPath + "/" + "file.xml";
@@ -361,13 +352,27 @@ public class JenkinsService {
     private void downloadAndSendFlow(String flowFileName, String flowVersion) {
         // Get the IFlow zip from CPI API
         ResponseEntity<byte[]> response = packagesService.downloadFlow(flowFileName, flowVersion);
-
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            // Create a temporary file with the github file content
             sendFileToJenkins(response.getBody(), flowFileName + ".zip");
         } else {
             System.out.println("Failed to retrieve IFlow zip from CPI API.");
             throw new BadRequestException("Failed to retrieve IFlow zip from CPI API.", FAILED_TO_UPLOAD_FILE);
+        }
+    }
+
+    private void sendFileToJenkins(byte[] fileContent, String fileName) {
+        try {
+            String filePath = externalPath + "/" + fileName;
+
+            String targetDirectory = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project";
+            String targetFilename = "firstintegrationflow.zip";
+
+            Files.copy(new ByteArrayInputStream(fileContent), Path.of(targetDirectory, targetFilename), StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.println("File created with content: " + filePath);
+        } catch (IOException e) {
+            System.out.println("Error creating temporary file.");
+            throw new BadRequestException("Files with rules not found", RULE_FILE_NOT_FOUND);
         }
     }
 }
