@@ -245,33 +245,6 @@ public class PackagesService {
         }
     }
 
-    public ResponseEntity<String> uploadFlowZip(MultipartFile zipFile) {
-        if (zipFile.isEmpty()) {
-            return new ResponseEntity<>("No file provided", HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            // Specify the directory where you want to save the uploaded file
-            String uploadDir = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project";
-
-            // Ensure the directory exists, create it if not
-            File uploadDirectory = new File(uploadDir);
-            if (!uploadDirectory.exists()) {
-                uploadDirectory.mkdirs();
-            }
-
-            // Save the file to the specified directory
-            String fileName = zipFile.getOriginalFilename();
-            Path filePath = Path.of(uploadDir, fileName);
-            Files.copy(zipFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Failed to upload the file", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public ResponseEntity<byte[]> downloadFlow(String flowId, String flowVersion) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

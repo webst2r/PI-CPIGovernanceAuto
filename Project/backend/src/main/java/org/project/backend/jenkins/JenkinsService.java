@@ -26,8 +26,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.nio.file.StandardCopyOption;
 import java.io.IOException;
 import java.io.InputStream;
@@ -190,8 +192,6 @@ public class JenkinsService {
             System.out.println("RuleFile not found in the database.");
             throw new BadRequestException("RuleFile not found in the database.", RULE_FILE_NOT_FOUND);
         }
-
-        downloadAndSendFlow(flowFileName, flowVersion);
     }
 
     public String checkBuildState(String jobName) {
@@ -349,30 +349,41 @@ public class JenkinsService {
         return destinationPath;
     }
 
-    private void downloadAndSendFlow(String flowFileName, String flowVersion) {
-        // Get the IFlow zip from CPI API
-        ResponseEntity<byte[]> response = packagesService.downloadFlow(flowFileName, flowVersion);
-        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            sendFileToJenkins(response.getBody(), flowFileName + ".zip");
-        } else {
-            System.out.println("Failed to retrieve IFlow zip from CPI API.");
-            throw new BadRequestException("Failed to retrieve IFlow zip from CPI API.", FAILED_TO_UPLOAD_FILE);
-        }
-    }
-
     private void sendFileToJenkins(byte[] fileContent, String fileName) {
         try {
             String filePath = externalPath + "/" + fileName;
-
-            String targetDirectory = "C:\\Users\\rodri\\IdeaProjects\\PI-CPIGovernanceAuto\\Project";
-            String targetFilename = "firstintegrationflow.zip";
-
-            Files.copy(new ByteArrayInputStream(fileContent), Path.of(targetDirectory, targetFilename), StandardCopyOption.REPLACE_EXISTING);
-
+            Files.write(Path.of(filePath), fileContent);
             System.out.println("File created with content: " + filePath);
         } catch (IOException e) {
             System.out.println("Error creating temporary file.");
-            throw new BadRequestException("Files with rules not found", RULE_FILE_NOT_FOUND);
+            throw new BadRequestException("Files with rules not found", RULE_FILE_NOT_FOUND); // Rethrow the exception to indicate the failure
+        }
+    }
+
+    public ResponseEntity<String> uploadFlowZip(MultipartFile zipFile) {
+        if (zipFile.isEmpty()) {
+            return new ResponseEntity<>("No file provided", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            // Specify the directory where you want to save the uploaded file
+            String uploadDir = externalPath;
+
+            // Ensure the directory exists, create it if not
+            File uploadDirectory = new File(uploadDir);
+            if (!uploadDirectory.exists()) {
+                uploadDirectory.mkdirs();
+            }
+
+            // Save the file to the specified directory
+            String fileName = zipFile.getOriginalFilename();
+            Path filePath = Path.of(uploadDir, fileName);
+            Files.copy(zipFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Failed to upload the file", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -92,7 +92,7 @@ public class PackagesController {
     }
     @PostMapping("/uploadFlowZip")
     public ResponseEntity<String> uploadFlowZip(@RequestParam("zipFile") MultipartFile zipFile) {
-        packagesService.uploadFlowZip(zipFile);
+        jenkinsService.uploadFlowZip(zipFile);
         return ResponseEntity.ok("File uploaded successfully");
     }
 

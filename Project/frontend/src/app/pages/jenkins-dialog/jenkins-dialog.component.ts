@@ -16,7 +16,7 @@ import {FlowElement} from "../../models/flows";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {ReportService} from "../../services/report.service";
 import {Router} from "@angular/router";
-import {tap} from "rxjs";
+import {Observable, tap} from "rxjs";
 
 @Component({
   selector: 'app-jenkins-dialog',
@@ -46,6 +46,7 @@ export class JenkinsDialogComponent implements OnInit{
   isLoadingSig = signal(false);
   router = inject(Router);
   private translate = inject(TranslateService);
+  downloadedZipFile!: Blob;
 
   ngOnInit() {
     this.dialogRef.updateSize('65%', '65%');
@@ -120,6 +121,8 @@ export class JenkinsDialogComponent implements OnInit{
       console.log('Selected Rule File:', selectedRuleFile);
       console.log('Selected Codenarc File:', selectedCodenarcFile);
 
+      this.uploadFlowZip(this.flowElement);
+
       let flowName = this.removeSpaces(this.flowElement.name)
       this.packageDetailService.enableJenkins(flowName, selectedRuleFile, selectedCodenarcFile, this.flowElement.version).pipe(
         tap(res => this.reportService.set(res))
@@ -143,6 +146,50 @@ export class JenkinsDialogComponent implements OnInit{
   removeSpaces(text: string): string {
     // Use a regular expression to match and replace spaces globally
     return text.replace(/\s/g, '');
+  }
+
+  downloadFlowNoTransfer(element: FlowElement): Observable<any> {
+    return new Observable((observer) => {
+      this.packageDetailService.downloadFlow(element.id, element.version).subscribe(
+        (response) => {
+          const contentType = response.type;
+          if (contentType === 'application/zip') {
+            this.downloadedZipFile = response;
+            observer.next(); // Notify the observer that the download is complete
+            observer.complete();
+          } else {
+            observer.error(`Unexpected content type: ${contentType}`);
+          }
+        },
+        (error) => {
+          observer.error(`Error downloading flow: ${error}`);
+        }
+      );
+    });
+  }
+
+  uploadFlowZip(element: FlowElement) {
+    this.downloadFlowNoTransfer(element).subscribe(
+      () => {
+        // Now the download is complete, proceed with the upload
+        if (this.downloadedZipFile) {
+          let flowName = this.removeSpaces(element.name);
+          this.packageDetailService.uploadFlowZip(flowName, this.downloadedZipFile).subscribe(
+            () => {
+              this.showSuccessToast(`${element.name}_${element.version}.zip uploaded successfully`);
+            },
+            (error) => {
+              console.error('Error uploading flow:', error);
+            }
+          );
+        } else {
+          console.error('No file downloaded yet.');
+        }
+      },
+      (error) => {
+        console.error(error); // Handle any errors during download
+      }
+    );
   }
 
 }
