@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable, of, throwError} from 'rxjs';
+import {Observable, of, throwError, timeout} from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import {AppConstant} from "../app.constant";
 import {PackageDetails} from "../models/package-details";
@@ -118,6 +118,7 @@ export class PackageDetailService {
     const endpoint = `${AppConstant.API_URL}${AppConstant.API_PATHS.PACKAGES.CREATE_EXECUTE_PIPELINE}/${jobName}/${ruleFileName}/${codenarcFileName}/${flowVersion}`;
 
     return this.httpClient.get<ReportDTO>(endpoint).pipe(
+      timeout(180000),
       map((response: ReportDTO) => response),
       catchError((error) => {
         console.error('Error enabling Jenkins for the flow:', error);
