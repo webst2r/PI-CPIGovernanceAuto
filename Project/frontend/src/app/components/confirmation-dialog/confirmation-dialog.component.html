@@ -2,6 +2,6 @@
   {{ text }}
 </h2>
 <mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="{save: false}">Cancel</button>
-  <button class="btn-confirm" mat-raised-button [mat-dialog-close]="{save: true}">Confirm</button>
+  <button mat-button [mat-dialog-close]="{save: false}">{{ 'dialog.cancel' | translate }}</button>
+  <button class="btn-confirm" mat-raised-button [mat-dialog-close]="{save: true}">{{ 'dialog.confirm' | translate }}</button>
 </mat-dialog-actions>

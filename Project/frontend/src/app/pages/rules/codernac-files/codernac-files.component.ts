@@ -5,7 +5,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {CodenarcFilesService} from "../../../services/codenarc-files.service";
 import {MatFormFieldModule} from "@angular/material/form-field";
-import {TranslateModule} from "@ngx-translate/core";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-codernac-files',
@@ -23,6 +23,7 @@ import {TranslateModule} from "@ngx-translate/core";
 export class CodernacFilesComponent implements OnInit{
   private snackBar = inject(MatSnackBar);
   codenarcFileForm!: FormGroup;
+  translate = inject(TranslateService);
 
   constructor(
     private formBuilder: FormBuilder,
@@ -36,7 +37,8 @@ export class CodernacFilesComponent implements OnInit{
   }
 
   onFileChange(event: any) {
-    this.handleFile(event.target.files[0]);
+    const file = event.target.files[0];
+    this.handleFile(file);
   }
 
   onDrop(event: DragEvent) {
@@ -47,12 +49,25 @@ export class CodernacFilesComponent implements OnInit{
 
   handleFile(file: File | undefined) {
     if (file) {
-      this.codenarcFileForm.patchValue({
-        file
-      });
-      this.codenarcFileForm.get('file')!.updateValueAndValidity();
+      // Check if the file has a valid extension
+      if (this.isValidFileExtension(file.name)) {
+        this.codenarcFileForm.patchValue({
+          file
+        });
+        this.codenarcFileForm.get('file')!.updateValueAndValidity();
+      } else {
+        this.showWarningToast(this.translate.instant('rules.invalid_file_extension_codenarc'));
+      }
     }
   }
+
+  isValidFileExtension(fileName: string): boolean {
+    const allowedExtensions = ['.groovy'];
+    const fileExtension = fileName.split('.').pop()?.toLowerCase();
+
+    return !!fileExtension && allowedExtensions.includes(`.${fileExtension}`);
+  }
+
 
   @HostListener('dragover', ['$event'])
   onDragOver(event: DragEvent) {
@@ -72,14 +87,14 @@ export class CodernacFilesComponent implements OnInit{
       this.codenarcFilesService.checkFileExists(file.name).subscribe(
         (exists: boolean) => {
           if (exists) {
-            this.showWarningToast(`File "${file.name}" already exists. Please choose a different file.`);
+            this.showWarningToast(this.translate.instant('rules.file_already_exists'));
           } else {
             const formData = new FormData();
             formData.append('file', file);
 
             this.codenarcFilesService.uploadCodenarcFile(formData).subscribe(
               (response: HttpResponse<any>) => {
-                this.showSuccessToast(`Codenarc file "${file.name}" uploaded successfully`);
+                this.showSuccessToast(this.translate.instant('rules.success_upload_codenarc'));
               },
               (error: HttpErrorResponse) => {
                 console.error('Error uploading Codenarc file:', error);

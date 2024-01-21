@@ -6,7 +6,7 @@ import {NgIf} from "@angular/common";
 import {MatInputModule} from "@angular/material/input";
 import {MatButtonModule} from "@angular/material/button";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {TranslateModule} from "@ngx-translate/core";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-rulefiles',
@@ -24,6 +24,7 @@ import {TranslateModule} from "@ngx-translate/core";
 export class RuleFilesComponent implements OnInit{
   private snackBar = inject(MatSnackBar);
   ruleFileForm!: FormGroup;
+  translate = inject(TranslateService);
 
   constructor(
     private formBuilder: FormBuilder,
@@ -48,11 +49,22 @@ export class RuleFilesComponent implements OnInit{
 
   handleFile(file: File | undefined) {
     if (file) {
-      this.ruleFileForm.patchValue({
-        file
-      });
-      this.ruleFileForm.get('file')!.updateValueAndValidity();
+      // Check if the file has a valid extension
+      if (this.isValidFileExtension(file.name)) {
+        this.ruleFileForm.patchValue({
+          file
+        });
+        this.ruleFileForm.get('file')!.updateValueAndValidity();
+      } else {
+        this.showWarningToast(this.translate.instant('rules.invalid_file_extension_cpi'));
+      }
     }
+  }
+
+  isValidFileExtension(fileName: string): boolean {
+    const allowedExtensions = ['.xml'];
+    const fileExtension = fileName.split('.').pop()?.toLowerCase();
+    return !!fileExtension && allowedExtensions.includes(`.${fileExtension}`);
   }
 
   @HostListener('dragover', ['$event'])
@@ -74,7 +86,7 @@ export class RuleFilesComponent implements OnInit{
         (exists: boolean) => {
           if (exists) {
             // File already exists, show a warning message
-            this.showWarningToast(`File "${file.name}" already exists. Please choose a different file.`);
+            this.showWarningToast(this.translate.instant('rules.file_already_exists'));
           } else {
             // File doesn't exist, proceed with the upload
             const formData = new FormData();
@@ -82,7 +94,7 @@ export class RuleFilesComponent implements OnInit{
 
             this.ruleFilesService.uploadRuleFile(formData).subscribe(
               (response: HttpResponse<any>) => {
-                this.showSuccessToast(`Rule file "${file.name}" uploaded successfully`);
+                this.showSuccessToast(this.translate.instant('rules.success_upload_cpi'));
               },
               (error: HttpErrorResponse) => {
                 console.error('Error uploading rule file:', error);
@@ -106,7 +118,6 @@ export class RuleFilesComponent implements OnInit{
       .onAction()
       .subscribe(() => this.snackBar.dismiss());
   }
-
 
   showSuccessToast(message: string): void {
     this.snackBar

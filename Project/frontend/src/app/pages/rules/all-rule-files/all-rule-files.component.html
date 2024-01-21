@@ -1,1 +1,64 @@
-<p>all-rule-files works!</p>
+<div class="cpi_files_wrapper">
+  <h3>{{"rules.cpi_rules" | translate}}</h3>
+  <mat-table [dataSource]="ruleFilesDataSource" class="mat-elevation-z8">
+    <!-- ID Column -->
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+      <mat-cell *matCellDef="let ruleFile">{{ ruleFile.id }}</mat-cell>
+    </ng-container>
+
+    <!-- FileName Column -->
+    <ng-container matColumnDef="fileName">
+      <mat-header-cell *matHeaderCellDef>{{"rules.filename" | translate}}</mat-header-cell>
+      <mat-cell *matCellDef="let ruleFile">{{ ruleFile.fileName }}</mat-cell>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>{{"rules.actions" | translate}}</mat-header-cell>
+      <mat-cell *matCellDef="let ruleFile">
+        <button mat-icon-button (click)="deleteRuleFile(ruleFile.id)" matTooltip="{{'rules.delete' | translate}}">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="['id', 'fileName', 'actions']"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: ['id', 'fileName', 'actions']"></mat-row>
+  </mat-table>
+</div>
+
+<div style="margin-bottom: 2rem;"></div>
+
+<!-- Codenarc Files Table -->
+<div>
+  <h3>{{"rules.codenarc_rules" | translate}}</h3>
+  <mat-table [dataSource]="codenarcFilesDataSource" class="mat-elevation-z8">
+    <!-- ID Column -->
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+      <mat-cell *matCellDef="let codenarcFile">{{ codenarcFile.id }}</mat-cell>
+    </ng-container>
+
+    <!-- FileName Column -->
+    <ng-container matColumnDef="fileName">
+      <mat-header-cell *matHeaderCellDef>{{"rules.filename" | translate}}</mat-header-cell>
+      <mat-cell *matCellDef="let codenarcFile">{{ codenarcFile.fileName }}</mat-cell>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>{{"rules.actions" | translate}}</mat-header-cell>
+      <mat-cell *matCellDef="let codenarcFile">
+        <button mat-icon-button (click)="deleteCodenarcFile(codenarcFile.id)" matTooltip="{{'rules.delete' | translate}}">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Other columns can be added as needed -->
+
+    <mat-header-row *matHeaderRowDef="['id', 'fileName', 'actions']"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: ['id', 'fileName', 'actions']"></mat-row>
+  </mat-table>
+</div>

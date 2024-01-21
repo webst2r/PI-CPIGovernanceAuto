@@ -334,12 +334,8 @@ public class JenkinsService {
         Path destinationPath = Paths.get(fullDestinationPath);
 
         try (InputStream inputStream = resource.getInputStream()) {
-            // Ensure that the destination directories exist, create them if necessary
-            Files.createDirectories(destinationPath.getParent());
-
-            // Use Files.copy to copy the content of the InputStream to the destination
+            Files.createDirectories(destinationPath.getParent()); // if the directory does not exist, create it
             Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-
             System.out.println("Resource file moved successfully to external Jenkins folder.");
         } catch (IOException e) {
             System.err.println("Failed to move the resource file to external Jenkins folder: " + e.getMessage());

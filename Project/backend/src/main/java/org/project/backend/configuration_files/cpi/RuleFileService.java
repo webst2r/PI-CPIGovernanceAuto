@@ -36,4 +36,11 @@ public class RuleFileService {
     public boolean doesFileExist(String fileName) {
         return ruleFileRepository.getByFileName(fileName).isPresent();
     }
+
+    public RuleFile deleteRuleFile(Long fileId) {
+        RuleFile ruleFile = ruleFileRepository.findById(fileId)
+                .orElseThrow(() -> new ResourceNotFoundException("RuleFile", "id", fileId));
+        ruleFileRepository.delete(ruleFile);
+        return ruleFile;
+    }
 }

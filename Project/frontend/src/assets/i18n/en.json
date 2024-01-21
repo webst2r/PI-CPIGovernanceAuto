@@ -107,14 +107,33 @@
   },
   "rules": {
     "rules": "Rules",
+    "all_rules": "All Rules",
+    "cpi_rules": "CPILint Rules",
+    "codenarc_rules": "Codenarc Rules",
     "upload_rule_file": "Upload Rule File",
     "upload_cpi_rule": "Upload CPILint Rule",
     "upload_codenarc_file": "Upload Codenarc File",
     "select_cpi_rule": "Select a CPILint Rule",
-    "select_codenarc_rule": "Select a Codernarc File"
+    "select_codenarc_rule": "Select a Codernarc File",
+    "filename": "Filename",
+    "actions": "Actions",
+    "delete": "Delete",
+    "cpi_confirmation_delete": "Are you sure you want to delete the CPILint Rule?",
+    "codenarc_confirmation_delete": "Are you sure you want to delete the Codenarc Rule?",
+    "success_delete_cpi": "CPILint Rule deleted successfully",
+    "success_delete_codenarc": "Codenarc Rule deleted successfully",
+    "invalid_file_extension_cpi": "Invalid file extension. Please upload a .xml file.",
+    "invalid_file_extension_codenarc": "Invalid file extension. Please upload a .groovy file.",
+    "file_already_exists": "File already exists. Please upload a file with a different name.",
+    "success_upload_cpi": "CPILint Rule uploaded successfully",
+    "success_upload_codenarc": "Codenarc Rule uploaded successfully"
   },
   "buttons": {
     "submit": "Submit"
+  },
+  "dialog": {
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "github": {
     "select_branch": "Select a branch"

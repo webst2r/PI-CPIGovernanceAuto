@@ -36,4 +36,8 @@ public class CodenarcFileService {
     public boolean doesFileExist(String fileName) {
         return codenarcFileRepository.getByFileName(fileName).isPresent();
     }
+
+    public void deleteCodenarcFile(Long fileId) {
+        codenarcFileRepository.deleteById(fileId);
+    }
 }

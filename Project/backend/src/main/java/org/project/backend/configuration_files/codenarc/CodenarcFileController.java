@@ -25,6 +25,12 @@ public class CodenarcFileController {
         return ResponseEntity.ok(savedFile);
     }
 
+    @DeleteMapping("/delete/{fileId}")
+    public ResponseEntity<Void> deleteCodenarcFile(@PathVariable Long fileId) {
+        codenarcFileService.deleteCodenarcFile(fileId);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{fileId}")
     public ResponseEntity<byte[]> downloadCodenarcFile(@PathVariable Long fileId) {
         CodenarcFile codenarcFile = codenarcFileService.getCodenarcFile(fileId);

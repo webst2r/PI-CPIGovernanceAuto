@@ -26,6 +26,13 @@ public class RuleFileController {
                 return ResponseEntity.ok(savedFile);
         }
 
+        // delete
+        @DeleteMapping("/delete/{fileId}")
+        public ResponseEntity<RuleFile> deleteRuleFile(@PathVariable Long fileId) {
+                RuleFile ruleFile = ruleFilesService.deleteRuleFile(fileId);
+                return ResponseEntity.ok(ruleFile);
+        }
+
         @GetMapping("/{fileId}")
         public ResponseEntity<byte[]> downloadRuleFile(@PathVariable Long fileId) {
                 RuleFile ruleFile = ruleFilesService.getRuleFile(fileId);

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable, of, tap} from 'rxjs';
+import {forkJoin, Observable, of, tap} from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import {AppConstant} from "../app.constant";
 import {RuleFile} from "../models/rule-file";
@@ -10,13 +10,14 @@ import {RuleFile} from "../models/rule-file";
 })
 export class RuleFilesService {
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) {
+  }
 
   uploadRuleFile(formData: FormData): Observable<any> {
     const endpoint = AppConstant.API_URL + AppConstant.API_PATHS.RULEFILES.CPI.CREATE;
     const headers = new HttpHeaders();
 
-    return this.httpClient.post(endpoint, formData, { headers }).pipe(
+    return this.httpClient.post(endpoint, formData, {headers}).pipe(
       tap(res => console.log('Successfully created rule file:', res)),
       catchError((error) => {
         console.error('Error uploading rule file:', error);
@@ -56,5 +57,37 @@ export class RuleFilesService {
         return of([]);
       })
     );
+  }
+
+  getAllRuleAndCodenarcFiles(): Observable<{ ruleFiles: RuleFile[], codenarcFiles: RuleFile[] }> {
+    return forkJoin({
+      ruleFiles: this.getAllRuleFiles(),
+      codenarcFiles: this.getAllCodenarcFiles()
+    });
+  }
+
+  deleteCodenarcFile(id: string): Observable<any> {
+    const endpoint = `${AppConstant.API_URL}${AppConstant.API_PATHS.RULEFILES.CODENARC.DELETE}/${id}`;
+
+    return this.httpClient.delete(endpoint).pipe(
+      tap(() => console.log('Successfully deleted Codenarc file')),
+      catchError((error) => {
+        console.error('Error deleting Codenarc file:', error);
+        return of('Failed to delete Codenarc file');
+      })
+    );
+  }
+
+  deleteRuleFile(id: string): Observable<any> {
+    const endpoint = `${AppConstant.API_URL}${AppConstant.API_PATHS.RULEFILES.CPI.DELETE}/${id}`;
+
+    return this.httpClient.delete(endpoint).pipe(
+      tap(() => console.log('Successfully deleted Rule file')),
+      catchError((error) => {
+        console.error('Error deleting Rule file:', error);
+        return of('Failed to delete Rule file');
+      })
+    );
+
   }
 }
