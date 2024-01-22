@@ -14,9 +14,6 @@ services:
       - jenkins_external:/files
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/local/bin/docker
-      - PATH_EXTERNAL=/files
-      - PATH_INTERNAL=/var/jenkins_home
-      - JENKINS_URL=http://localhost:8080/
     networks:
       project-network:
 
@@ -56,8 +53,9 @@ services:
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_JPA_SHOW_SQL=true
       - SERVER_PORT=9001
-      - PATH_EXTERNAL = /files
-      - PATH_INTERNAL = /var/jenkins_home
+      - JENKINS_URL=http://localhost:8080/
+      - PATH_EXTERNAL=/files
+      - PATH_INTERNAL=/var/jenkins_home
     networks:
       - project-network
     restart: on-failure
