@@ -15,7 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/local/bin/docker
     networks:
-      project-network:
+      - project-network
 
   mysqldb:
     image: mysql:latest
@@ -33,7 +33,7 @@ services:
     volumes:
       - mysql_db:/var/lib/mysql
     networks:
-      project-network:
+      - project-network
 
   backend:
     container_name: backend
@@ -71,7 +71,7 @@ services:
     depends_on:
       - backend
     networks:
-      project-network:
+      - project-network
 
 volumes:
   mysql_db:
