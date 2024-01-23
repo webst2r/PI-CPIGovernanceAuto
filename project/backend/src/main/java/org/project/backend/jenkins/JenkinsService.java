@@ -227,7 +227,7 @@ public class JenkinsService {
                     System.out.println("Failed to check job status. Status code: " + statusCode);
                     throw new BadRequestException("Failed to check job status", FAILED_TO_CHECK_JOB_STATUS);
                 }
-            } catch (IOException | InterruptedException e) {
+            } catch (InterruptedException | IOException e) {
                 throw new BadRequestException("Failed to check job status", FAILED_TO_CHECK_JOB_STATUS);
             }
         } while (building);

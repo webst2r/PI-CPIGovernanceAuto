@@ -26,7 +26,7 @@ public class CodenarcReportReaderDeserializer {
     public CodenarcReportDTO deserialize(String jobName) {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        String internalPath = this.internalPath + "workspace/"+ jobName+"/output.json";
+        String internalPath = this.internalPath + "workspace"+ "/" + jobName + "/" + "output.json";
         Path projectPath = Paths.get(internalPath);
         try {
             Resource resource = resourceLoader.getResource("file:" + projectPath.toString());

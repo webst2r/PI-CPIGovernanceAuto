@@ -29,7 +29,7 @@ public class CPIlintDeserializer {
     public CPILintReportDTO deserialize(String jobName) {
         CPILintReportDTO cpilintReportDTO = new CPILintReportDTO();
         List<IssueDTO> issueList = new ArrayList<>();
-        String internalPath = this.internalPath + "workspace/"+ jobName+"/cpilint.log";
+        String internalPath = this.internalPath + "workspace" + "/" + jobName + "/" + "cpilint.log";
         Path projectPath = Paths.get(internalPath);
         Resource resource = resourceLoader.getResource("file:" + projectPath);
 

@@ -23,7 +23,7 @@ public class DependencyCheckReportReaderDeserializer {
 
     public DependencyCheckReportDTO deserialize(String jobName) {
         ObjectMapper objectMapper = new ObjectMapper();
-        String internalPath = this.internalPath + "workspace/"+ jobName+"/dependency-check-report.json";
+        String internalPath = this.internalPath + "workspace"+ "/" +  jobName + "/" +"dependency-check-report.json";
         Path projectPath = Paths.get(internalPath);
 
         try {
