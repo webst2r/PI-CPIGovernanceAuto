@@ -11,5 +11,5 @@ Mockups que apresentam uma primeira ideia para o desenvolvimento das interfaces 
 
 
 ## [Backlog](https://docs.google.com/spreadsheets/d/1kh6NV6ZPKDo-MXn_YH3cCqnICfz5tv92suDrGLPKVQ0/edit?usp=sharing "Backlog")
-O backlog do produto, que inclui todas as funcionalidades e tarefas que a equipa planeia abordar ao longo do tempo. O seu objetivo passa por garantir que todos os envolvidos compreendam os objetivos e prioridades do
+O backlog do produto inclui todas as funcionalidades e tarefas que a equipa planeia abordar ao longo do tempo. O seu objetivo passa por garantir que todos os envolvidos compreendam os objetivos e prioridades do
 projeto. 
