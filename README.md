@@ -1,8 +1,8 @@
-# CPI Governance Automation
+<p align="center">Cloud Platform Integration</p>
+<h1 align="center>Governance Automation</h1>
+<br/>
 
-
-
-### Collaborators:  
+## Authors:  
 - [Rodrigo Rodrigues](https://github.com/webst2r)  
 - [Rui Guilherme Monteiro](https://github.com/rushmetra) 
 - [Joaquim Roque](https://github.com/jtmr05)  
