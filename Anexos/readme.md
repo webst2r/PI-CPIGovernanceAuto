@@ -4,8 +4,7 @@
 
 
 ## [Cronograma](https://docs.google.com/spreadsheets/d/1Txlr_G8KfKD7-EHG46goUM1c4jY-mylaaL7IhbeJXto/edit?usp=sharing "Cronograma")
-Roadmap que permite ter uma visão das tarefas delineadas para o desenvolvimento de software ao longo do tempo.
-
+O Cronograma reflete a ideia inicial da divisão temporal do trabalho de acordo com o prazo de entrega final. Nele estão descritas as tarefas previstas inicialmente e o seu período de execução, englobando algumas reuniões iniciais e os sprints de desenvolvimento planeados para quando foi começado o projeto.
 
 ## [Mockups](https://www.figma.com/file/kKPw1ePVuugXeZkTVLBNQc/CPI-Mockups?type=design&node-id=0%3A1&mode=design&t=7yxDWZnecfJduTkI-1 "Mockups Figma")
 Mockups que apresentam uma primeira ideia para o desenvolvimento das interfaces e funcionalidades do sistema.
