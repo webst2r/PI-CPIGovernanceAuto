@@ -3,7 +3,7 @@
 <br/>
 
 ### Introduction
-This application aims to automate the review of integration interfaces developed on the SAP Cloud Platform Integration (CPI) platform.
+This project aims to automate the review of integration interfaces developed on the SAP Cloud Platform Integration (CPI) platform.
 
 ### Authors:  
 - [Rodrigo Rodrigues](https://github.com/webst2r)  
