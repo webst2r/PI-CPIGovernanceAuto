@@ -135,7 +135,7 @@ public class JenkinsService {
                 System.out.println("Job triggered successfully!");
 
                 var state = checkBuildState(jobName);
-                if (state.equals("SUCCESS")) {
+                if (state.equals("SUCCESS") || state.equals("FAILURE")) {
                     System.out.println("Job executed successfully!");
                     sendFlowZipToGithub(jobName);
                     sendReportToGithub(jobName);
@@ -165,16 +165,16 @@ public class JenkinsService {
 
     public void sendReportToGithub(String fileName) throws IOException, InterruptedException {
 
-        String uploadDir = internalPath + "workspace" + "\\" + fileName;
+        String uploadDir = internalPath + "workspace" + "/" + fileName;
         System.out.println("Upload dir: " + uploadDir);
         File flowDirectory = new File(uploadDir);
         if (!flowDirectory.exists()) {
-            flowDirectory.mkdirs();
+          throw new BadRequestException("Directory not found", DIRECTORY_NOT_FOUND);
         }
 
-        File cpilintLog = new File(uploadDir + "\\" + "cpilint.log");
-        File dependencyCheckLog = new File(uploadDir + "\\" + "dependency-check-report.json");
-        File codenarcLog = new File(uploadDir + "\\" + "output.json");
+        File cpilintLog = new File(uploadDir + "/" + "cpilint.log");
+        File dependencyCheckLog = new File(uploadDir + "/" + "dependency-check-report.json");
+        File codenarcLog = new File(uploadDir + "/" + "output.json");
 
         byte[] contentCpi = Files.readAllBytes(cpilintLog.toPath());
         byte[] contentDependencyCheck = Files.readAllBytes(dependencyCheckLog.toPath());
