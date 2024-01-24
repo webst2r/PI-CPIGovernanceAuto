@@ -53,12 +53,15 @@ services:
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
       - SPRING_JPA_SHOW_SQL=true
       - SERVER_PORT=9001
-      - JENKINS_URL=http://localhost:8080/
+      - JENKINS_URL=http://jenkins:8080/
       - PATH_EXTERNAL=/files
-      - PATH_INTERNAL=/var/jenkins_home
+      - PATH_INTERNAL=/var/jenkins_home/
     networks:
       - project-network
     restart: on-failure
+    volumes:
+      - jenkins_internal:/var/jenkins_home
+      - jenkins_external:/files
 
   frontend:
     container_name: frontend
