@@ -28,7 +28,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.StandardCopyOption;
 import java.io.IOException;
@@ -112,8 +111,6 @@ public class JenkinsService {
         }
     }
 
-    //TODO: add the zip and logs to github
-    //TODO: delete files from jenkins
     public ReportDTO execute(String jobName) {
         var jenkinsCredentials = getJenkinsCredentials();
         String jenkinsUsername = jenkinsCredentials.getUsername();
@@ -140,7 +137,8 @@ public class JenkinsService {
                 var state = checkBuildState(jobName);
                 if (state.equals("SUCCESS")) {
                     System.out.println("Job executed successfully!");
-                    //TODO: Send zip and logs to github
+                    sendFlowZipToGithub(jobName);
+                    sendReportToGithub(jobName);
                     return getJenkinsReport(jobName);
                 } else {
                     System.out.println("Job executed with errors!");
@@ -154,6 +152,36 @@ public class JenkinsService {
         } catch (Exception e) {
             throw new BadRequestException("Failed to trigger job", FAILED_TO_EXECUTE_JOB);
         }
+    }
+
+
+    public void sendFlowZipToGithub (String fileName) throws IOException, InterruptedException {
+        String uploadDir = externalPath;
+        fileName += ".zip";
+        Path filePath = Path.of(uploadDir, fileName);
+        byte[] content = Files.readAllBytes(filePath);
+        githubRepositoryService.sendFileToGitHub("main", fileName, content);
+    }
+
+    public void sendReportToGithub(String fileName) throws IOException, InterruptedException {
+
+        String uploadDir = internalPath + "workspace" + "\\" + fileName;
+        System.out.println("Upload dir: " + uploadDir);
+        File flowDirectory = new File(uploadDir);
+        if (!flowDirectory.exists()) {
+            flowDirectory.mkdirs();
+        }
+
+        File cpilintLog = new File(uploadDir + "\\" + "cpilint.log");
+        File dependencyCheckLog = new File(uploadDir + "\\" + "dependency-check-report.json");
+        File codenarcLog = new File(uploadDir + "\\" + "output.json");
+
+        byte[] contentCpi = Files.readAllBytes(cpilintLog.toPath());
+        byte[] contentDependencyCheck = Files.readAllBytes(dependencyCheckLog.toPath());
+        byte[] contentCodenarc = Files.readAllBytes(codenarcLog.toPath());
+        githubRepositoryService.sendFileToGitHub("main", "cpilint.log", contentCpi);
+        githubRepositoryService.sendFileToGitHub("main", "dependency-check-report.json", contentDependencyCheck);
+        githubRepositoryService.sendFileToGitHub("main", "output.json", contentCodenarc);
     }
 
     public void executeUpdateJenkinsFile(String ruleFileName, String codenarcFileName, String flowFileName, String flowVersion) {
@@ -235,7 +263,6 @@ public class JenkinsService {
     }
 
     public ReportDTO getJenkinsReport(String jobName) {
-        //TODO: call this method the right method in jenkins when pipeline as finished
         return ReportDTO.builder()
                 .codenarcReport(codenarcReportReaderDeserializer.deserialize(jobName))
                 .dependencyCheckReport(dependencyCheckReportReaderDeserializer.deserialize(jobName))

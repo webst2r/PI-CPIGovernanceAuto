@@ -16,12 +16,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -243,7 +241,7 @@ public class GithubRepositoryService {
         return HttpClient.newHttpClient().send(request, responseBodyHandler());
     }
 
-    public void sendZipToGitHub(String branch, String filePath, byte[] zipContentBytes) throws IOException, InterruptedException {
+    public void sendFileToGitHub(String branch, String fileName, byte[] fileContentBytes) throws IOException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()) {
@@ -277,14 +275,14 @@ public class GithubRepositoryService {
                 System.out.println("last commit SHA: " + commitSha);
 
                 // 1.1 Read ZIP file content
-                String zipContent = Base64.getEncoder().encodeToString(zipContentBytes);
+                String zipContent = Base64.getEncoder().encodeToString(fileContentBytes);
 
                 // 2. Criar um novo blob no repositório
                 String blobSha = createBlob(zipContent, githubApiUrl, githubToken);
                 System.out.println("SHA of Blob: " + blobSha);
 
                 // 3. Criar uma nova árvore contendo o blob
-                String newTreeSha = createTree(commitSha, filePath, blobSha, githubApiUrl, githubToken);
+                String newTreeSha = createTree(commitSha, fileName, blobSha, githubApiUrl, githubToken);
                 System.out.println("SHA of Tree: " + newTreeSha);
 
                 // 4. Criar um novo commit apontando para a nova árvore
@@ -388,5 +386,4 @@ public class GithubRepositoryService {
             throw new RuntimeException("User not authenticated");
         }
     }
-
 }

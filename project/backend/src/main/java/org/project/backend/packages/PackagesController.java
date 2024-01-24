@@ -117,7 +117,7 @@ public class PackagesController {
             byte[] zipContentBytes = convertBytesToZip(response.getBody(), fileName);
             String zipFileName = fileName.replace(".xml", ".zip");
             System.out.println("Zip Filename: " + zipFileName);
-            gitHubService.sendZipToGitHub(branch, zipFileName, zipContentBytes);
+            gitHubService.sendFileToGitHub(branch, zipFileName, zipContentBytes);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
