@@ -9,7 +9,9 @@ O Cronograma reflete a ideia inicial da divisão temporal do trabalho de acordo 
 ## [Mockups](https://www.figma.com/file/kKPw1ePVuugXeZkTVLBNQc/CPI-Mockups?type=design&node-id=0%3A1&mode=design&t=7yxDWZnecfJduTkI-1 "Mockups Figma")
 Mockups que apresentam uma primeira ideia para o desenvolvimento das interfaces e funcionalidades do sistema.
 
-
 ## [Backlog](https://docs.google.com/spreadsheets/d/1kh6NV6ZPKDo-MXn_YH3cCqnICfz5tv92suDrGLPKVQ0/edit?usp=sharing "Backlog")
 O backlog do produto inclui todas as funcionalidades e tarefas que a equipa planeia abordar ao longo do tempo. O seu objetivo passa por garantir que todos os envolvidos compreendam os objetivos e prioridades do
 projeto. 
+
+##  [Apresentação Final](https://pitch.com/v/cloud-platform-integration-6c4s72 "Apresentação Final")
+De modo a tirar proveito dos slides da apresentação final do produto, é recomendável utilizar o _link_ fornecido.
